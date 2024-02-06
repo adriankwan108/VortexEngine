@@ -6,15 +6,28 @@ bin-int/
 *.log
 **.spv
 
-#visual studio files
+# visual studio files
 .vs/
 **.sln
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
 
+# xcode files
+**.pbxproj
+**.xcsettings
+
 # dirs
 */vendor/VulkanSDK
 
+# compressed files
 **.ttf
+
+# MacOS
 **/.DS_Store
+
+# CMake
+**/CMakeFiles/
+**/CMakeScripts/
+**/CMakeCache.txt
+**.cmake
