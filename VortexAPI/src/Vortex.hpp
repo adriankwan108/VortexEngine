@@ -2,9 +2,9 @@
 
 // For use by Template Applications
 
-#include "Template/Application.hpp"
+#include "Vortex/Application.hpp"
 #include <stdio.h>
 #include <iostream>
 
 // ---------- Entry Point ----------
-#include "Template/EntryPoint.hpp"
+#include "Vortex/EntryPoint.hpp"

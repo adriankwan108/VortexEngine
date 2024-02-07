@@ -1,17 +1,17 @@
 #include "EngineApplication.hpp"
 #include <iostream>
-#include <Template.hpp>
+#include <Vortex.hpp>
 
 
-class EngineApplication : public VX::Application
+class VortexEngine : public VX::Application
 {
 public:
-    EngineApplication()
+    VortexEngine()
     {
         
     }
     
-    ~EngineApplication()
+    ~VortexEngine()
     {
         
     }
@@ -19,5 +19,5 @@ public:
 
 VX::Application* VX::CreateApplication()
 {
-    return new EngineApplication();
+    return new VortexEngine();
 }

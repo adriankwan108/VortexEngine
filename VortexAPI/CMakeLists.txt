@@ -6,33 +6,34 @@ if (POLICY CMP0141)
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-file(GLOB TEMPLATE_HEADERS "src/Template/**.hpp")
-file(GLOB TEMPLATE_SOURCES "src/Template/**.cpp")
-file(GLOB TEMPLATE_API "src/**.hpp")
+file(GLOB VORTEX_HEADERS "src/Vortex/**.hpp")
+file(GLOB VORTEX_SOURCES "src/Vortex/**.cpp")
+file(GLOB VORTEX_API "src/**.hpp")
 
 # libaries
-add_library(TemplateAPI SHARED)
-target_sources(TemplateAPI PRIVATE
-    ${TEMPLATE_HEADERS}
-    ${TEMPLATE_SOURCES}
-    ${TEMPLATE_API}
+add_library(VortexAPI SHARED)
+target_sources(VortexAPI PRIVATE
+    ${VORTEX_HEADERS}
+    ${VORTEX_SOURCES}
+    ${VORTEX_API}
     # glm
 )
 
-set_target_properties(TemplateAPI PROPERTIES VERSION 0.1.1)
+set_target_properties(VortexAPI PROPERTIES VERSION 0.1.1)
 
 # additional include directories (for #include)
-target_include_directories(TemplateAPI PRIVATE
-    "Engine/src"
+target_include_directories(VortexAPI PRIVATE
+    # "Engine/src"
     # spdlog, glfw, vulkan ...
 )
 
 # Set output directories
-set_target_properties(TemplateAPI PROPERTIES
-RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin/Debug-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/TemplateAPI
-RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/Release-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/TemplateAPI
-RUNTIME_OUTPUT_DIRECTORY_DIST ${CMAKE_BINARY_DIR}/bin/Dist-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/TemplateAPI
+set_target_properties(VortexAPI PROPERTIES
+RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin/Debug-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/VortexAPI
+RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/Release-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/VortexAPI
+RUNTIME_OUTPUT_DIRECTORY_DIST ${CMAKE_BINARY_DIR}/bin/Dist-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/VortexAPI
 
+# replace dll automatically
 RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin/Debug-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/Engine
 RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/Release-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/Engine
 RUNTIME_OUTPUT_DIRECTORY_DIST ${CMAKE_BINARY_DIR}/bin/Dist-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/Engine

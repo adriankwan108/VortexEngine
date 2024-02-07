@@ -25,6 +25,7 @@ bin-int/
 
 # MacOS
 **/.DS_Store
+**.dylib
 
 # CMake
 **/CMakeFiles/

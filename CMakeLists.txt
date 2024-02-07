@@ -7,7 +7,7 @@ if (POLICY CMP0141)
 endif()
 
 # set the project name
-project(TemplateEngine VERSION 0.1.1)
+project(VortexEngine VERSION 0.1.1)
 
 # set C++ version
 if (CMAKE_VERSION VERSION_GREATER 3.13)
@@ -19,7 +19,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # add_compile_options(-fsanitize=address)
 # add_link_options(-fsanitize=address)
-add_subdirectory(TemplateAPI)
+add_subdirectory(VortexAPI)
 add_subdirectory(Engine)
 
 # Turn on any compiler-specific flags
@@ -63,11 +63,11 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Dist" CACHE STRING "" FORCE)
 # set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
 target_include_directories(Engine PRIVATE
-	"TemplateAPI/src"
+	"VortexAPI/src"
 )
 
 target_link_libraries(Engine PRIVATE
-	TemplateAPI
+	VortexAPI
 )
 
 set_property(DIRECTORY ${CMAKE_BINARY_DIR} PROPERTY VS_STARTUP_PROJECT Engine)
