@@ -1,6 +1,7 @@
 # binaries
 **/bin/
 bin-int/
+**/build/
 
 # engine files
 *.log
@@ -26,6 +27,8 @@ bin-int/
 # MacOS
 **/.DS_Store
 **.dylib
+**.plist
+**.xcuserstate
 
 # CMake
 **/CMakeFiles/
