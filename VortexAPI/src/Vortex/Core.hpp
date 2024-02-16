@@ -1,9 +1,6 @@
-#ifndef Core_hpp
-#define Core_hpp
+#pragma once
 
 #include <stdio.h>
-
-#endif /* Core_hpp */
 
 #if defined(_MSC_VER) // microsoft
     #ifdef VX_BUILD_DLL

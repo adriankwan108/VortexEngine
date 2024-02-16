@@ -1,12 +1,5 @@
 #pragma once
-
-#ifndef Application_hpp
-#define Application_hpp
-
 #include "Core.hpp"
-
-#endif
-
 
 namespace VX
 {

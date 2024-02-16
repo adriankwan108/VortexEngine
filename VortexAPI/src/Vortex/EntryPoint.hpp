@@ -1,10 +1,27 @@
-#ifndef EntryPoint_hpp
-#define EntryPoint_hpp
+#pragma once
 
-
-#endif
-
-#if defined(_MSC_VER)
+//#if defined(_MSC_VER)
+//
+//extern VX::Application* VX::CreateApplication();
+//int main(int argc, char** argv)
+//{
+//    auto app = VX::CreateApplication();
+//    app->Run();
+//    delete app;
+//    return 0;
+//}
+//#else
+//
+//extern VX::Application* VX::CreateApplication();
+//int main(int argc, char** argv)
+//{
+//    auto app = VX::CreateApplication();
+//    app->Run();
+//    delete app;
+//    return 0;
+//}
+//
+//#endif
 
 extern VX::Application* VX::CreateApplication();
 int main(int argc, char** argv)
@@ -14,15 +31,3 @@ int main(int argc, char** argv)
     delete app;
     return 0;
 }
-#else
-
-extern VX::Application* VX::CreateApplication();
-int main(int argc, char** argv)
-{
-    auto app = VX::CreateApplication();
-    app->Run();
-    delete app;
-    return 0;
-}
-
-#endif
