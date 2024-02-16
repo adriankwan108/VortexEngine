@@ -28,6 +28,10 @@ target_include_directories(VortexAPI PUBLIC
     "vendor/spdlog/include"
 )
 
+if(MSVC)
+  add_definitions(-DVX_BUILD_DLL)
+endif()
+
 # Set output directories
 set_target_properties(VortexAPI PROPERTIES
 RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin/Debug-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}/VortexAPI

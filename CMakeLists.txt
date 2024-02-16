@@ -63,7 +63,7 @@ target_link_libraries(Engine PRIVATE
 
 set_property(DIRECTORY ${CMAKE_BINARY_DIR} PROPERTY VS_STARTUP_PROJECT Engine)
 
-add_compile_options(-D VX_BUILD_DLL)
+# add_compile_options(-D VX_BUILD_DLL)
 
 # Generate Xcode project
 # set(CMAKE_XCODE_SCHEME_EXECUTABLE Engine)

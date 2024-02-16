@@ -13,7 +13,7 @@ namespace VX
         
         s_ClientLogger = spdlog::stdout_color_mt("App");
         s_ClientLogger->set_level(spdlog::level::trace);
-        
+
         VX_CORE_INFO("Log initiated...");
     }
 }
