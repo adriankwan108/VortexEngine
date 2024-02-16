@@ -1,0 +1,3 @@
+[submodule "VortexAPI/vendor/spdlog"]
+	path = VortexAPI/vendor/spdlog
+	url = https://github.com/gabime/spdlog.git
