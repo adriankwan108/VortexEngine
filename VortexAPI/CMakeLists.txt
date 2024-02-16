@@ -25,6 +25,7 @@ set_target_properties(VortexAPI PROPERTIES VERSION 0.1.1)
 target_include_directories(VortexAPI PRIVATE
     # "Engine/src"
     # spdlog, glfw, vulkan ...
+    "vendor/spdlog/include"
 )
 
 # Set output directories
