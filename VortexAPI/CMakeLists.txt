@@ -6,16 +6,14 @@ if (POLICY CMP0141)
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-file(GLOB_RECURSE VORTEX_HEADERS "src/Vortex/**.hpp")
-file(GLOB_RECURSE VORTEX_SOURCES "src/Vortex/**.cpp")
-file(GLOB VORTEX_API "src/**.hpp")
+file(GLOB_RECURSE VORTEX_HEADERS "src/*.hpp")
+file(GLOB_RECURSE VORTEX_SOURCES "src/*.cpp")
 
 # libaries
 add_library(VortexAPI SHARED)
 target_sources(VortexAPI PRIVATE
     ${VORTEX_HEADERS}
     ${VORTEX_SOURCES}
-    ${VORTEX_API}
     # glm
 )
 
