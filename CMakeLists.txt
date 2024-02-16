@@ -6,11 +6,16 @@ if (POLICY CMP0141)
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
+if(MSVC)
+  target_compile_options(<target> PUBLIC "/ZI")
+  target_link_options(<target> PUBLIC "/INCREMENTAL")
+endif()
+
 # set the project name
 project(VortexEngine VERSION 0.1.1)
 
 # set C++ version
-if (CMAKE_VERSION VERSION_GREATER 3.13)
+if (CMAKE_VERSION VERSION_GREATER 3.12)
     # set_property(TARGET TemplateEngine PROPERTY CXX_STANDARD 20)
     set(CMAKE_CXX_STANDARD 20)
 endif()
@@ -39,13 +44,6 @@ else()
 			set(CMAKE_XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS[variant=RelWithDebInfo] "NO")
 			set(CMAKE_XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS[variant=Release] "YES")
 			set(CMAKE_XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS[variant=Dist] "YES")
-
-			# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/build/Debug)
-			# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/build/Release)
-			# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/build/Debug)
-			# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/build/Release)
-			# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/build/Debug)
-			# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/build/Release)
 		endif()
 	endif()
 endif()
@@ -54,13 +52,6 @@ set(CMAKE_USE_RELATIVE_PATHS ON)
 
 # Add support for additional build configurations
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Dist" CACHE STRING "" FORCE)
-# set(EXCLUDE_FROM_ALL true)
-# set(CMAKE_SUPPRESS_REGENERATION true)
-
-# set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-# set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
-
-# set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
 target_include_directories(Engine PRIVATE
 	"VortexAPI/src"
