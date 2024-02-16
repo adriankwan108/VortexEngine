@@ -26,6 +26,8 @@
 extern VX::Application* VX::CreateApplication();
 int main(int argc, char** argv)
 {
+    VX::Log::Init();
+    
     auto app = VX::CreateApplication();
     app->Run();
     delete app;

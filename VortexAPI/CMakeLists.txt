@@ -22,7 +22,7 @@ target_sources(VortexAPI PRIVATE
 set_target_properties(VortexAPI PROPERTIES VERSION 0.1.1)
 
 # additional include directories (for #include)
-target_include_directories(VortexAPI PRIVATE
+target_include_directories(VortexAPI PUBLIC
     # "Engine/src"
     # spdlog, glfw, vulkan ...
     "vendor/spdlog/include"
