@@ -6,8 +6,8 @@ if (POLICY CMP0141)
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-file(GLOB VORTEX_HEADERS "src/Vortex/**.hpp")
-file(GLOB VORTEX_SOURCES "src/Vortex/**.cpp")
+file(GLOB_RECURSE VORTEX_HEADERS "src/Vortex/**.hpp")
+file(GLOB_RECURSE VORTEX_SOURCES "src/Vortex/**.cpp")
 file(GLOB VORTEX_API "src/**.hpp")
 
 # libaries
