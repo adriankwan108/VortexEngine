@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vortex/Events/Event.h"
+#include "Event.hpp"
 
 namespace VX {
 

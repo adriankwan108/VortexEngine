@@ -21,7 +21,7 @@ set_target_properties(VortexAPI PROPERTIES VERSION 0.1.1)
 
 # additional include directories (for #include)
 target_include_directories(VortexAPI PUBLIC
-    # "Engine/src"
+    "src/Vortex"
     # spdlog, glfw, vulkan ...
     "vendor/spdlog/include"
 )
@@ -29,6 +29,11 @@ target_include_directories(VortexAPI PUBLIC
 if(MSVC)
   add_definitions(-DVX_BUILD_DLL)
 endif()
+
+target_precompile_headers(VortexAPI
+    PUBLIC
+        VortexPCH.hpp
+)
 
 # Set output directories
 set_target_properties(VortexAPI PROPERTIES
