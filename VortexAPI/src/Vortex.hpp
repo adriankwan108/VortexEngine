@@ -4,8 +4,7 @@
 
 #include "Vortex/Application.hpp"
 #include "Vortex/Log.hpp"
-#include <stdio.h>
-#include <iostream>
+#include "Vortex/Core.hpp"
 
 // ---------- Entry Point ----------
 #include "Vortex/EntryPoint.hpp"

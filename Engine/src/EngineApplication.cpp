@@ -1,5 +1,4 @@
 #include "EngineApplication.hpp"
-#include <iostream>
 #include <Vortex.hpp>
 
 

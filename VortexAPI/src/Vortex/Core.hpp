@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdio.h>
-
 #if defined(_MSC_VER) // microsoft
     #ifdef VX_BUILD_DLL
         #define VX_API __declspec(dllexport)

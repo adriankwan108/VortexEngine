@@ -24,6 +24,7 @@ target_include_directories(VortexAPI PUBLIC
     "src/Vortex"
     # spdlog, glfw, vulkan ...
     "vendor/spdlog/include"
+    "src"
 )
 
 if(MSVC)
@@ -32,7 +33,7 @@ endif()
 
 target_precompile_headers(VortexAPI
     PUBLIC
-        VortexPCH.hpp
+        "src/VortexPCH.hpp"
 )
 
 # Set output directories

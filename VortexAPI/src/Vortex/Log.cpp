@@ -1,3 +1,4 @@
+#include "VortexPCH.hpp"
 #include "Log.hpp"
 
 namespace VX

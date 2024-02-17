@@ -1,13 +1,5 @@
-//
-//  EntryPoint.cpp
-//  TemplateAPI
-//
-//  Created by Ting Fung Kwan on 25/1/2024.
-//
-
+#include "VortexPCH.hpp"
 #include "Application.hpp"
-#include "Log.hpp"
-#include <iostream>
 
 namespace VX
 {
