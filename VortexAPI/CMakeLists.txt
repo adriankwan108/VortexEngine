@@ -24,6 +24,7 @@ target_include_directories(VortexAPI PUBLIC
     "src/Vortex"
     # spdlog, glfw, vulkan ...
     "vendor/spdlog/include"
+    "vendor/glfw/include"
     "src"
 )
 
