@@ -13,3 +13,5 @@
 //    #define VX_API // Most compilers export all the symbols by default. We hope for the best here.
 //    #pragma warning Unknown dynamic link import/export semantics.
 #endif
+
+#define BIT(x) (1 << x)
