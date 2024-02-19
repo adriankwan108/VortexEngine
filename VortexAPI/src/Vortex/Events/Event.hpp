@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Core.hpp"
-#include <functional> 
-#include <string>
-#include <sstream>
+#include "VortexPCH.hpp"
 
 namespace VX {
 
