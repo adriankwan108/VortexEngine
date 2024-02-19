@@ -1,6 +1,7 @@
 #pragma once
 #include "Core.hpp"
 #include "Log.hpp"
+#include "Window.hpp"
 
 namespace VX
 {
@@ -11,6 +12,8 @@ namespace VX
         ~Application();
         
         void Run();
+    private:
+        std::unique_ptr<Window> m_Window;
     };
 
     // To be defined by client (global)
