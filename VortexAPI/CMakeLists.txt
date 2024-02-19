@@ -9,6 +9,11 @@ endif()
 file(GLOB_RECURSE VORTEX_HEADERS "src/*.hpp")
 file(GLOB_RECURSE VORTEX_SOURCES "src/*.cpp")
 
+# glfw
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
 # libaries
 add_library(VortexAPI SHARED)
 target_sources(VortexAPI PRIVATE
@@ -19,12 +24,15 @@ target_sources(VortexAPI PRIVATE
 
 set_target_properties(VortexAPI PROPERTIES VERSION 0.1.1)
 
+add_subdirectory("vendor/glfw")
+target_link_libraries(VortexAPI glfw)
+
 # additional include directories (for #include)
 target_include_directories(VortexAPI PUBLIC
     "src/Vortex"
     # spdlog, glfw, vulkan ...
     "vendor/spdlog/include"
-    "vendor/glfw/include"
+    
     "src"
 )
 
