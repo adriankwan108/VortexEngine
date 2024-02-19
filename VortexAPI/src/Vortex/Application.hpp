@@ -1,6 +1,5 @@
 #pragma once
 #include "Core.hpp"
-#include "Log.hpp"
 #include "Window.hpp"
 
 namespace VX
