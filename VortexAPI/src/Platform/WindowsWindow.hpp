@@ -1,5 +1,8 @@
 #pragma once
 #include "Window.hpp"
+#include "Events/ApplicationEvent.hpp"
+#include "Events/MouseEvent.hpp"
+#include "Events/KeyEvent.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
