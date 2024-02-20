@@ -1,6 +1,6 @@
 #include "LayerStack.hpp"
 
-namespace Hazel {
+namespace VX {
 
 	// layers are intended to live throughout the lifetime of application
 	// changing layers may be worth recreating the entire stack
