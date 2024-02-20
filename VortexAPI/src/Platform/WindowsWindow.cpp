@@ -5,12 +5,6 @@ namespace VX
 {
     static bool s_GLFWInitialized = false;
 
-    Window* Window::Create(const WindowProps& props)
-    {
-        // somewhere should have a detector of OS
-        return new WindowsWindow(props);
-    }
-
     WindowsWindow::WindowsWindow(const WindowProps& props)
     {
         Init(props);
