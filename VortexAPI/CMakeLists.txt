@@ -29,11 +29,11 @@ target_link_libraries(VortexAPI glfw)
 
 # additional include directories (for #include)
 target_include_directories(VortexAPI PUBLIC
+    "src"
     "src/Vortex"
+    "src/Platform"
     # spdlog, glfw, vulkan ...
     "vendor/spdlog/include"
-    
-    "src"
 )
 
 if(MSVC)
