@@ -20,11 +20,30 @@ namespace VX
         VX_CORE_INFO("Application closed...");
     }
 
+    void Application::PushLayer(Layer* layer)
+    {
+        m_LayerStack.PushLayer(layer);
+        layer->OnAttach();
+    }
+
+    void Application::PushOverlay(Layer* layer)
+    {
+        m_LayerStack.PushOverlay(layer);
+        layer->OnAttach();
+    }
+
     void Application::OnEvent(Event& e)
     {
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
-        VX_CORE_TRACE("{0}", e);
+        // VX_CORE_TRACE("{0}", e);
+
+        for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
+        {
+            if (e.Handled)
+                break;
+            (*it)->OnEvent(e);
+        }
     }
 
     void Application::Run()
@@ -33,6 +52,10 @@ namespace VX
 
         while(m_Running)
         {
+            for (Layer* layer: m_LayerStack)
+            {
+                layer->OnUpdate();
+            }
             m_Window->OnUpdate();
         }
     }
