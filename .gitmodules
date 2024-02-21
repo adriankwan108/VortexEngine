@@ -4,3 +4,6 @@
 [submodule "VortexAPI/vendor/glfw"]
 	path = VortexAPI/vendor/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "VortexAPI/vendor/imgui"]
+	path = VortexAPI/vendor/imgui
+	url = https://github.com/ocornut/imgui.git
