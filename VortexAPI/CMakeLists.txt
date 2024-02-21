@@ -9,6 +9,9 @@ endif()
 file(GLOB_RECURSE VORTEX_HEADERS "src/*.hpp")
 file(GLOB_RECURSE VORTEX_SOURCES "src/*.cpp")
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES VORTEX_HEADERS)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES VORTEX_SOURCES)
+
 # glfw
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -18,7 +21,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # vulkan
-find_package(Vulkan REQUIRED FATAL_ERROR)
+find_package(Vulkan REQUIRED)
 
 # libaries
 add_library(VortexAPI SHARED)
@@ -44,6 +47,7 @@ target_include_directories(VortexAPI PUBLIC
     "src/Platform"
     # spdlog, glfw, vulkan ...
     "vendor/spdlog/include"
+    "vendor/imgui/backends"
 )
 
 if(MSVC)
