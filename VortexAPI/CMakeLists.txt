@@ -17,6 +17,9 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 # MSVC: multi-threaded debug dll
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+# vulkan
+find_package(Vulkan REQUIRED FATAL_ERROR)
+
 # libaries
 add_library(VortexAPI SHARED)
 target_sources(VortexAPI PRIVATE
@@ -28,7 +31,11 @@ target_sources(VortexAPI PRIVATE
 set_target_properties(VortexAPI PROPERTIES VERSION 0.1.1)
 
 add_subdirectory("vendor/glfw")
-target_link_libraries(VortexAPI glfw)
+target_link_libraries(VortexAPI PUBLIC
+    glfw
+    Vulkan::Vulkan
+    #glm::glm
+)
 
 # additional include directories (for #include)
 target_include_directories(VortexAPI PUBLIC

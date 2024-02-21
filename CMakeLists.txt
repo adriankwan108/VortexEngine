@@ -20,6 +20,7 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
     set(CMAKE_CXX_STANDARD 20)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2") # place -O2 for optimization when release 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # add_compile_options(-fsanitize=address)
