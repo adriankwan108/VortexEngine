@@ -15,6 +15,6 @@ namespace VX
         virtual void Display() override;
 
     private:
-        
+        VkInstance m_Instance = VK_NULL_HANDLE;
     };
 }

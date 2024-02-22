@@ -42,7 +42,10 @@ namespace VX
         glfwSetWindowUserPointer(m_Window, &m_Data);
 
         // create graphics context
+        m_GraphicsContext = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_Window));
+        
         // init graphics context
+        m_GraphicsContext->Init();
 
         SetVSync(true);
         
