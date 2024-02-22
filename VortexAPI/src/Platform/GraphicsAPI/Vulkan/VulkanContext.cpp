@@ -198,6 +198,8 @@ namespace VX
         );
         if (func != nullptr)
         {
+            // createInfo is created in createInstance before .pNext, 
+            // so that it can debug any issues in vkCreateInstance and vkDestroyInstance
             if (func(m_Instance, &createInfo, nullptr, &m_validationMessenger) != VK_SUCCESS)
             {
                 VX_CORE_ERROR("Vulkan: Failed to set up vaildation messenger.");

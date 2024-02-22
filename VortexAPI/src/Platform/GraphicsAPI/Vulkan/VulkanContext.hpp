@@ -26,11 +26,11 @@ namespace VX
         const char** m_glfwExtensions;
         
         // extensions supported by current hardware
-        std::vector<std::string> m_supportedInstanceExtensions;
+        std::vector<std::string> m_supportedInstanceExtensions = {};
         
         // extensions required by os
-        std::vector<const char*> m_requiredDeviceExtensions;
-        std::vector<const char*> m_requiredInstanceExtensions;
+        std::vector<const char*> m_requiredDeviceExtensions = {};
+        std::vector<const char*> m_requiredInstanceExtensions = {};
         
         // extensions to be enabled
         std::vector<const char*> m_enabledInstanceExtensions = { VK_KHR_SURFACE_EXTENSION_NAME };
@@ -38,7 +38,7 @@ namespace VX
     private: // vulkan objects that may be required to be exposed for imgui
         VkInstance m_Instance = VK_NULL_HANDLE;
         // physical device
-        // device
+        // logical device
         // queue family
         // queue
         // descriptor pool
@@ -51,10 +51,11 @@ namespace VX
         // useDynamicRendering
 
     private: // vulkan objects that not required by imgui
-        VkDebugUtilsMessengerEXT m_validationMessenger;
+        VkDebugUtilsMessengerEXT m_validationMessenger = VK_NULL_HANDLE;
         
     private:
         void createInstance(bool enableValidation);
+
         void setupValidationMessenger(bool enableValidation, VkDebugUtilsMessengerCreateInfoEXT& createInfo);
         void destroyValidationMessenger(bool enableValidation);
     };
