@@ -1,5 +1,6 @@
 #include "VortexPCH.hpp"
 #include "WindowsWindow.hpp"
+#include "Renderer/GraphicsContext.hpp"
 
 namespace VX
 {
@@ -39,6 +40,13 @@ namespace VX
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
         glfwMakeContextCurrent(m_Window);
         glfwSetWindowUserPointer(m_Window, &m_Data);
+        
+        // create graphics context
+        m_GraphicsContext = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_Window));
+        
+        // init graphics context
+        m_GraphicsContext->Init();
+
         SetVSync(true);
 
         // set glfw callbacks

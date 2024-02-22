@@ -1,7 +1,7 @@
 #include "VortexPCH.hpp"
 #include "Window.hpp"
-#include "Platform/MacWindow.hpp"
-#include "Platform/WindowsWindow.hpp"
+#include "Platform/OS/MacWindow.hpp"
+#include "Platform/OS/WindowsWindow.hpp"
 
 namespace VX
 {
