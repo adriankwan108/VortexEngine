@@ -15,6 +15,12 @@ namespace VX
         virtual void Init() override;
         virtual void Display() override;
 
+        static VKAPI_ATTR VkBool32 VKAPI_CALL ValidationCallback(
+            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+            VkDebugUtilsMessageTypeFlagsEXT messageType,
+            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+            void* pUserData);
+
     private:
         uint32_t m_glfwExtensionCount = 0;
         const char** m_glfwExtensions;
@@ -29,7 +35,7 @@ namespace VX
         // extensions to be enabled
         std::vector<const char*> m_enabledInstanceExtensions = { VK_KHR_SURFACE_EXTENSION_NAME };
         
-    private: // may be required to be exposed for imgui
+    private: // vulkan objects that may be required to be exposed for imgui
         VkInstance m_Instance = VK_NULL_HANDLE;
         // physical device
         // device
@@ -43,8 +49,13 @@ namespace VX
         // pipeline cache
         // subpass
         // useDynamicRendering
+
+    private: // vulkan objects that not required by imgui
+        VkDebugUtilsMessengerEXT m_validationMessenger;
         
     private:
-        VkResult createInstance(bool enableValidation);
+        void createInstance(bool enableValidation);
+        void setupValidationMessenger(bool enableValidation, VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+        void destroyValidationMessenger(bool enableValidation);
     };
 }
