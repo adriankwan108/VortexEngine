@@ -26,7 +26,7 @@ namespace VX
         m_Data.Width = props.Width;
         m_Data.Height = props.Height;
         
-        VX_CORE_INFO("Creating window {0}: {1},{2}", props.Title, props.Width, props.Height);
+        VX_CORE_INFO("Creating window for {0}: {1},{2}", props.Title, props.Width, props.Height);
         
         if(s_GLFWInitialized == false)
         {
@@ -36,7 +36,10 @@ namespace VX
             s_GLFWInitialized = true;
         }
 
+        // if use Vulkan
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // as Vulkan handles window resize with special care
+        
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 //        glfwMakeContextCurrent(m_Window);
         glfwSetWindowUserPointer(m_Window, &m_Data);
