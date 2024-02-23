@@ -18,6 +18,7 @@ namespace VX
     {
         VX_CORE_INFO("Initiating Vulkan context...");
         createInstance(true);
+        pickDevice();
     }
 
     void VulkanContext::Display()
@@ -186,6 +187,47 @@ namespace VX
         }
 
         setupValidationMessenger(enableValidation, validationMessengerCreateInfo);
+    }
+
+    void VulkanContext::pickDevice()
+    {
+        // get number of available GPUs with Vulkan support
+        uint32_t gpuCount = 0;
+        VK_CHECK_RESULT(vkEnumeratePhysicalDevices(m_Instance, &gpuCount, nullptr));
+        
+        if(gpuCount == 0)
+        {
+            VX_CORE_ERROR("Vulkan: No GPUs with Vulkan support is found.");
+            throw std::runtime_error("Vulkan: No GPUs with Vulkan support is found.");
+            return;
+        }
+        
+        // enumerate GPUs
+        std::vector<VkPhysicalDevice> physicalDevices(gpuCount);
+        VK_CHECK_RESULT(vkEnumeratePhysicalDevices(m_Instance, &gpuCount, physicalDevices.data()));
+        
+        // select GPUs
+        // Currently, just find the first suitable GPU, as I have only one GPU in hand.
+        // TODO: Score all device and pick the highest one
+        // TODO: Enable certain features
+        for(const auto& gpu: physicalDevices)
+        {
+            if(vkclass::VulkanDevice::IsDeviceSuitable(gpu))
+            {
+                m_gpu = gpu;
+                break;
+            }
+        }
+//        m_gpu = physicalDevices[0];
+        
+        if(m_gpu == VK_NULL_HANDLE)
+        {
+            VX_CORE_ERROR("Vulkan: Failed to find a suitable GPU.");
+            throw std::runtime_error("Vulkan: Failed to find a suitable GPU.");
+        }
+        
+        m_VulkanDevice = new vkclass::VulkanDevice(m_gpu);
+     
     }
 
     void VulkanContext::setupValidationMessenger(bool enableValidation, VkDebugUtilsMessengerCreateInfoEXT& createInfo)

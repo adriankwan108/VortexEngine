@@ -1,8 +1,11 @@
 #pragma once
 #include "VortexPCH.hpp"
 #include "Renderer/GraphicsContext.hpp"
+
 #include <GLFW/glfw3.h>
 #include "vulkan/vulkan.h"
+#include "Base/VulkanDevice.hpp"
+#include "Base/VulkanTools.hpp"
 
 namespace VX
 {
@@ -37,8 +40,8 @@ namespace VX
         
     private: // vulkan objects that may be required to be exposed for imgui
         VkInstance m_Instance = VK_NULL_HANDLE;
-        // physical device
-        // logical device
+        VkPhysicalDevice m_gpu = VK_NULL_HANDLE;
+        VkDevice m_LogicalDevice = VK_NULL_HANDLE;
         // queue family
         // queue
         // descriptor pool
@@ -52,9 +55,11 @@ namespace VX
 
     private: // vulkan objects that not required by imgui
         VkDebugUtilsMessengerEXT m_validationMessenger = VK_NULL_HANDLE;
+        vkclass::VulkanDevice* m_VulkanDevice = nullptr;
         
     private:
         void createInstance(bool enableValidation);
+        void pickDevice();
 
         void setupValidationMessenger(bool enableValidation, VkDebugUtilsMessengerCreateInfoEXT& createInfo);
         void destroyValidationMessenger(bool enableValidation);
