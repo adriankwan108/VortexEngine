@@ -9,7 +9,10 @@ namespace VX
 
     VulkanContext::~VulkanContext()
     {
-        destroyValidationMessenger(true);
+        if(m_enableValidation)
+        {
+            vkclass::debug::clearValidation(m_Instance);
+        }
         vkDestroyInstance(m_Instance, nullptr);
         VX_CORE_INFO("Vulkan: Instance destroyed.");
     }
@@ -24,38 +27,6 @@ namespace VX
     void VulkanContext::Display()
     {
         
-    }
-
-    VkBool32 VulkanContext::ValidationCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-        VkDebugUtilsMessageTypeFlagsEXT messageType,
-        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-        void* pUserData)
-    {
-        switch (messageSeverity)
-        {
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-            // VX_CORE_TRACE("Vulkan Validation layer: {0}", pCallbackData->pMessage);
-            break;
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-            // VX_CORE_INFO("Vulkan Validation layer: {0}", pCallbackData->pMessage);
-            break;
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-            VX_CORE_WARN("Vulkan Validation layer: {0}", pCallbackData->pMessage);
-            break;
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-            VX_CORE_ERROR("Vulkan Validation layer: {0}", pCallbackData->pMessage);
-            break;
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
-            VX_CORE_CRITICAL("Vulkan Validation layer: {0}", pCallbackData->pMessage);
-            break;
-        default:
-            break;
-        }
-
-        // the callback returns a boolean that indicates if the Vulkan call that triggered the validation layer msg should be aborted
-        // if the callback returns true, then the call is aborted with VK_ERROR_VALIDATION_FAILED_EXT error
-        // this is normally only used to test the validation layers themselves, so always return VK_FALSE
-        return VK_FALSE;
     }
 
     void VulkanContext::createInstance(bool enableValidation)
@@ -140,7 +111,7 @@ namespace VX
         // Note that on Android this layer requires at least NDK r20
         const char* validationLayerName = "VK_LAYER_KHRONOS_validation";
         VkDebugUtilsMessengerCreateInfoEXT validationMessengerCreateInfo{};
-        if (enableValidation)
+        if (m_enableValidation)
         {
             // Check if this layer is available at instance level
             uint32_t instanceLayerCount;
@@ -162,11 +133,7 @@ namespace VX
                 createInfo.enabledLayerCount = 1;
                 VX_CORE_INFO("Vulkan: Validation layer enabled");
 
-                validationMessengerCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-                validationMessengerCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-                validationMessengerCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-                validationMessengerCreateInfo.pfnUserCallback = ValidationCallback;
-                validationMessengerCreateInfo.pUserData = nullptr; // Optional
+                vkclass::debug::setupValidationMessengerCI(validationMessengerCreateInfo);
                 createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&validationMessengerCreateInfo;
             }
             else 
@@ -180,13 +147,18 @@ namespace VX
         {
             VX_CORE_ERROR("Vulkan: Failed to create instance!");
             throw std::runtime_error("Vulkan: Failed to create instance!");
+            return;
         }
         else
         {
             VX_CORE_INFO("Vulkan: Instance created.");
         }
 
-        setupValidationMessenger(enableValidation, validationMessengerCreateInfo);
+        if(m_enableValidation)
+        {
+            VkDebugUtilsMessengerCreateInfoEXT validationCreateInfo;
+            vkclass::debug::setupValidation(m_Instance);
+        }
     }
 
     void VulkanContext::pickDevice()
@@ -228,43 +200,5 @@ namespace VX
         
         m_VulkanDevice = new vkclass::VulkanDevice(m_gpu);
      
-    }
-
-    void VulkanContext::setupValidationMessenger(bool enableValidation, VkDebugUtilsMessengerCreateInfoEXT& createInfo)
-    {
-        if ( !enableValidation ) { return; }
-
-        auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-            m_Instance, 
-            "vkCreateDebugUtilsMessengerEXT"
-        );
-        if (func != nullptr)
-        {
-            // createInfo is created in createInstance before .pNext, 
-            // so that it can debug any issues in vkCreateInstance and vkDestroyInstance
-            if (func(m_Instance, &createInfo, nullptr, &m_validationMessenger) != VK_SUCCESS)
-            {
-                VX_CORE_ERROR("Vulkan: Failed to set up vaildation messenger.");
-                throw std::runtime_error("Vulkan: Failed to set up vaildation messenger.");
-            }
-        }
-
-        VX_CORE_INFO("Vulkan: Validation messenger is set up");
-    }
-
-    void VulkanContext::destroyValidationMessenger(bool enableValidation)
-    {
-        if (!enableValidation) { return; }
-
-        auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-            m_Instance, 
-            "vkDestroyDebugUtilsMessengerEXT"
-        );
-        if (func != nullptr)
-        {
-            func(m_Instance, m_validationMessenger, nullptr);
-        }
-
-        VX_CORE_INFO("Vulkan: Validation messenger destroyed");
     }
 }
