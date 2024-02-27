@@ -2,8 +2,8 @@
 #include "VortexPCH.hpp"
 #include "Renderer/GraphicsContext.hpp"
 
-#include <GLFW/glfw3.h>
 #include "vulkan/vulkan.h"
+#include "Base/VulkanInstance.hpp"
 #include "Base/VulkanDebug.hpp"
 #include "Base/VulkanDevice.hpp"
 #include "Base/VulkanTools.hpp"
@@ -23,21 +23,12 @@ namespace VX
         bool m_enableValidation = true;
         
     private:
-        uint32_t m_glfwExtensionCount = 0;
-        const char** m_glfwExtensions;
-        
-        // extensions supported by current hardware
-        std::vector<std::string> m_supportedInstanceExtensions = {};
-        
         // extensions required by os
-        std::vector<const char*> m_requiredDeviceExtensions = {};
-        std::vector<const char*> m_requiredInstanceExtensions = {};
+        // std::vector<const char*> m_requiredDeviceExtensions = {};
+
         
-        // extensions to be enabled
-        std::vector<const char*> m_enabledInstanceExtensions = { VK_KHR_SURFACE_EXTENSION_NAME };
-        
-    private: // vulkan objects that may be required to be exposed for imgui
-        VkInstance m_Instance = VK_NULL_HANDLE;
+    private: // vulkan objects that are required to be exposed for imgui
+        // VkInstance m_Instance = VK_NULL_HANDLE;
         VkPhysicalDevice m_gpu = VK_NULL_HANDLE;
         VkDevice m_LogicalDevice = VK_NULL_HANDLE;
         // queue family
@@ -51,11 +42,15 @@ namespace VX
         // subpass
         // useDynamicRendering
 
-    private: // vulkan objects that not required by imgui
-        vkclass::VulkanDevice* m_VulkanDevice = nullptr;
+    private:
+         vkclass::VulkanInstance* m_VulkanInstance = nullptr;
+         vkclass::VulkanDevice* m_VulkanDevice = nullptr;
         
     private:
-        void createInstance(bool enableValidation);
-        void pickDevice();
+        /** @brief Create app info and create the encapsulated instance with that info*/
+        void initInstance(bool enableValidation);
+        
+        /** @brief Create the encapsulated device (physical and logical device) */
+        void initDevice();
     };
 }
