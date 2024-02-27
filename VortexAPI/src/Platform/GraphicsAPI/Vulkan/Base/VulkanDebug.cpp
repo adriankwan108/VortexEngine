@@ -13,16 +13,21 @@ namespace vkclass
             );
             if (validationCreateFunc != nullptr)
             {
-                VkDebugUtilsMessengerCreateInfoEXT createInfo;
+                VkDebugUtilsMessengerCreateInfoEXT createInfo{};
                 setupValidationMessengerCI(createInfo);
+                
                 if (validationCreateFunc(instance, &createInfo, nullptr, &validationMessenger) != VK_SUCCESS)
                 {
                     VX_CORE_ERROR("Vulkan: Failed to set up vaildation messenger.");
                     throw std::runtime_error("Vulkan: Failed to set up vaildation messenger.");
+                }else
+                {
+                    VX_CORE_INFO("Vulkan: Validation messenger is set up");
                 }
+            }else
+            {
+                VX_CORE_ERROR("Vulkan: Validation extension is not present");
             }
-            
-            VX_CORE_INFO("Vulkan: Validation messenger is set up");
         }
     
         void clearValidation(VkInstance instance)
