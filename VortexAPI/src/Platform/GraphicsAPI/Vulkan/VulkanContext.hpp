@@ -29,8 +29,8 @@ namespace VX
         
     private: // vulkan objects that are required to be exposed for imgui
         // VkInstance m_Instance = VK_NULL_HANDLE;
-        VkPhysicalDevice m_gpu = VK_NULL_HANDLE;
-        VkDevice m_LogicalDevice = VK_NULL_HANDLE;
+//        VkPhysicalDevice m_gpu = VK_NULL_HANDLE;
+//        VkDevice m_LogicalDevice = VK_NULL_HANDLE;
         // queue family
         // queue
         // descriptor pool
@@ -48,7 +48,7 @@ namespace VX
         
     private:
         /** @brief Create app info and create the encapsulated instance with that info*/
-        void initInstance(bool enableValidation);
+        void initInstance();
         
         /** @brief Create the encapsulated device (physical and logical device) */
         void initDevice();

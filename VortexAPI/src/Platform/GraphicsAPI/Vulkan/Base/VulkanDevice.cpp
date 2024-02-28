@@ -2,135 +2,221 @@
 
 namespace vkclass
 {
-    VulkanDevice::VulkanDevice(VkPhysicalDevice gpu)
+    VulkanDevice::VulkanDevice(VkInstance instance, std::vector<const char *> requiredDeviceExtensions, bool enableValidation): m_enableValidation(enableValidation)
     {
-        this->m_PhysicalDevice = gpu;
+        VX_CORE_ASSERT(instance!=VK_NULL_HANDLE, "Vulkan Device: Null instance");
         
-        // store the chosen gpu's properties, features, limits
-        vkGetPhysicalDeviceProperties(m_PhysicalDevice, &m_Properties);
-        vkGetPhysicalDeviceFeatures(m_PhysicalDevice, &m_SupportedFeatures);
-        
-        // retrieve the list of queue families
-        uint32_t queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice, &queueFamilyCount , nullptr);
-        VX_CORE_ASSERT(queueFamilyCount > 0, "VulkanDevice: Unexpected failure: no queue family is found.");
-        m_QueueFamilyProperties.resize(queueFamilyCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice, &queueFamilyCount, m_QueueFamilyProperties.data());
-        
-        // get list of supported extensions
-        int i = 0;
-        for (const auto& queueFamily : m_QueueFamilyProperties)
-        {
-            if( queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-            {
-                m_QueueFamilyIndices.graphicsFamily = i;
-            }else if( (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) && ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)==0) )
-            {
-                // dedicated queue for compute
-                m_QueueFamilyIndices.computeFamily = i;
-            }else if((queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) && ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)==0) && ((queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) == 0))
-            {
-                // dedicated queue for transfer
-                m_QueueFamilyIndices.transferFamily = i;
-            }
-            
-            if(m_QueueFamilyIndices.isComplete())
-            {
-                break;
-            }
-            i++;
-        }
-        
-        createLogicalDevice();
+        getPhysicalDevice(instance);
+        createLogicalDevice(requiredDeviceExtensions);
     }
 
     VulkanDevice::~VulkanDevice()
     {
+        vkDestroyDevice(m_logicalDevice, nullptr);
+        VX_CORE_INFO("Vulkan Device: Logical device destroyed.");
+    }
+
+    void VulkanDevice::getPhysicalDevice(VkInstance instance)
+    {
+        // get number of available GPUs with Vulkan support
+        VK_CHECK_RESULT(vkEnumeratePhysicalDevices(instance, &m_gpuCount, nullptr));
+        
+        if(m_gpuCount == 0)
+        {
+            VX_CORE_ERROR("Vulkan: No GPUs with Vulkan support is found.");
+            throw std::runtime_error("Vulkan: No GPUs with Vulkan support is found.");
+            return;
+        }
+        
+        // enumerate GPUs
+        m_physicalDevices.resize(m_gpuCount);
+        VK_CHECK_RESULT(vkEnumeratePhysicalDevices(instance, &m_gpuCount, m_physicalDevices.data()));
+        
+        // select gpu
+        // Use an ordered map to automatically sort candidates by increasing score
+        std::multimap<int, VkPhysicalDevice> candidates;
+        for(const auto& gpu: m_physicalDevices)
+        {
+            if(isGpuSuitable(gpu))
+            {
+                int score = rateGpuSuitability(gpu);
+                candidates.insert(std::make_pair(score, gpu));
+                break;
+            }
+        }
+        
+        // Check if the best candidate is suitable at all
+        if (candidates.rbegin()->first >= 0)
+        {
+            m_physicalDevice = candidates.rbegin()->second;
+        } else
+        {
+            VX_CORE_ERROR("Vulkan Device: Failed to find a suitable GPU!");
+            throw std::runtime_error("VulkanDevice: Failed to find a suitable GPU!");
+        }
+        
+        // store the chosen gpu props, features and limits
+        retrieveGpuInfo(m_physicalDevice, m_gpuProps, m_gpuFeatures);
+        
+        // get list of supported device extensions
+        uint32_t extCount = 0;
+        vkEnumerateDeviceExtensionProperties(m_physicalDevice, nullptr, &extCount, nullptr);
+        if (extCount > 0)
+        {
+            std::vector<VkExtensionProperties> extensions(extCount);
+            if (vkEnumerateDeviceExtensionProperties(m_physicalDevice, nullptr, &extCount, &extensions.front()) == VK_SUCCESS)
+            {
+                for (auto ext : extensions)
+                {
+                    m_supportedDeviceExtensions.push_back(ext.extensionName);
+                }
+            }
+        }
+        
+        VX_CORE_INFO("Vulkan Device: Gpu picking process done.");
+        VX_CORE_INFO("Vulkan Device: Using {0} for the application.", m_gpuProps.deviceName);
         
     }
-    
-    bool VulkanDevice::IsDeviceSuitable(VkPhysicalDevice device)
+
+    void VulkanDevice::retrieveGpuInfo(VkPhysicalDevice device, VkPhysicalDeviceProperties& props, VkPhysicalDeviceFeatures& features)
     {
+        // query of basic props, e.g. name, type, supported Vulkan version
+        vkGetPhysicalDeviceProperties(device, &props);
+        
+        // query of optional features
+        vkGetPhysicalDeviceFeatures(device, &features);
+    }
+
+    bool VulkanDevice::isGpuSuitable(VkPhysicalDevice device)
+    {
+        // query of basic props, e.g. name, type, supported Vulkan version
+//        VkPhysicalDeviceProperties deviceProperties;
+//        VkPhysicalDeviceFeatures deviceFeatures;
+//        retrieveGpuInfo(device, deviceProperties, deviceFeatures);
+        
+        QueueFamilyIndices indices = findQueueFamilies(device);
+
+        return indices.isComplete();
+    }
+
+    int VulkanDevice::rateGpuSuitability(VkPhysicalDevice device)
+    {
+        int score = 0;
+
         VkPhysicalDeviceProperties deviceProperties;
         VkPhysicalDeviceFeatures deviceFeatures;
-        vkGetPhysicalDeviceProperties(device, &deviceProperties);
-        vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+        retrieveGpuInfo(device, deviceProperties, deviceFeatures);
         
-        QueueFamilyIndices queueFamilyIndices;
+        // Discrete GPUs have a significant performance advantage
+        if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+        {
+            score += 1000;
+        }
+
+        // Maximum possible size of textures affects graphics quality
+//        score += deviceProperties.limits.maxImageDimension2D;
+//
+//        // Application can't function without geometry shaders
+//        if (!deviceFeatures.geometryShader)
+//        {
+//            return 0;
+//        }
+
+        return score;
+    }
+
+    QueueFamilyIndices VulkanDevice::findQueueFamilies(VkPhysicalDevice device)
+    {
+        QueueFamilyIndices indices;
+
         uint32_t queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount , nullptr);
-        VX_CORE_ASSERT(queueFamilyCount > 0, "VulkanDevice: Unexpected failure: no queue family is found.");
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-        
+
         int i = 0;
-        for (const auto& queueFamily : queueFamilies)
-        {
-//            if( queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-//            {
-//                queueFamilyIndices.graphicsFamily = i;
-//            }else if( (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) && ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)==0) )
-//            {
-//                // dedicated queue for compute
-//                queueFamilyIndices.computeFamily = i;
-//            }else if((queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) && ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)==0) && ((queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) == 0))
-//            {
-//                // dedicated queue for transfer
-//                queueFamilyIndices.transferFamily = i;
-//            }
-            
-            if( queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT )
-            {
-                queueFamilyIndices.graphicsFamily = i;
-            }else if(queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT )
-            {
-                queueFamilyIndices.computeFamily = i;
-            }else if(queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT )
-            {
-                queueFamilyIndices.transferFamily = i;
+        for (const auto& queueFamily : queueFamilies) {
+            if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+                indices.graphicsFamily = i;
             }
-                
-            if(queueFamilyIndices.isComplete())
+            
+            if(indices.isComplete())
             {
                 break;
             }
+
             i++;
         }
-        VX_CORE_INFO("VulkanDevice: device type == discrete gpu: {0}", deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
-        
-        // macos does not support geometry shader ?
-        VX_CORE_INFO("VulkanDevice: device features: geometry shader: {0}", deviceFeatures.geometryShader);
-        
-        VX_CORE_INFO("VulkanDevice: queue family\nGraphics: {0}\nCompute: {1}\nTransfer: {2}", queueFamilyIndices.graphicsFamily.has_value(), queueFamilyIndices.computeFamily.has_value(), queueFamilyIndices.transferFamily.has_value());
-
-//        return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader && queueFamilyIndices.isComplete();
-        return queueFamilyIndices.isComplete();
+        return indices;
     }
+    
+    void VulkanDevice::createLogicalDevice(std::vector<const char *> requiredDeviceExtensions)
+    {
+        // specifying the queues to be created
+        QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
 
-    void VulkanDevice::createLogicalDevice()
-{
-        // specify the queues to be created
         VkDeviceQueueCreateInfo queueCreateInfo{};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueCreateInfo.queueFamilyIndex = m_QueueFamilyIndices.graphicsFamily.value();
+        queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
         queueCreateInfo.queueCount = 1; // no need more than one as we can create all of the command buffers on multiple threads and then submit them all at once on the main thread with a single low-overhead cal
         
-        const float defaultQueuePriority = 0.0f;
-        queueCreateInfo.pQueuePriorities = &defaultQueuePriority;
+        // scheduling of command buffer execution
+        float queuePriority = 1.0f; // [0.0, 1.0]
+        queueCreateInfo.pQueuePriorities = &queuePriority; // required
         
-        VkPhysicalDeviceFeatures deviceFeatures{}; // e.g. geometry shader
         VkDeviceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         createInfo.pQueueCreateInfos = &queueCreateInfo;
         createInfo.queueCreateInfoCount = 1;
         
-        createInfo.pEnabledFeatures = &deviceFeatures;
-        
+        VkPhysicalDeviceFeatures enabledGpuFeatures{};
+        createInfo.pEnabledFeatures = &enabledGpuFeatures; // nothing
         createInfo.enabledExtensionCount = 0;
-        if(true) // enable validation
+        
+        // to be compatible with older implementation
+        std::vector<const char*> deviceExtensions(requiredDeviceExtensions);
+#if defined(__APPLE__)
+        // SRS - When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
+        deviceExtensions.push_back("VK_KHR_portability_subset");
+#endif
+        
+        for (const char* extension : deviceExtensions)
         {
-            
+            if (!isDeviceExtensionSupported(extension))
+            {
+                VX_CORE_ERROR("Vulkan Device: Extension {0} is not presented at device level", extension);
+                throw std::runtime_error("Vulkan Device: Extension is not presented at device level");
+            }
+        }
+        if (deviceExtensions.size() > 0)
+        {
+            createInfo.enabledExtensionCount = (uint32_t)deviceExtensions.size();
+            createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+        }else
+        {
+            createInfo.enabledExtensionCount = 0;
         }
         
+        if(m_enableValidation)
+        {
+            createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
+            createInfo.ppEnabledLayerNames = m_validationLayers.data();
+        }else
+        {
+            createInfo.enabledLayerCount = 0;
+        }
+
+        VK_CHECK_RESULT(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_logicalDevice));
+        VX_CORE_INFO("Vulkan Device: Logical device created.");
+        
+        // retrieve queue functions
+        VkQueue graphicsQueue;
+        vkGetDeviceQueue(m_logicalDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
+    }
+
+    bool VulkanDevice::isDeviceExtensionSupported(std::string extension)
+    {
+        return (std::find(m_supportedDeviceExtensions.begin(), m_supportedDeviceExtensions.end(), extension) != m_supportedDeviceExtensions.end());
     }
 }

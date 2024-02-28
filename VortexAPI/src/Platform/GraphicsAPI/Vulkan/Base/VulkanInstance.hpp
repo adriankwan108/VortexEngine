@@ -16,6 +16,7 @@ namespace vkclass
         ~VulkanInstance();
     
         const VkInstance& Instance = m_Instance;
+        const std::vector<const char*>& RequiredDeviceExtensions = m_requiredDeviceExtensions;
         
     private:
         bool m_enableValidation = true;
@@ -28,8 +29,11 @@ namespace vkclass
         std::vector<std::string> m_supportedInstanceExtensions = {};
         // extensions required by OS
         std::vector<const char*> m_requiredInstanceExtensions = { VK_KHR_SURFACE_EXTENSION_NAME };
-        // extensions that are enabled
+        // extensions that are enabled for usage of instance
         std::vector<const char*> m_enabledInstanceExtensions = {};
+        
+        // extensions that are required for our usage in gpu
+        std::vector<const char*> m_requiredDeviceExtensions = {};
    
        private:
            void getSupportedExtensions();
