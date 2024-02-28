@@ -2,6 +2,7 @@
 
 #include "VortexPCH.hpp"
 #include <map>
+#include <set>
 #include "vulkan/vulkan.h"
 #include "VulkanTools.hpp"
 
@@ -10,12 +11,23 @@ namespace vkclass
     struct QueueFamilyIndices
     {
         std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
 //        std::optional<uint32_t> computeFamily;
 //        std::optional<uint32_t> transferFamily;
         
         bool isComplete()
         {
-            return graphicsFamily.has_value();
+            return graphicsFamily.has_value() && presentFamily.has_value();
+        }
+        
+        void ShowInfo()
+        {
+            VX_CORE_INFO("GraphicsFamily: {0}", graphicsFamily.has_value()
+                         ?std::to_string(graphicsFamily.value())
+                         :"Dedicated queue not found");
+            VX_CORE_INFO("PresentFamily: {0}", presentFamily.has_value()
+                         ?std::to_string(presentFamily.value())
+                         :"Dedicated queue not found");
         }
     };
 
@@ -23,7 +35,7 @@ namespace vkclass
     {
     public:
 //        explicit VulkanDevice(VkPhysicalDevice gpu);
-        explicit VulkanDevice(VkInstance instance, std::vector<const char *> requiredDeviceExtensions, bool enableValidation);
+        explicit VulkanDevice(VkInstance instance, std::vector<const char *> requiredDeviceExtensions, VkSurfaceKHR surface, bool enableValidation);
         ~VulkanDevice();
         
         const VkPhysicalDevice& PhysicalDevice = m_physicalDevice;
@@ -37,6 +49,11 @@ namespace vkclass
         
         VkPhysicalDevice m_physicalDevice;
         VkDevice m_logicalDevice;
+        
+        VkSurfaceKHR m_surface;
+        
+        VkQueue m_graphicsQueue;
+        VkQueue m_presentQueue;
         
         VkPhysicalDeviceProperties m_gpuProps;
         VkPhysicalDeviceFeatures m_gpuFeatures;

@@ -43,8 +43,9 @@ namespace VX
         // useDynamicRendering
 
     private:
-         vkclass::VulkanInstance* m_VulkanInstance = nullptr;
-         vkclass::VulkanDevice* m_VulkanDevice = nullptr;
+        GLFWwindow* m_Window = nullptr;
+        vkclass::VulkanInstance* m_VulkanInstance = nullptr;
+        vkclass::VulkanDevice* m_VulkanDevice = nullptr;
         
     private:
         /** @brief Create app info and create the encapsulated instance with that info*/

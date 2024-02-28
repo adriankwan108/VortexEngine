@@ -17,13 +17,20 @@ namespace vkclass
     
         const VkInstance& Instance = m_Instance;
         const std::vector<const char*>& RequiredDeviceExtensions = m_requiredDeviceExtensions;
+        const VkSurfaceKHR& Surface = m_surface;
+        
+    public:
+        void CreateSurface(GLFWwindow* window);
         
     private:
         bool m_enableValidation = true;
+        
         VkInstance m_Instance = VK_NULL_HANDLE;
         
         uint32_t m_glfwExtensionCount = 0;
         const char** m_glfwExtensions;
+        
+        VkSurfaceKHR m_surface;
    
         // extensions supported by current hardware
         std::vector<std::string> m_supportedInstanceExtensions = {};

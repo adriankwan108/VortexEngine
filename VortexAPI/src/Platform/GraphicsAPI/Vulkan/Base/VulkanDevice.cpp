@@ -2,7 +2,7 @@
 
 namespace vkclass
 {
-    VulkanDevice::VulkanDevice(VkInstance instance, std::vector<const char *> requiredDeviceExtensions, bool enableValidation): m_enableValidation(enableValidation)
+    VulkanDevice::VulkanDevice(VkInstance instance, std::vector<const char *> requiredDeviceExtensions, VkSurfaceKHR surface, bool enableValidation): m_enableValidation(enableValidation), m_surface(surface)
     {
         VX_CORE_ASSERT(instance!=VK_NULL_HANDLE, "Vulkan Device: Null instance");
         
@@ -141,6 +141,16 @@ namespace vkclass
                 indices.graphicsFamily = i;
             }
             
+            // ensure that a device can present images to the surface we created
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface, &presentSupport);
+            
+            if(presentSupport)
+            {
+                // note that this is very likely that being the same queue with graphics
+                indices.presentFamily = i;
+            }
+            
             if(indices.isComplete())
             {
                 break;
@@ -154,21 +164,34 @@ namespace vkclass
     void VulkanDevice::createLogicalDevice(std::vector<const char *> requiredDeviceExtensions)
     {
         // specifying the queues to be created
-        QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
+        m_QueueFamilyIndices = findQueueFamilies(m_physicalDevice);
 
-        VkDeviceQueueCreateInfo queueCreateInfo{};
-        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-        queueCreateInfo.queueCount = 1; // no need more than one as we can create all of the command buffers on multiple threads and then submit them all at once on the main thread with a single low-overhead cal
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+        std::set<uint32_t> uniqueQueueFamilies =
+        {
+            m_QueueFamilyIndices.graphicsFamily.value(),
+            m_QueueFamilyIndices.presentFamily.value()
+        };
         
         // scheduling of command buffer execution
         float queuePriority = 1.0f; // [0.0, 1.0]
-        queueCreateInfo.pQueuePriorities = &queuePriority; // required
+        
+        for(uint32_t queueFamily: uniqueQueueFamilies)
+        {
+            VkDeviceQueueCreateInfo queueCreateInfo{};
+            queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queueCreateInfo.queueFamilyIndex = m_QueueFamilyIndices.graphicsFamily.value();
+            queueCreateInfo.queueCount = 1; // no need more than one as we can create all of the command buffers on multiple threads and then submit them all at once on the main thread with a single low-overhead cal
+            queueCreateInfo.pQueuePriorities = &queuePriority; // required
+            
+            queueCreateInfos.emplace_back(queueCreateInfo);
+        }
+    
         
         VkDeviceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.pQueueCreateInfos = &queueCreateInfo;
-        createInfo.queueCreateInfoCount = 1;
+        createInfo.pQueueCreateInfos = queueCreateInfos.data();
+        createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
         
         VkPhysicalDeviceFeatures enabledGpuFeatures{};
         createInfo.pEnabledFeatures = &enabledGpuFeatures; // nothing
@@ -211,8 +234,9 @@ namespace vkclass
         VX_CORE_INFO("Vulkan Device: Logical device created.");
         
         // retrieve queue functions
-        VkQueue graphicsQueue;
-        vkGetDeviceQueue(m_logicalDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
+        vkGetDeviceQueue(m_logicalDevice, m_QueueFamilyIndices.graphicsFamily.value(), 0, &m_graphicsQueue);
+        vkGetDeviceQueue(m_logicalDevice, m_QueueFamilyIndices.presentFamily.value(), 0, &m_presentQueue);
+        m_QueueFamilyIndices.ShowInfo();
     }
 
     bool VulkanDevice::isDeviceExtensionSupported(std::string extension)

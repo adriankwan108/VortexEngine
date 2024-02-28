@@ -2,9 +2,9 @@
 
 namespace VX
 {
-    VulkanContext::VulkanContext(GLFWwindow* window)
+    VulkanContext::VulkanContext(GLFWwindow* window): m_Window(window)
     {
-//        m_glfwExtensions = glfwGetRequiredInstanceExtensions(&m_glfwExtensionCount);
+
     }
 
     VulkanContext::~VulkanContext()
@@ -40,10 +40,18 @@ namespace VX
         
         m_VulkanInstance = new vkclass::VulkanInstance(appInfo, m_enableValidation);
         
+        m_VulkanInstance->CreateSurface(m_Window);
     }
 
     void VulkanContext::initDevice()
     {
-        m_VulkanDevice = new vkclass::VulkanDevice(m_VulkanInstance->Instance, m_VulkanInstance->RequiredDeviceExtensions, m_enableValidation);
+        m_VulkanDevice = new vkclass::VulkanDevice
+        (
+            m_VulkanInstance->Instance,
+            m_VulkanInstance->RequiredDeviceExtensions,
+            m_VulkanInstance->Surface,
+            m_enableValidation
+        );
+        
     }
 }
