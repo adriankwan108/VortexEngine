@@ -31,6 +31,13 @@ namespace vkclass
         }
     };
 
+    struct SwapChainSupportDetails
+    {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkSurfaceFormatKHR> formats;
+        std::vector<VkPresentModeKHR> presentModes;
+    };
+
     class VulkanDevice
     {
     public:
@@ -40,6 +47,11 @@ namespace vkclass
         
         const VkPhysicalDevice& PhysicalDevice = m_physicalDevice;
         const VkDevice& LogicalDevice = m_logicalDevice;
+        
+    public:
+        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+        
+        SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 
     private:
         bool m_enableValidation = true;
@@ -47,10 +59,12 @@ namespace vkclass
             "VK_LAYER_KHRONOS_validation"
         };
         
+        // ref
+        VkSurfaceKHR m_surface;
+        
+        // properties
         VkPhysicalDevice m_physicalDevice;
         VkDevice m_logicalDevice;
-        
-        VkSurfaceKHR m_surface;
         
         VkQueue m_graphicsQueue;
         VkQueue m_presentQueue;
@@ -85,9 +99,8 @@ namespace vkclass
         bool isGpuSuitable(VkPhysicalDevice device);
         int rateGpuSuitability(VkPhysicalDevice device);
         
-        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-        
         void createLogicalDevice(std::vector<const char *> requiredDeviceExtensions);
-        bool isDeviceExtensionSupported(std::string extension);
+        bool isGpuExtensionSupported(std::string extension);
+        
     };
 }

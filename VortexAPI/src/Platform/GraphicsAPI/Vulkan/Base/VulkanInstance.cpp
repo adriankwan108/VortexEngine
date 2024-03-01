@@ -12,27 +12,12 @@ namespace vkclass
 
     VulkanInstance::~VulkanInstance()
     {
-        vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
-        VX_CORE_INFO("Vulkan Instance: Surface destroyed");
         if(m_enableValidation)
         {
             vkclass::debug::clearValidation(m_Instance);
         }
         vkDestroyInstance(m_Instance, nullptr);
         VX_CORE_INFO("Vulkan: Instance destroyed.");
-    }
-
-    void VulkanInstance::CreateSurface(GLFWwindow* window)
-    {
-        // create surface, which should be platform agnostic, but glfw already takes care
-        if (glfwCreateWindowSurface(m_Instance, window, nullptr, &m_surface) != VK_SUCCESS)
-        {
-               throw std::runtime_error("failed to create window surface!");
-        }else
-        {
-            VX_CORE_INFO("Vulkan Instance: Surface created.");
-        }
-        
     }
 
     void VulkanInstance::getSupportedExtensions()

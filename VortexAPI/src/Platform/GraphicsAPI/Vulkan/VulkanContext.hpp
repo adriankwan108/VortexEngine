@@ -3,10 +3,12 @@
 #include "Renderer/GraphicsContext.hpp"
 
 #include "vulkan/vulkan.h"
-#include "Base/VulkanInstance.hpp"
 #include "Base/VulkanDebug.hpp"
-#include "Base/VulkanDevice.hpp"
 #include "Base/VulkanTools.hpp"
+#include "Base/VulkanInstance.hpp"
+#include "Base/VulkanSurface.hpp"
+#include "Base/VulkanDevice.hpp"
+#include "Base/VulkanSwapChain.hpp"
 
 namespace VX
 {
@@ -45,13 +47,20 @@ namespace VX
     private:
         GLFWwindow* m_Window = nullptr;
         vkclass::VulkanInstance* m_VulkanInstance = nullptr;
+        vkclass::VulkanSurface* m_VulkanSurface = nullptr;
         vkclass::VulkanDevice* m_VulkanDevice = nullptr;
+        vkclass::VulkanSwapChain* m_VulkanSwapChain = nullptr;
         
     private:
         /** @brief Create app info and create the encapsulated instance with that info*/
         void initInstance();
         
+        /** @brief Create an abstract type of surface for rendering*/
+        void initSurface();
+        
         /** @brief Create the encapsulated device (physical and logical device) */
         void initDevice();
+        
+        void initSwapChain();
     };
 }

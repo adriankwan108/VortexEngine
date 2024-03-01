@@ -16,6 +16,33 @@ namespace vkclass
         VX_CORE_INFO("Vulkan Device: Logical device destroyed.");
     }
 
+    SwapChainSupportDetails VulkanDevice::QuerySwapChainSupport(VkPhysicalDevice device)
+    {
+        SwapChainSupportDetails details;
+
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface, &details.capabilities);
+        
+        uint32_t formatCount;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &formatCount, nullptr);
+
+        if (formatCount != 0)
+        {
+            details.formats.resize(formatCount);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &formatCount, details.formats.data());
+        }
+        
+        uint32_t presentModeCount;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface, &presentModeCount, nullptr);
+
+        if (presentModeCount != 0)
+        {
+            details.presentModes.resize(presentModeCount);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface, &presentModeCount, details.presentModes.data());
+        }
+        
+        return details;
+    }
+
     void VulkanDevice::getPhysicalDevice(VkInstance instance)
     {
         // get number of available GPUs with Vulkan support
@@ -95,8 +122,12 @@ namespace vkclass
 //        retrieveGpuInfo(device, deviceProperties, deviceFeatures);
         
         QueueFamilyIndices indices = findQueueFamilies(device);
+        
+        SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+        bool swapChainAdequate = false;
+        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 
-        return indices.isComplete();
+        return indices.isComplete() && swapChainAdequate;
     }
 
     int VulkanDevice::rateGpuSuitability(VkPhysicalDevice device)
@@ -136,22 +167,26 @@ namespace vkclass
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
         int i = 0;
-        for (const auto& queueFamily : queueFamilies) {
+        for (const auto& queueFamily : queueFamilies)
+        {
             if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamily = i;
             }
             
-            // ensure that a device can present images to the surface we created
+            // TODO: try to search for a queue that supports both graphics and present, otherwise, separate
+            // Currently don't know the situation
+            // TODO: validate the queue index
+            // Iterate over each queue to learn whether it supports presenting:
+            // Will be used to present the swap chain images to the windowing system
             VkBool32 presentSupport = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface, &presentSupport);
             
-            if(presentSupport)
+            if (presentSupport)
             {
-                // note that this is very likely that being the same queue with graphics
                 indices.presentFamily = i;
             }
             
-            if(indices.isComplete())
+            if(indices.isComplete() && presentSupport)
             {
                 break;
             }
@@ -206,10 +241,13 @@ namespace vkclass
         
         for (const char* extension : deviceExtensions)
         {
-            if (!isDeviceExtensionSupported(extension))
+            if (!isGpuExtensionSupported(extension))
             {
                 VX_CORE_ERROR("Vulkan Device: Extension {0} is not presented at device level", extension);
                 throw std::runtime_error("Vulkan Device: Extension is not presented at device level");
+            }else
+            {
+                VX_CORE_INFO("Vulkan Device: Device extension {0} enabled", extension);
             }
         }
         if (deviceExtensions.size() > 0)
@@ -239,7 +277,7 @@ namespace vkclass
         m_QueueFamilyIndices.ShowInfo();
     }
 
-    bool VulkanDevice::isDeviceExtensionSupported(std::string extension)
+    bool VulkanDevice::isGpuExtensionSupported(std::string extension)
     {
         return (std::find(m_supportedDeviceExtensions.begin(), m_supportedDeviceExtensions.end(), extension) != m_supportedDeviceExtensions.end());
     }
