@@ -9,6 +9,10 @@ namespace VX
 
     VulkanContext::~VulkanContext()
     {
+        for(auto framebuffer: m_VulkanFrameBuffers)
+        {
+            delete framebuffer;
+        }
         delete m_VulkanSwapChain;
         delete m_VulkanDevice;
         delete m_VulkanSurface;
@@ -23,6 +27,7 @@ namespace VX
         initSurface();
         initDevice();
         initSwapChain();
+        initFrameBuffers();
     }
 
     void VulkanContext::Display()
@@ -65,5 +70,21 @@ namespace VX
     void VulkanContext::initSwapChain()
     {
         m_VulkanSwapChain = new vkclass::VulkanSwapChain( m_VulkanSurface ,m_VulkanDevice);
+    }
+
+    void VulkanContext::initFrameBuffers()
+    {
+        m_VulkanFrameBuffers.resize(m_VulkanSwapChain->ImageCount);
+        for(size_t i = 0; i < m_VulkanSwapChain->ImageCount; i++)
+        {
+            m_VulkanFrameBuffers[i] = new vkclass::VulkanFrameBuffer(m_VulkanDevice, m_VulkanSwapChain);
+            
+            vkclass::AttachmentCreateInfo attachmentInfo = {};
+            attachmentInfo.format = m_VulkanSwapChain->SurfaceFormat.format;
+//            attachmentInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT; // VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+            m_VulkanFrameBuffers[i]->AddAttachment(attachmentInfo);
+            m_VulkanFrameBuffers[i]->CreateRenderPass();
+            m_VulkanFrameBuffers[i]->SetUpFrameBuffer();
+        }
     }
 }

@@ -19,6 +19,10 @@ namespace vkclass
         explicit VulkanSwapChain(vkclass::VulkanSurface* surface, vkclass::VulkanDevice* device);
         ~VulkanSwapChain();
         
+        const uint32_t& ImageCount = m_imageCount; // equal to SwapChainBuffers size
+        const VkSurfaceFormatKHR& SurfaceFormat = m_surfaceFormat;
+        const VkExtent2D& Extent = m_extent;
+        
     private:
         vkclass::VulkanSurface* m_surface;
         vkclass::VulkanDevice* m_device;
