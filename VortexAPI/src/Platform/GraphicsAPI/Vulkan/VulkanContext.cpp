@@ -9,6 +9,7 @@ namespace VX
 
     VulkanContext::~VulkanContext()
     {
+        delete m_VulkanCommandManager;
         for(auto framebuffer: m_VulkanFrameBuffers)
         {
             delete framebuffer;
@@ -114,11 +115,11 @@ namespace VX
 
     void VulkanContext::initCommandBuffers()
     {
-        m_VulkanCommandBuffers = new vkclass::VulkanCommandBuffers(m_VulkanDevice->LogicalDevice);
+        m_VulkanCommandManager = new vkclass::VulkanCommandManager(m_VulkanDevice);
         
         if(m_VulkanDevice->QueueIndices.QueueFamilyIndices::isComplete())
         {
-            m_VulkanCommandBuffers->CreateCommandPools(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, m_VulkanDevice->QueueIndices.graphicsFamily.value());
+            m_VulkanCommandManager->CreateCommandPools(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
         }else
         {
             VX_CORE_ERROR("Vulkan: Init command buffers incomplete: queue family not complete.");
