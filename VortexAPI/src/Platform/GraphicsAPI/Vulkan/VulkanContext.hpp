@@ -10,6 +10,7 @@
 #include "Base/VulkanDevice.hpp"
 #include "Base/VulkanSwapChain.hpp"
 #include "Base/VulkanFrameBuffer.hpp"
+#include "Base/VulkanCommandBuffers.hpp"
 
 namespace VX
 {
@@ -51,7 +52,9 @@ namespace VX
         vkclass::VulkanSurface* m_VulkanSurface = nullptr;
         vkclass::VulkanDevice* m_VulkanDevice = nullptr;
         vkclass::VulkanSwapChain* m_VulkanSwapChain = nullptr;
+        
         std::vector<vkclass::VulkanFrameBuffer*> m_VulkanFrameBuffers;
+        vkclass::VulkanCommandBuffers* m_VulkanCommandBuffers = nullptr;
         
     private:
         /** @brief Create app info and create the encapsulated instance with that info*/
@@ -66,5 +69,7 @@ namespace VX
         void initSwapChain();
         
         void initFrameBuffers();
+        
+        void initCommandBuffers();
     };
 }

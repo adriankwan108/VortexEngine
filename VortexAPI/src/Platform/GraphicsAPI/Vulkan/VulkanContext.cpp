@@ -28,11 +28,29 @@ namespace VX
         initDevice();
         initSwapChain();
         initFrameBuffers();
+        initCommandBuffers();
     }
 
     void VulkanContext::Display()
     {
+        // fence
+        // acquire swapchain image
+        // update shaders
+        // for each command buffer: (for eacch thread)
+        //      for each render pass assign to this command buffer:
+        //          begin (command buffer, render pass)
+        //          cmd set viewport
+        //          cmd set scissor
+        //          cmd bind descriptor sets
+        //          cmd bind cmd pipeline
+        //          cmd bind vertex buffers
+        //          cmd bind index buffers
+        //          cmd draw indexed
+        //          end (command buffer, render pass)
+        // submit queue
+        // present queue
         
+        // next frame indexing
     }
 
     void VulkanContext::initInstance()
@@ -91,6 +109,19 @@ namespace VX
             m_VulkanFrameBuffers[i]->AddAttachment(attachmentInfo, m_VulkanSwapChain->ImageBuffers[i].view);
             m_VulkanFrameBuffers[i]->CreateRenderPass();
             m_VulkanFrameBuffers[i]->SetUpFrameBuffer();
+        }
+    }
+
+    void VulkanContext::initCommandBuffers()
+    {
+        m_VulkanCommandBuffers = new vkclass::VulkanCommandBuffers(m_VulkanDevice->LogicalDevice);
+        
+        if(m_VulkanDevice->QueueIndices.QueueFamilyIndices::isComplete())
+        {
+            m_VulkanCommandBuffers->CreateCommandPools(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, m_VulkanDevice->QueueIndices.graphicsFamily.value());
+        }else
+        {
+            VX_CORE_ERROR("Vulkan: Init command buffers incomplete: queue family not complete.");
         }
     }
 }
