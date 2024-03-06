@@ -6,6 +6,7 @@ namespace vkclass
         m_device(device), m_swapChain(swapChain)
     {
         m_device = device;
+        
         Width = m_swapChain->Extent.width;
         Height = m_swapChain->Extent.height;
     }
@@ -25,13 +26,25 @@ namespace vkclass
 
     void VulkanFrameBuffer::AddAttachment(vkclass::AttachmentCreateInfo info)
     {
+        AddAttachment(info, VK_NULL_HANDLE);
+    }
+
+    void VulkanFrameBuffer::AddAttachment(vkclass::AttachmentCreateInfo info, VkImageView view)
+    {
         // Create Attachment
         vkclass::FramebufferAttachment attachment;
-        attachment.format = info.format; // for hasDepth func
+        attachment.format = info.format;
         
-        // Create image & image view for this attachment
+        if(view != VK_NULL_HANDLE)
+        {
+            attachment.view = view;
+        }else
+        {
+            VX_CORE_INFO("VulkanFrameBuffer: Creating image view for attachment...");
+            // create image view
+        }
         
-        // Fill the attachment description
+        // Fill the attachment description (render pass)
         attachment.description = {};
         attachment.description.format = info.format;
         attachment.description.samples = info.imageSampleCount;

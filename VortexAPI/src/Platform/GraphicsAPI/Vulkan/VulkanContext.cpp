@@ -74,15 +74,21 @@ namespace VX
 
     void VulkanContext::initFrameBuffers()
     {
+        // decide which frame buffers we are going to use here (e.g. deferred rendering)
+        
+        // for each swapchain image, we need to prepare a related framebuffer(s)
         m_VulkanFrameBuffers.resize(m_VulkanSwapChain->ImageCount);
         for(size_t i = 0; i < m_VulkanSwapChain->ImageCount; i++)
         {
+            // one swapchain image : one framebuffer currently
             m_VulkanFrameBuffers[i] = new vkclass::VulkanFrameBuffer(m_VulkanDevice, m_VulkanSwapChain);
             
+            // fill in framebuffer necessary info
             vkclass::AttachmentCreateInfo attachmentInfo = {};
             attachmentInfo.format = m_VulkanSwapChain->SurfaceFormat.format;
-//            attachmentInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT; // VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-            m_VulkanFrameBuffers[i]->AddAttachment(attachmentInfo);
+            // attachmentInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+            attachmentInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+            m_VulkanFrameBuffers[i]->AddAttachment(attachmentInfo, m_VulkanSwapChain->ImageBuffers[i].view);
             m_VulkanFrameBuffers[i]->CreateRenderPass();
             m_VulkanFrameBuffers[i]->SetUpFrameBuffer();
         }

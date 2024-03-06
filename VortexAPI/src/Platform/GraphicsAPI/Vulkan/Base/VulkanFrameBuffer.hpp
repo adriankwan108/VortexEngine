@@ -5,6 +5,7 @@
 #include "VulkanSwapChain.hpp"
 #include "VulkanDevice.hpp"
 #include "VulkanTools.hpp"
+#include "VulkanInitializer.hpp"
 
 namespace vkclass
 {
@@ -13,11 +14,13 @@ namespace vkclass
     */
     struct FramebufferAttachment
     {
-        VkImage image;
+        // images & image view for the frame buffer result
+//        VkImage image;
         VkImageView view;
-        VkDeviceMemory memory;
+//        VkDeviceMemory memory;
         
-        VkFormat format;
+        VkFormat format; // for bool func, description (in render pass) format, image view format
+        
 //        VkImageSubresourceRange subresourceRange;
         VkAttachmentDescription description;
 
@@ -67,27 +70,41 @@ namespace vkclass
     */
     struct AttachmentCreateInfo
     {
-//        uint32_t width, height;
-//        uint32_t layerCount;
+        // info for image views & render pass
         VkFormat format;
-//        VkImageUsageFlags usage;
-        VkSampleCountFlagBits imageSampleCount = VK_SAMPLE_COUNT_1_BIT; // if not doing anything with multi-sampling
+        VkSampleCountFlagBits imageSampleCount = VK_SAMPLE_COUNT_1_BIT; // change this if going for multi-sampling
+        VkImageUsageFlags usage;
+        
+        // info for image views only
+        uint32_t layerCount;
     };
 
     class VulkanFrameBuffer
     {
     public:
+        // actually we use swapchain only for extent, this should be cleaned up
         explicit VulkanFrameBuffer(vkclass::VulkanDevice* device, vkclass::VulkanSwapChain* swapchain);
         ~VulkanFrameBuffer();
         
         void AddAttachment(vkclass::AttachmentCreateInfo info);
-        void CreateSampler();
+        
+        // may be better to have AddAttachment_SwapChain
+        void AddAttachment(vkclass::AttachmentCreateInfo info, VkImageView view);
+//        void CreateSampler();
+//        void SetExtent(uint32_t width, uint32_t height);
+        
         void CreateRenderPass();
         void SetUpFrameBuffer();
         
     public:
         // changable extent for offscreen rendering, default set as swapchain extent2D
         uint32_t Width, Height;
+        const VkRenderPass& RenderPass = m_renderPass;
+        // frame buffer
+        // render pass
+        // attachments (images)
+        //
+        
         
     private:
         // reference

@@ -22,6 +22,7 @@ namespace vkclass
         const uint32_t& ImageCount = m_imageCount; // equal to SwapChainBuffers size
         const VkSurfaceFormatKHR& SurfaceFormat = m_surfaceFormat;
         const VkExtent2D& Extent = m_extent;
+        const std::vector<SwapChainBuffer>& ImageBuffers = m_swapChainBuffers;
         
     private:
         vkclass::VulkanSurface* m_surface;
@@ -34,7 +35,7 @@ namespace vkclass
         uint32_t m_imageCount;
         
         VkSwapchainKHR m_swapChain;
-        std::vector<VkImage> m_swapChainImages;
+        std::vector<VkImage> m_swapChainImages; // TODO: this should be cleaned up
         std::vector<SwapChainBuffer> m_swapChainBuffers;
         
     private:
