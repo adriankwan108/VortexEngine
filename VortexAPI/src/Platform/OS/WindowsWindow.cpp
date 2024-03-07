@@ -149,13 +149,16 @@ namespace VX
 
     void WindowsWindow::Shutdown()
     {
+        m_GraphicsContext->End();
         glfwDestroyWindow(m_Window);
+        glfwTerminate();
     }
 
     void WindowsWindow::OnUpdate()
     {
         glfwPollEvents();
         // glfwSwapBuffers(m_Window);
+        m_GraphicsContext->Display();
     }
 
     void WindowsWindow::SetVSync(bool enabled)

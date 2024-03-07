@@ -9,6 +9,7 @@ namespace VX
 
     VulkanContext::~VulkanContext()
     {
+        delete m_VulkanSyncManager;
         delete m_VulkanCommandManager;
         for(auto framebuffer: m_VulkanFrameBuffers)
         {
@@ -29,29 +30,41 @@ namespace VX
         initDevice();
         initSwapChain();
         initFrameBuffers();
-        initCommandBuffers();
+        initCommandManager();
+        initSyncManager();
     }
 
     void VulkanContext::Display()
     {
-        // fence
-        // acquire swapchain image
-        // update shaders
-        // for each command buffer: (for eacch thread)
-        //      for each render pass assign to this command buffer:
-        //          begin (command buffer, render pass)
-        //          cmd set viewport
-        //          cmd set scissor
-        //          cmd bind descriptor sets
-        //          cmd bind cmd pipeline
-        //          cmd bind vertex buffers
-        //          cmd bind index buffers
-        //          cmd draw indexed
-        //          end (command buffer, render pass)
-        // submit queue
-        // present queue
+        // all operations in display are asynchronous
         
-        // next frame indexing
+        m_VulkanSyncManager->WaitForFences();
+        m_VulkanSyncManager->ResetFences();
+        m_VulkanSwapChain->AcquireNextImage(m_VulkanSyncManager->ImageSemaphore);
+        
+        m_VulkanCommandManager->Reset();
+        m_VulkanCommandManager->BeginRecordCommands(m_VulkanSwapChain->AvailableImageIndex);
+        m_VulkanCommandManager->BeginRenderPass(
+            m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->RenderPass,
+            m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->FrameBuffer,
+            m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->Extent
+        );
+        
+//        // bind pipeline
+//        m_VulkanCommandManager->Draw(m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->Extent);
+        
+        m_VulkanCommandManager->End();
+        m_VulkanCommandManager->Submit(
+            {m_VulkanSyncManager->ImageSemaphore},
+            {m_VulkanSyncManager->RenderSemaphore},
+            m_VulkanSyncManager->InFlightFence
+        );
+        m_VulkanSwapChain->PresentImage({m_VulkanSyncManager->RenderSemaphore});
+    }
+
+    void VulkanContext::End()
+    {
+        vkDeviceWaitIdle(m_VulkanDevice->LogicalDevice);
     }
 
     void VulkanContext::initInstance()
@@ -113,16 +126,23 @@ namespace VX
         }
     }
 
-    void VulkanContext::initCommandBuffers()
+    void VulkanContext::initCommandManager()
     {
         m_VulkanCommandManager = new vkclass::VulkanCommandManager(m_VulkanDevice);
         
         if(m_VulkanDevice->QueueIndices.QueueFamilyIndices::isComplete())
         {
-            m_VulkanCommandManager->CreateCommandPools(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+            m_VulkanCommandManager->CreateCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
         }else
         {
             VX_CORE_ERROR("Vulkan: Init command buffers incomplete: queue family not complete.");
         }
+        
+        m_VulkanCommandManager->CreateCommandBuffer();
+    }
+
+    void VulkanContext::initSyncManager()
+    {
+        m_VulkanSyncManager = new vkclass::VulkanSyncManager(m_VulkanDevice->LogicalDevice);
     }
 }

@@ -11,6 +11,7 @@ namespace VX
 
         virtual void Init() = 0;
         virtual void Display() = 0;
+        virtual void End() = 0;
 
         static GraphicsContext* Create(GLFWwindow* window = nullptr);
     };

@@ -19,7 +19,13 @@ namespace vkclass
         explicit VulkanSwapChain(vkclass::VulkanSurface* surface, vkclass::VulkanDevice* device);
         ~VulkanSwapChain();
         
-        const uint32_t& ImageCount = m_imageCount; // equal to SwapChainBuffers size
+        void AcquireNextImage(VkSemaphore semaphore);
+        void PresentImage(std::vector<VkSemaphore> signalSemaphores);
+        
+    public:
+        const uint32_t& ImageCount = m_imageCount;
+        const uint32_t& AvailableImageIndex = m_availableImageIndex;
+        
         const VkSurfaceFormatKHR& SurfaceFormat = m_surfaceFormat;
         const VkExtent2D& Extent = m_extent;
         const std::vector<SwapChainBuffer>& ImageBuffers = m_swapChainBuffers;
@@ -32,7 +38,8 @@ namespace vkclass
         VkPresentModeKHR m_presentMode;
         VkExtent2D m_extent;
         
-        uint32_t m_imageCount;
+        uint32_t m_imageCount; // equal to SwapChainBuffers size
+        uint32_t m_availableImageIndex; // index of the swap chain image that has become available.
         
         VkSwapchainKHR m_swapChain;
         std::vector<VkImage> m_swapChainImages; // TODO: this should be cleaned up

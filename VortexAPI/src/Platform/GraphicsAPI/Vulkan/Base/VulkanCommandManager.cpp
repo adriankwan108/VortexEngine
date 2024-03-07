@@ -13,7 +13,7 @@ namespace vkclass
         VX_CORE_INFO("VulkanCommandManager: Command Pool destroyed.");
     }
 
-    void VulkanCommandManager::CreateCommandPools(VkCommandPoolCreateFlags flags)
+    void VulkanCommandManager::CreateCommandPool(VkCommandPoolCreateFlags flags)
     {
         VkCommandPoolCreateInfo createInfo = vkclass::initializers::commandPoolCreateInfo();
         createInfo.flags = flags;
@@ -22,7 +22,7 @@ namespace vkclass
         VK_CHECK_RESULT(vkCreateCommandPool(m_device->LogicalDevice, &createInfo, nullptr, &m_commandPool));
     }
 
-    void VulkanCommandManager::CreateCommandBuffers()
+    void VulkanCommandManager::CreateCommandBuffer()
     {
         // TODO: create one command buffer for each swap chain image and reuse command buffer
         VkCommandBufferAllocateInfo allocInfo{};
@@ -63,8 +63,37 @@ namespace vkclass
         vkCmdBeginRenderPass(m_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
+    void VulkanCommandManager::Reset()
+    {
+        // nothing special to reset flags => 0
+        vkResetCommandBuffer(m_commandBuffer, 0);
+    }
+
+    void VulkanCommandManager::Submit(std::vector<VkSemaphore> waitSemaphores, std::vector<VkSemaphore> signalSemaphores, VkFence fence)
+    {
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+        // which semaphores to wait on before execution begins
+        submitInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
+        submitInfo.pWaitSemaphores = waitSemaphores.data();
+        // which stage(s) of the pipeline to wait
+        VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+        submitInfo.pWaitDstStageMask = waitStages;
+        
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &m_commandBuffer;
+        
+        // which semaphores to signal once the command buffer(s) have finished execution
+        submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
+        submitInfo.pSignalSemaphores = signalSemaphores.data();
+        
+        VK_CHECK_RESULT(vkQueueSubmit(m_device->GraphicsQueue, 1, &submitInfo, fence));
+    }
+
     void VulkanCommandManager::End()
     {
+        vkCmdEndRenderPass(m_commandBuffer);
         VK_CHECK_RESULT(vkEndCommandBuffer(m_commandBuffer));
     }
 

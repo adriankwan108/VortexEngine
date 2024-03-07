@@ -9,6 +9,9 @@ namespace vkclass
         
         Width = m_swapChain->Extent.width;
         Height = m_swapChain->Extent.height;
+        
+        m_extent.width = Width;
+        m_extent.height = Height;
     }
 
     VulkanFrameBuffer::~VulkanFrameBuffer()
@@ -82,7 +85,16 @@ namespace vkclass
         subpass.colorAttachmentCount = 1;
         subpass.pColorAttachments = &colorAttachmentRef;
         
-        // TODO: use subpass dependencies for attachment layout transition
+        // for attachment layout transition between subpasses
+        VkSubpassDependency dependency{};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL; // implicit subpass before or after the render pass depending on whether it is specified in srcSubpass or dstSubpass
+        dependency.dstSubpass = 0;
+        // operations to wait on and the stages in which these operations occur
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.srcAccessMask = 0;
+        // operations that should wait on this are in the color attachment stage and involve the writing of the color attachment.
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         
         // create render pass
         VkRenderPassCreateInfo renderPassInfo{};
@@ -91,6 +103,9 @@ namespace vkclass
         renderPassInfo.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
         renderPassInfo.pSubpasses = &subpass;
         renderPassInfo.subpassCount = 1;
+        
+        renderPassInfo.dependencyCount = 1;
+        renderPassInfo.pDependencies = &dependency;
 
         VK_CHECK_RESULT(vkCreateRenderPass(m_device->LogicalDevice, &renderPassInfo, nullptr, &m_renderPass));
     }

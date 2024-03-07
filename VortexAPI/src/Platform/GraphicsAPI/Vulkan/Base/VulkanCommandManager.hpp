@@ -20,10 +20,12 @@ namespace vkclass
         // because mulitple cmd buffers create from a cmd pool, cmd pools can only be used from one thread
         // so if we want to record command buffers from multiple threads, then we will need more command pools, one per thread
         
-        void CreateCommandPools(VkCommandPoolCreateFlags flags);
-        void CreateCommandBuffers();
+        void CreateCommandPool(VkCommandPoolCreateFlags flags);
+        void CreateCommandBuffer();
         void BeginRecordCommands(uint32_t imageIndex);
         void BeginRenderPass(VkRenderPass renderPass, VkFramebuffer frameBuffer, VkExtent2D extent);
+        void Reset();
+        void Submit(std::vector<VkSemaphore> waitSemaphores, std::vector<VkSemaphore> signalSemaphores, VkFence fence);
         void End();
 
         void BindPipeline(VkPipeline pipeline); // TODO: bind with vertex buffer, index buffer, etc; and bind with related cmd buffer

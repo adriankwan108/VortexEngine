@@ -49,6 +49,9 @@ namespace vkclass
         const VkDevice& LogicalDevice = m_logicalDevice;
         QueueFamilyIndices& QueueIndices = m_QueueFamilyIndices;
         
+        const VkQueue& GraphicsQueue = m_graphicsQueue;
+        const VkQueue& PresentQueue = m_presentQueue;
+        
     public:
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
         

@@ -11,6 +11,7 @@
 #include "Base/VulkanSwapChain.hpp"
 #include "Base/VulkanFrameBuffer.hpp"
 #include "Base/VulkanCommandManager.hpp"
+#include "Base/VulkanSyncManager.hpp"
 
 namespace VX
 {
@@ -22,6 +23,7 @@ namespace VX
 
         virtual void Init() override;
         virtual void Display() override;
+        virtual void End() override;
 
     private: // configs
         bool m_enableValidation = true;
@@ -54,7 +56,9 @@ namespace VX
         vkclass::VulkanSwapChain* m_VulkanSwapChain = nullptr;
         
         std::vector<vkclass::VulkanFrameBuffer*> m_VulkanFrameBuffers;
+        
         vkclass::VulkanCommandManager* m_VulkanCommandManager = nullptr;
+        vkclass::VulkanSyncManager* m_VulkanSyncManager = nullptr;
         
     private:
         /** @brief Create app info and create the encapsulated instance with that info*/
@@ -70,6 +74,8 @@ namespace VX
         
         void initFrameBuffers();
         
-        void initCommandBuffers();
+        void initCommandManager();
+        
+        void initSyncManager();
     };
 }

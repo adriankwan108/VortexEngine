@@ -100,10 +100,9 @@ namespace vkclass
         // changable extent for offscreen rendering, default set as swapchain extent2D
         uint32_t Width, Height;
         const VkRenderPass& RenderPass = m_renderPass;
-        // frame buffer
-        // render pass
+        const VkFramebuffer& FrameBuffer = m_frameBuffer;
         // attachments (images)
-        //
+        const VkExtent2D& Extent = m_extent; // equal to width and height
         
         
     private:
@@ -115,5 +114,6 @@ namespace vkclass
         VkFramebuffer m_frameBuffer;
         std::vector<FramebufferAttachment> m_attachments;
         VkRenderPass m_renderPass;
+        VkExtent2D m_extent{};
     };
 }

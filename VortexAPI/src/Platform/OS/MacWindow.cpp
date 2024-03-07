@@ -149,6 +149,7 @@ namespace VX
 
     void MacWindow::Shutdown()
     {
+        m_GraphicsContext->End();
         glfwDestroyWindow(m_Window);
         glfwTerminate();
     }
@@ -157,6 +158,7 @@ namespace VX
     {
         glfwPollEvents();
         // glfwSwapBuffers(m_Window);
+        m_GraphicsContext->Display();
     }
 
     void MacWindow::SetVSync(bool enabled)

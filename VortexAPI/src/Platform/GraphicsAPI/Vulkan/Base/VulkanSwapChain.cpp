@@ -31,6 +31,29 @@ namespace vkclass
         VX_CORE_INFO("Vulkan SwapChain: Destroy SwapChain");
     }
 
+    void VulkanSwapChain::AcquireNextImage(VkSemaphore semaphore)
+    {
+        // timeout disabled
+        vkAcquireNextImageKHR(m_device->LogicalDevice, m_swapChain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &m_availableImageIndex);
+    }
+
+    void VulkanSwapChain::PresentImage(std::vector<VkSemaphore> signalSemaphores)
+    {
+        VkPresentInfoKHR presentInfo{};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+        presentInfo.waitSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
+        presentInfo.pWaitSemaphores = signalSemaphores.data();
+        
+        presentInfo.swapchainCount = 1;
+        VkSwapchainKHR swapChains[] = {m_swapChain};
+        presentInfo.pSwapchains = swapChains;
+        presentInfo.pImageIndices = &m_availableImageIndex;
+        presentInfo.pResults = nullptr; // Optional
+        
+        vkQueuePresentKHR(m_device->PresentQueue, &presentInfo);
+    }
+
     VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
     {
         // TODO: implement methods that best suits for out desired needs
