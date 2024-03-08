@@ -12,6 +12,8 @@
 #include "Base/VulkanFrameBuffer.hpp"
 #include "Base/VulkanCommandManager.hpp"
 #include "Base/VulkanSyncManager.hpp"
+#include "Base/VulkanShader.hpp"
+#include "Base/VulkanPipelineBuilder.hpp"
 
 namespace VX
 {
@@ -60,6 +62,10 @@ namespace VX
         vkclass::VulkanCommandManager* m_VulkanCommandManager = nullptr;
         vkclass::VulkanSyncManager* m_VulkanSyncManager = nullptr;
         
+        vkclass::VulkanPipelineBuilder m_pipelineBuilder;
+        
+        VkPipelineLayout m_pipelineLayout;
+        
     private:
         /** @brief Create app info and create the encapsulated instance with that info*/
         void initInstance();
@@ -77,5 +83,8 @@ namespace VX
         void initCommandManager();
         
         void initSyncManager();
+        
+        void prepareTriangle();
+        void drawTriangle();
     };
 }

@@ -32,6 +32,12 @@ namespace VX
         initFrameBuffers();
         initCommandManager();
         initSyncManager();
+        
+//        vkclass::VulkanShader::Init(m_VulkanDevice->LogicalDevice);
+        
+        m_pipelineBuilder.SetDevice(m_VulkanDevice->LogicalDevice);
+        
+        // prepareTriangle();
     }
 
     void VulkanContext::Display()
@@ -50,8 +56,7 @@ namespace VX
             m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->Extent
         );
         
-//        // bind pipeline
-//        m_VulkanCommandManager->Draw(m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->Extent);
+        drawTriangle();
         
         m_VulkanCommandManager->End();
         m_VulkanCommandManager->Submit(
@@ -144,5 +149,36 @@ namespace VX
     void VulkanContext::initSyncManager()
     {
         m_VulkanSyncManager = new vkclass::VulkanSyncManager(m_VulkanDevice->LogicalDevice);
+    }
+
+    void VulkanContext::prepareTriangle()
+    {
+        vkclass::VulkanShader vertShader = vkclass::VulkanShader("/Resources/VortexAPI/shaders/triangle.vert");
+        vkclass::VulkanShader fragShader = vkclass::VulkanShader("/Resources/VortexAPI/shaders/triangle.frag");
+        
+        m_pipelineBuilder.SetShaders(vertShader.ShaderModule, fragShader.ShaderModule);
+        
+        // TODO: pipeline layout builder
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 0; // Optional
+        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+        pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+        pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+
+        if (vkCreatePipelineLayout(m_VulkanDevice->LogicalDevice, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create pipeline layout!");
+        }
+        
+//        m_pipelineBuilder.BuildPipeline(m_pipelineLayout, /*render pass*/);
+    }
+
+    void VulkanContext::drawTriangle()
+    {
+        // bind pipeline
+        // m_VulkanCommandManager->Draw(m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->Extent);
+        
+        
+        
     }
 }
