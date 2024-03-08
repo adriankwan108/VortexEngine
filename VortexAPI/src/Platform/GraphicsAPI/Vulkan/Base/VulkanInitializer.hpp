@@ -430,6 +430,7 @@ namespace vkclass
             pipelineRasterizationStateCreateInfo.frontFace = frontFace;
             pipelineRasterizationStateCreateInfo.flags = flags;
             pipelineRasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
+            pipelineRasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
             pipelineRasterizationStateCreateInfo.lineWidth = 1.0f;
             return pipelineRasterizationStateCreateInfo;
         }

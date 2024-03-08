@@ -11,28 +11,54 @@ namespace vkclass
     public:
         VulkanPipelineBuilder();
         
-        VkPipeline BuildPipeline(VkDevice device);
+        void SetDevice(VkDevice device);
+        
+        VkPipeline BuildPipeline(VkPipelineLayout layout, VkRenderPass renderPass);
         void Clear();
         
         // parameter setters
-        void SetShaders();
+        void SetShaders(VkShaderModule vertexShader, VkShaderModule fragmentShader);
+        void SetInputTopology(VkPrimitiveTopology topology);
+        void SetPolygonMode(VkPolygonMode mode);
+        void SetCullMode(VkCullModeFlags cullMode, VkFrontFace frontFace);
+//        void SetDepthFormat(VkFormat format);
         
+        // options, disable by default (set false by initializer) unless called
+        void EnableDepthClamp(bool enable = true); // rasterizer stuff
+        void EnableDepthBias(bool enable = true); // rasterizer stuff
+        void EnableMultiSampling(bool enable = true);
+//        void EnableDepthStencil(bool enable = true);
+        void EnableBlending(bool enable = true);
+        void EnableDepthTest(bool enable = true);
         
     public:
-        // fixed function parameters:
-        VkPipelineInputAssemblyStateCreateInfo _inputAssembly;
-        VkPipelineRasterizationStateCreateInfo _rasterizer;
-        VkPipelineMultisampleStateCreateInfo _multisampling;
-        VkPipelineDepthStencilStateCreateInfo _depthStencil;
-        VkPipelineColorBlendAttachmentState _colorBlendAttachment;
-        // viewports and scissors // ?
+        // default
+        const VkPrimitiveTopology DefaultTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        const VkPolygonMode DefaultPolygonMode = VK_POLYGON_MODE_FILL; // other than fill require gpu feature
+        const VkCullModeFlags DefaultCullMode = VK_CULL_MODE_BACK_BIT;
+        const VkFrontFace DefaultFrontFace = VK_FRONT_FACE_CLOCKWISE;
+        
+    private:
+        VkDevice m_device;
         
         // shaders
-        std::vector<VkPipelineShaderStageCreateInfo> _shaderStages;
-        VkPipelineLayout _pipelineLayout;
+        std::vector<VkPipelineShaderStageCreateInfo> m_shaderStages;
         
-        // ?
-        VkFormat _colorAttachmentformat;
-        VkPipelineRenderingCreateInfo _renderInfo;
+        // fixed function parameters:
+        VkPipelineVertexInputStateCreateInfo m_vertexInputInfo{};
+        VkPipelineInputAssemblyStateCreateInfo m_inputAssembly{};
+        VkPipelineViewportStateCreateInfo m_viewportState{}; // this would be handled by dynamic,
+        VkPipelineRasterizationStateCreateInfo m_rasterizer{};
+        VkPipelineMultisampleStateCreateInfo m_multisampling{};
+//        VkPipelineDepthStencilStateCreateInfo m_depthStencil{};
+        
+        VkPipelineColorBlendAttachmentState m_colorBlendAttachment{}; // configs per attached framebuffer
+        VkPipelineColorBlendStateCreateInfo m_colorBlending{}; // global color blending setting
+        
+        // dynamic for viewports, scissor
+        std::vector<VkDynamicState> m_dynamicStates = {
+            VK_DYNAMIC_STATE_VIEWPORT,
+            VK_DYNAMIC_STATE_SCISSOR
+        };
     };
 }
