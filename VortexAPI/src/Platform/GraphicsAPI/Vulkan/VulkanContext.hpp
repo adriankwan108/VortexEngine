@@ -10,6 +10,8 @@
 #include "Base/VulkanDevice.hpp"
 #include "Base/VulkanSwapChain.hpp"
 #include "Base/VulkanFrameBuffer.hpp"
+#include "Base/VulkanSubpass.hpp"
+#include "Base/VulkanRenderPass.hpp"
 #include "Base/VulkanCommandManager.hpp"
 #include "Base/VulkanSyncManager.hpp"
 #include "Base/VulkanShader.hpp"
@@ -57,6 +59,7 @@ namespace VX
         vkclass::VulkanDevice* m_VulkanDevice = nullptr;
         vkclass::VulkanSwapChain* m_VulkanSwapChain = nullptr;
         
+        vkclass::VulkanRenderPass* m_RenderPass = nullptr;
         std::vector<vkclass::VulkanFrameBuffer*> m_VulkanFrameBuffers;
         
         vkclass::VulkanCommandManager* m_VulkanCommandManager = nullptr;

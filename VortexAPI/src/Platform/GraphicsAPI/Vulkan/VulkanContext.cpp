@@ -15,6 +15,7 @@ namespace VX
         {
             delete framebuffer;
         }
+        delete m_RenderPass;
         delete m_VulkanSwapChain;
         delete m_VulkanDevice;
         delete m_VulkanSurface;
@@ -35,7 +36,7 @@ namespace VX
         
 //        vkclass::VulkanShader::Init(m_VulkanDevice->LogicalDevice);
         
-        m_pipelineBuilder.SetDevice(m_VulkanDevice->LogicalDevice);
+//        m_pipelineBuilder.SetDevice(m_VulkanDevice->LogicalDevice);
         
         // prepareTriangle();
     }
@@ -56,7 +57,7 @@ namespace VX
             m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->Extent
         );
         
-        drawTriangle();
+//        drawTriangle();
         
         m_VulkanCommandManager->End();
         m_VulkanCommandManager->Submit(
@@ -113,21 +114,34 @@ namespace VX
     {
         // decide which frame buffers we are going to use here (e.g. deferred rendering)
         
-        // for each swapchain image, we need to prepare a related framebuffer(s)
+        // new subpass("Name")
+        vkclass::VulkanSubpass GeometrySubpass("Geometry");
+        // add attachment to subpass
+        vkclass::SubpassAttachmentInfo subpassInfo;
+        subpassInfo.format = m_VulkanSwapChain->SurfaceFormat.format;
+        GeometrySubpass.AddAttachment(subpassInfo);
+        GeometrySubpass.Create();
+        
+        // create render pass (from subpass pool), with dependency
+        m_RenderPass = new vkclass::VulkanRenderPass(m_VulkanDevice->LogicalDevice);
+        m_RenderPass->AddSubpass(GeometrySubpass);
+        m_RenderPass->AddDependency();
+        m_RenderPass->Create();
+        // TODO: add to renderpass pool
+        
+        // for each swapchain image, prepare framebuffer(s) and assign renderpass
         m_VulkanFrameBuffers.resize(m_VulkanSwapChain->ImageCount);
         for(size_t i = 0; i < m_VulkanSwapChain->ImageCount; i++)
         {
             // one swapchain image : one framebuffer currently
             m_VulkanFrameBuffers[i] = new vkclass::VulkanFrameBuffer(m_VulkanDevice, m_VulkanSwapChain);
-            
-            // fill in framebuffer necessary info
-            vkclass::AttachmentCreateInfo attachmentInfo = {};
-            attachmentInfo.format = m_VulkanSwapChain->SurfaceFormat.format;
-            // attachmentInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-            attachmentInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-            m_VulkanFrameBuffers[i]->AddAttachment(attachmentInfo, m_VulkanSwapChain->ImageBuffers[i].view);
-            m_VulkanFrameBuffers[i]->CreateRenderPass();
-            m_VulkanFrameBuffers[i]->SetUpFrameBuffer();
+            m_VulkanFrameBuffers[i]->AddRenderPass(m_RenderPass);
+            std::vector<VkImageView> imageViews{};
+            for(const auto& buffer : m_VulkanSwapChain->ImageBuffers)
+            {
+                imageViews.push_back(buffer.view);
+            }
+            m_VulkanFrameBuffers[i]->SetUpFrameBuffer(imageViews);
         }
     }
 
