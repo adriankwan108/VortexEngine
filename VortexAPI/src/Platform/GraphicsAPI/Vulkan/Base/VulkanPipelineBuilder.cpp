@@ -30,7 +30,8 @@ namespace vkclass
         pipelineInfo.pDepthStencilState = nullptr; // this should be optional
         pipelineInfo.pColorBlendState = &m_colorBlending;
         
-//        VkPipelineDynamicStateCreateInfo dynamicaStateInfo = vkclass::initializers::pipelineDynamicStateCreateInfo(m_dynamicStates);
+        VkPipelineDynamicStateCreateInfo dynamicaStateInfo = vkclass::initializers::pipelineDynamicStateCreateInfo(m_dynamicStates);
+        pipelineInfo.pDynamicState = &dynamicaStateInfo;
         
         VkPipeline newPipeline;
         vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline);
@@ -68,13 +69,15 @@ namespace vkclass
         
         EnableDepthClamp(false);
         EnableDepthBias(false);
+        VX_CORE_INFO("PipelineBuilder: Reset");
     }
 
     void VulkanPipelineBuilder::SetShaders(VkShaderModule vertexShader, VkShaderModule fragmentShader)
     {
-        m_shaderStages.clear();
+        Clear();
         
-        // t it's possible to combine multiple fragment shaders into a single shader module and use different entry points to differentiate between their behaviors. In this case we'll stick to the standard main, however.
+        // it's possible to combine multiple fragment shaders into a single shader module and use different entry points to differentiate between their behaviors. In this case we'll stick to the standard main, however.
+        
         VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
         vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -90,6 +93,7 @@ namespace vkclass
         fragShaderStageInfo.pName = "main";
         
         m_shaderStages.push_back(fragShaderStageInfo);
+        VX_CORE_INFO("PipelineBuilder: Shaders set.");
     }
 
     void VulkanPipelineBuilder::SetInputTopology(VkPrimitiveTopology topology)
@@ -134,6 +138,7 @@ namespace vkclass
             m_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
             m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
             m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+            m_colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
         }else
         {
             m_colorBlendAttachment.blendEnable = VK_FALSE;
@@ -143,6 +148,7 @@ namespace vkclass
             m_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
             m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
             m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
+            m_colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
         }
     }
 }
