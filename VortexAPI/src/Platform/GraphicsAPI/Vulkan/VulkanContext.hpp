@@ -69,6 +69,9 @@ namespace VX
         
         VkPipelineLayout m_pipelineLayout;
         
+        // this object is the result of shader code + pipeline
+        VkPipeline m_pipeline;
+        
     private:
         /** @brief Create app info and create the encapsulated instance with that info*/
         void initInstance();

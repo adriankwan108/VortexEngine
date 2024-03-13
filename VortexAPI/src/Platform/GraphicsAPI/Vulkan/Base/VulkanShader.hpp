@@ -19,11 +19,11 @@ namespace vkclass
         
     public:
         const VkShaderModule& ShaderModule = m_shaderModule;
-        
-//         static VkDevice m_device;
-//         static void Init(VkDevice device);
+        static void Init(VkDevice device);
         
     private:
+        static VkDevice m_device;
+        
         uint32_t m_RendererID;
         std::string m_Name;
         std::string m_FilePath;
