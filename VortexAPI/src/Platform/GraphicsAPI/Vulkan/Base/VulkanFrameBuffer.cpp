@@ -31,8 +31,8 @@ namespace vkclass
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = m_renderPass;
         framebufferInfo.pAttachments = imageViews.data();
-        // framebufferInfo.attachmentCount = static_cast<uint32_t>(imageViews.size());
-        framebufferInfo.attachmentCount = 1;
+         framebufferInfo.attachmentCount = static_cast<uint32_t>(imageViews.size());
+//        framebufferInfo.attachmentCount = 1;
         framebufferInfo.width = Width;
         framebufferInfo.height = Height;
         framebufferInfo.layers = 1;

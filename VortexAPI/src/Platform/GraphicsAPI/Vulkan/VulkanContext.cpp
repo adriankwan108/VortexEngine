@@ -137,10 +137,10 @@ namespace VX
             m_VulkanFrameBuffers[i] = new vkclass::VulkanFrameBuffer(m_VulkanDevice, m_VulkanSwapChain);
             m_VulkanFrameBuffers[i]->AddRenderPass(m_RenderPass);
             std::vector<VkImageView> imageViews{};
-            for(const auto& buffer : m_VulkanSwapChain->ImageBuffers)
-            {
-                imageViews.push_back(buffer.view);
-            }
+//            for(const auto& buffer : m_VulkanSwapChain->ImageBuffers)
+//            {
+                imageViews.push_back(m_VulkanSwapChain->ImageBuffers[i].view);
+//            }
             m_VulkanFrameBuffers[i]->SetUpFrameBuffer(imageViews);
         }
     }
