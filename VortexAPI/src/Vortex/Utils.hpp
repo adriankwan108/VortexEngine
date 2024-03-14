@@ -46,7 +46,11 @@ namespace VX
                 }
 
                 tempPath += path;
+#if defined(__APPLE__)
+                tempPath += "/";
+#elif defined(_MSC_VER)
                 tempPath += "\\";
+#endif
 
                 if (path.stem() == "VortexEngine")
                 {
@@ -61,8 +65,12 @@ namespace VX
         {
             //std::string path = std::move(inputPath);
             std::string path = inputPath;
+#if defined(__APPLE__)
+            return GetProjectRootPath() + path;
+#elif defined(_MSC_VER)
             std::replace(path.begin(), path.end(), '/', '\\');
             return GetProjectRootPath() + "\\" + path;
+#endif
         }
 
     }
