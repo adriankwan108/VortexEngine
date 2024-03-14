@@ -9,14 +9,17 @@ namespace VX
 
     VulkanContext::~VulkanContext()
     {
-        vkDestroyPipelineLayout(m_VulkanDevice->LogicalDevice, m_pipelineLayout, nullptr);
-        vkDestroyPipeline(m_VulkanDevice->LogicalDevice, m_pipeline, nullptr);
         delete m_VulkanSyncManager;
         delete m_VulkanCommandManager;
+
         for(auto framebuffer: m_VulkanFrameBuffers)
         {
             delete framebuffer;
         }
+
+        vkDestroyPipeline(m_VulkanDevice->LogicalDevice, m_pipeline, nullptr);
+        vkDestroyPipelineLayout(m_VulkanDevice->LogicalDevice, m_pipelineLayout, nullptr);
+
         delete m_RenderPass;
         delete m_VulkanSwapChain;
         delete m_VulkanDevice;
@@ -169,9 +172,13 @@ namespace VX
 
     void VulkanContext::prepareTriangle()
     {
-        vkclass::VulkanShader vertShader = vkclass::VulkanShader("./../../../Resources/VortexAPI/shaders/vert.spv");
-        vkclass::VulkanShader fragShader = vkclass::VulkanShader("./../../..//Resources/VortexAPI/shaders/frag.spv");
+        vkclass::VulkanShader vertShader = vkclass::VulkanShader(VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/vert.spv"));
+        vkclass::VulkanShader fragShader = vkclass::VulkanShader(VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/frag.spv"));
         
+        if (!vertShader.Valid || !fragShader.Valid)
+        {
+            return;
+        }
         m_pipelineBuilder.SetShaders(vertShader.ShaderModule, fragShader.ShaderModule);
         
         // TODO: pipeline layout builder
