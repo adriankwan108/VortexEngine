@@ -9,6 +9,8 @@ namespace VX
 
     VulkanContext::~VulkanContext()
     {
+        delete triangleShader;
+        
         delete m_VulkanSyncManager;
         delete m_VulkanCommandManager;
 
@@ -16,9 +18,6 @@ namespace VX
         {
             delete framebuffer;
         }
-
-        vkDestroyPipeline(m_VulkanDevice->LogicalDevice, m_pipeline, nullptr);
-        vkDestroyPipelineLayout(m_VulkanDevice->LogicalDevice, m_pipelineLayout, nullptr);
 
         delete m_RenderPass;
         delete m_VulkanSwapChain;
@@ -40,8 +39,7 @@ namespace VX
         initSyncManager();
         
         vkclass::VulkanShader::Init(m_VulkanDevice->LogicalDevice);
-        
-        m_pipelineBuilder.SetDevice(m_VulkanDevice->LogicalDevice);
+        vkclass::VulkanPipelineBuilder::Init(m_VulkanDevice->LogicalDevice);
         
         prepareTriangle();
     }
@@ -172,34 +170,26 @@ namespace VX
 
     void VulkanContext::prepareTriangle()
     {
-        vkclass::VulkanShader vertShader = vkclass::VulkanShader(VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/vert.spv"));
-        vkclass::VulkanShader fragShader = vkclass::VulkanShader(VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/frag.spv"));
+        triangleShader = new vkclass::VulkanShader(
+            VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/vert.spv"),
+            VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/frag.spv")
+        );
         
-        if (!vertShader.Valid || !fragShader.Valid)
+        if (!triangleShader->Valid)
         {
             return;
         }
-        m_pipelineBuilder.SetShaders(vertShader.ShaderModule, fragShader.ShaderModule);
         
-        // TODO: pipeline layout builder
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0; // Optional
-        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
-        pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-        pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-
-        if (vkCreatePipelineLayout(m_VulkanDevice->LogicalDevice, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create pipeline layout!");
-        }
-        
-        m_pipeline = m_pipelineBuilder.BuildPipeline(m_pipelineLayout, m_RenderPass->RenderPass);
-
+        triangleShader->CreatePipeline(m_RenderPass->RenderPass);
     }
 
     void VulkanContext::drawTriangle()
     {
-        m_VulkanCommandManager->BindPipeline(m_pipeline);
+        if(!triangleShader->Valid)
+        {
+            return;
+        }
+        m_VulkanCommandManager->BindPipeline(triangleShader->Pipeline);
         m_VulkanCommandManager->Draw(m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->Extent);
     }
 }

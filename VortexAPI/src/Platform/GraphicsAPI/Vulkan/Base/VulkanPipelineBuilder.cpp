@@ -2,12 +2,14 @@
 
 namespace vkclass
 {
+    VkDevice vkclass::VulkanPipelineBuilder::m_device = VK_NULL_HANDLE;
+
     VulkanPipelineBuilder::VulkanPipelineBuilder()
     {
-        Clear();
+        // Clear();
     }
 
-    void VulkanPipelineBuilder::SetDevice(VkDevice device)
+    void VulkanPipelineBuilder::Init(VkDevice device)
     {
         m_device = device;
     }

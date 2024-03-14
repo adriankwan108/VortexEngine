@@ -11,7 +11,7 @@ namespace vkclass
     public:
         VulkanPipelineBuilder();
         
-        void SetDevice(VkDevice device);
+        static void Init(VkDevice device);
         
         VkPipeline BuildPipeline(VkPipelineLayout layout, VkRenderPass renderPass);
         void Clear();
@@ -39,7 +39,7 @@ namespace vkclass
         const VkFrontFace DefaultFrontFace = VK_FRONT_FACE_CLOCKWISE;
         
     private:
-        VkDevice m_device;
+        static VkDevice m_device;
         
         // shaders
         std::vector<VkPipelineShaderStageCreateInfo> m_shaderStages;

@@ -65,12 +65,7 @@ namespace VX
         vkclass::VulkanCommandManager* m_VulkanCommandManager = nullptr;
         vkclass::VulkanSyncManager* m_VulkanSyncManager = nullptr;
         
-        vkclass::VulkanPipelineBuilder m_pipelineBuilder;
-        
-        VkPipelineLayout m_pipelineLayout;
-        
-        // this object is the result of shader code + pipeline
-        VkPipeline m_pipeline;
+        vkclass::VulkanShader* triangleShader = nullptr;
         
     private:
         /** @brief Create app info and create the encapsulated instance with that info*/
