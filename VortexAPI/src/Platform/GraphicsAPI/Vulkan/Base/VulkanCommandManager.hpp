@@ -13,7 +13,7 @@ namespace vkclass
     class VulkanCommandManager
     {
     public:
-        explicit VulkanCommandManager(vkclass::VulkanDevice* device);
+        explicit VulkanCommandManager(vkclass::VulkanDevice* device, const int maxFramesInFlight, uint32_t& currentFrame);
         ~VulkanCommandManager();
         
         // we need multiple command pools for multi-threading, resource separation
@@ -21,8 +21,8 @@ namespace vkclass
         // so if we want to record command buffers from multiple threads, then we will need more command pools, one per thread
         
         void CreateCommandPool(VkCommandPoolCreateFlags flags);
-        void CreateCommandBuffer();
-        void BeginRecordCommands(uint32_t imageIndex);
+        void CreateCommandBuffers();
+        void BeginRecordCommands();
         void BeginRenderPass(VkRenderPass renderPass, VkFramebuffer frameBuffer, VkExtent2D extent);
         void Reset();
         void Submit(std::vector<VkSemaphore> waitSemaphores, std::vector<VkSemaphore> signalSemaphores, VkFence fence);
@@ -32,10 +32,16 @@ namespace vkclass
         void Draw(VkExtent2D extent);
         
     private:
+        // references
         vkclass::VulkanDevice* m_device;
-        VkCommandPool m_commandPool = VK_NULL_HANDLE; // TODO: change to vector of command pools for multi-threading and resource separation, i.e. transfer buffers, present images
-        VkCommandBuffer m_commandBuffer = VK_NULL_HANDLE;
+        int m_maxFramesInFlight = 1;
+        uint32_t& m_currentFrame;
         
-    private:
+        // props
+        VkCommandPool m_commandPool = VK_NULL_HANDLE; // TODO: change to vector of command pools for multi-threading and resource separation, i.e. transfer buffers, present images
+        
+//        VkCommandBuffer m_commandBuffer = VK_NULL_HANDLE;
+        std::vector<VkCommandBuffer> m_commandBuffers;
+        
     };
 }

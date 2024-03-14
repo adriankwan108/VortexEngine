@@ -46,14 +46,19 @@ namespace VX
 
     void VulkanContext::Display()
     {
-        // all operations in display are asynchronous
+        // all operations in display are asynchronous, inflight frames enabled
         
+        // sync manager operates with current rendering frame
+        // VX_CORE_INFO("Current frame: {0}", m_currentRenderingFrame);
         m_VulkanSyncManager->WaitForFences();
         m_VulkanSyncManager->ResetFences();
-        m_VulkanSwapChain->AcquireNextImage(m_VulkanSyncManager->ImageSemaphore);
         
+        m_VulkanSwapChain->AcquireNextImage(m_VulkanSyncManager->GetImageAvailableSemaphore()); // current frame's image available semaphore
+        // VX_CORE_INFO("FrameBuffer Index: {0}", m_VulkanSwapChain->AvailableImageIndex);
+        
+        // cmd manager operates with current rendering frame (current rendering cmd buffer)
         m_VulkanCommandManager->Reset();
-        m_VulkanCommandManager->BeginRecordCommands(m_VulkanSwapChain->AvailableImageIndex);
+        m_VulkanCommandManager->BeginRecordCommands();
         m_VulkanCommandManager->BeginRenderPass(
             m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->RenderPass,
             m_VulkanFrameBuffers[m_VulkanSwapChain->AvailableImageIndex]->FrameBuffer,
@@ -64,11 +69,13 @@ namespace VX
         
         m_VulkanCommandManager->End();
         m_VulkanCommandManager->Submit(
-            {m_VulkanSyncManager->ImageSemaphore},
-            {m_VulkanSyncManager->RenderSemaphore},
-            m_VulkanSyncManager->InFlightFence
+            {m_VulkanSyncManager->GetImageAvailableSemaphore()},
+            {m_VulkanSyncManager->GetRenderFinishedSemaphore()},
+            m_VulkanSyncManager->GetInFlightFence()
         );
-        m_VulkanSwapChain->PresentImage({m_VulkanSyncManager->RenderSemaphore});
+        m_VulkanSwapChain->PresentImage({m_VulkanSyncManager->GetRenderFinishedSemaphore()});
+        
+        m_currentRenderingFrame = (m_currentRenderingFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
     void VulkanContext::End()
@@ -146,11 +153,13 @@ namespace VX
 //            }
             m_VulkanFrameBuffers[i]->SetUpFrameBuffer(imageViews);
         }
+        
+        VX_CORE_INFO("FrameBuffers initiated.");
     }
 
     void VulkanContext::initCommandManager()
     {
-        m_VulkanCommandManager = new vkclass::VulkanCommandManager(m_VulkanDevice);
+        m_VulkanCommandManager = new vkclass::VulkanCommandManager(m_VulkanDevice, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame);
         
         if(m_VulkanDevice->QueueIndices.QueueFamilyIndices::isComplete())
         {
@@ -160,12 +169,14 @@ namespace VX
             VX_CORE_ERROR("Vulkan: Init command buffers incomplete: queue family not complete.");
         }
         
-        m_VulkanCommandManager->CreateCommandBuffer();
+        m_VulkanCommandManager->CreateCommandBuffers();
+        VX_CORE_INFO("CommandManager initiated.");
     }
 
     void VulkanContext::initSyncManager()
     {
-        m_VulkanSyncManager = new vkclass::VulkanSyncManager(m_VulkanDevice->LogicalDevice);
+        m_VulkanSyncManager = new vkclass::VulkanSyncManager(m_VulkanDevice->LogicalDevice, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame);
+        VX_CORE_INFO("SyncManager initiated.");
     }
 
     void VulkanContext::prepareTriangle()

@@ -2,7 +2,7 @@
 
 namespace vkclass
 {
-    VulkanCommandManager::VulkanCommandManager(vkclass::VulkanDevice* device):m_device(device)
+    VulkanCommandManager::VulkanCommandManager(vkclass::VulkanDevice* device, const int maxFramesInFlight, uint32_t& currentFrame):m_device(device), m_maxFramesInFlight(maxFramesInFlight), m_currentFrame(currentFrame)
     {
         
     }
@@ -22,26 +22,28 @@ namespace vkclass
         VK_CHECK_RESULT(vkCreateCommandPool(m_device->LogicalDevice, &createInfo, nullptr, &m_commandPool));
     }
 
-    void VulkanCommandManager::CreateCommandBuffer()
+    void VulkanCommandManager::CreateCommandBuffers()
     {
-        // TODO: create one command buffer for each swap chain image and reuse command buffer
+        m_commandBuffers.resize(m_maxFramesInFlight);
+        
+        // Create one command buffer for each render frames (in flight frame)
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.commandPool = m_commandPool;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = 1;
+        allocInfo.commandBufferCount = static_cast<uint32_t>(m_commandBuffers.size());
 
-        VK_CHECK_RESULT(vkAllocateCommandBuffers(m_device->LogicalDevice, &allocInfo, &m_commandBuffer));
+        VK_CHECK_RESULT(vkAllocateCommandBuffers(m_device->LogicalDevice, &allocInfo, m_commandBuffers.data()));
     }
 
-    void VulkanCommandManager::BeginRecordCommands(uint32_t imageIndex)
+    void VulkanCommandManager::BeginRecordCommands()
     {
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = 0; // Optional
         beginInfo.pInheritanceInfo = nullptr; // Optional
 
-        VK_CHECK_RESULT(vkBeginCommandBuffer(m_commandBuffer, &beginInfo));
+        VK_CHECK_RESULT(vkBeginCommandBuffer(m_commandBuffers[m_currentFrame], &beginInfo));
     }
 
     void VulkanCommandManager::BeginRenderPass(VkRenderPass renderPass, VkFramebuffer frameBuffer, VkExtent2D extent)
@@ -60,13 +62,13 @@ namespace vkclass
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues = &clearColor;
 
-        vkCmdBeginRenderPass(m_commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(m_commandBuffers[m_currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
     void VulkanCommandManager::Reset()
     {
         // nothing special to reset flags => 0
-        vkResetCommandBuffer(m_commandBuffer, 0);
+        vkResetCommandBuffer(m_commandBuffers[m_currentFrame], 0);
     }
 
     void VulkanCommandManager::Submit(std::vector<VkSemaphore> waitSemaphores, std::vector<VkSemaphore> signalSemaphores, VkFence fence)
@@ -82,7 +84,7 @@ namespace vkclass
         submitInfo.pWaitDstStageMask = waitStages;
         
         submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &m_commandBuffer;
+        submitInfo.pCommandBuffers = &m_commandBuffers[m_currentFrame];
         
         // which semaphores to signal once the command buffer(s) have finished execution
         submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
@@ -93,13 +95,13 @@ namespace vkclass
 
     void VulkanCommandManager::End()
     {
-        vkCmdEndRenderPass(m_commandBuffer);
-        VK_CHECK_RESULT(vkEndCommandBuffer(m_commandBuffer));
+        vkCmdEndRenderPass(m_commandBuffers[m_currentFrame]);
+        VK_CHECK_RESULT(vkEndCommandBuffer(m_commandBuffers[m_currentFrame]));
     }
 
     void VulkanCommandManager::BindPipeline(VkPipeline pipeline)
     {
-        vkCmdBindPipeline(m_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+        vkCmdBindPipeline(m_commandBuffers[m_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
     }
 
     void VulkanCommandManager::Draw(VkExtent2D extent)
@@ -111,14 +113,14 @@ namespace vkclass
         viewport.height = static_cast<float>(extent.height);
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
-        vkCmdSetViewport(m_commandBuffer, 0, 1, &viewport);
+        vkCmdSetViewport(m_commandBuffers[m_currentFrame], 0, 1, &viewport);
 
         VkRect2D scissor{};
         scissor.offset = { 0, 0 };
         scissor.extent = extent;
-        vkCmdSetScissor(m_commandBuffer, 0, 1, &scissor);
+        vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &scissor);
 
-        vkCmdDraw(m_commandBuffer, 3, 1, 0, 0);
+        vkCmdDraw(m_commandBuffers[m_currentFrame], 3, 1, 0, 0);
     }
 
 }

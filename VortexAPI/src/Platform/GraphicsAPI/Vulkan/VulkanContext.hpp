@@ -28,6 +28,8 @@ namespace VX
         virtual void Init() override;
         virtual void Display() override;
         virtual void End() override;
+        
+        const int MAX_FRAMES_IN_FLIGHT = 2;
 
     private: // configs
         bool m_enableValidation = true;
@@ -66,6 +68,9 @@ namespace VX
         vkclass::VulkanSyncManager* m_VulkanSyncManager = nullptr;
         
         vkclass::VulkanShader* triangleShader = nullptr;
+        
+    private: // var
+        uint32_t m_currentRenderingFrame = 0;
         
     private:
         /** @brief Create app info and create the encapsulated instance with that info*/
