@@ -28,7 +28,6 @@ namespace vkclass
         std::string m_name = "default";
         
         VkRenderPass m_renderPass;
-        VkPipelineLayout m_pipelineLayout;
         
         std::vector<VkSubpassDescription> m_subpasses{};
         std::vector<VkAttachmentDescription> m_attachments{};

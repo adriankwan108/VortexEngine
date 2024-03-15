@@ -9,7 +9,6 @@ namespace vkclass
 
     VulkanRenderPass::~VulkanRenderPass()
     {
-        vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
         vkDestroyRenderPass(m_device, m_renderPass, nullptr);
         VX_CORE_INFO("VulkanRenderPass: PipelineLayout destroyed");
         VX_CORE_INFO("VulkanRenderPass: RenderPass destroyed");
