@@ -34,4 +34,19 @@ namespace vkclass
     {
         return m_extent;
     }
+
+    bool VulkanSurface::ValidateExtent()
+    {
+        if (m_extent.width == 0 || m_extent.height == 0)
+        {
+            glfwWaitEvents();
+            //VX_CORE_TRACE("Vulkan Surface: Validate Extent: false");
+            return false;
+        }
+        else
+        {
+            //VX_CORE_TRACE("Vulkan Surface: Validate Extent: true");
+            return true;
+        }
+    }
 }

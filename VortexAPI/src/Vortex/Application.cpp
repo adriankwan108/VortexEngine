@@ -75,11 +75,14 @@ namespace VX
         if(event.GetWidth() == 0 || event.GetHeight() == 0)
         {
             m_Minimized = true;
-            VX_CORE_INFO("Window minimized...");
-            return false;
+            VX_CORE_INFO("Application: Window minimized...");
+        }
+        else
+        {
+            VX_CORE_INFO("Application: Window resized...");
+            m_Minimized = false;
         }
         
-        m_Minimized = false;
         m_Window->Resize(event.GetWidth(), event.GetHeight());
         return false;
     }

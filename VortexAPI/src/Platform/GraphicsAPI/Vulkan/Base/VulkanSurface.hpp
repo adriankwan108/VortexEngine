@@ -17,6 +17,7 @@ namespace vkclass
         
         void SetExtent(unsigned int width, unsigned int height);
         VkExtent2D GetExtent();
+        bool ValidateExtent();
         
     private:
         GLFWwindow* m_window;

@@ -67,6 +67,7 @@ namespace VX
         m_acquireNextImageResult = m_SwapChain->AcquireNextImage(m_SyncManager.GetImageAvailableSemaphore());
         if( m_acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR) // btw the return state is not guranteed by drivers / platforms
         {
+            //VX_CORE_TRACE("Vulkan Context: Display() acquire image out of date, resizing...");
             resizeHelper();
             return;
         }else if(m_acquireNextImageResult != VK_SUCCESS && m_acquireNextImageResult != VK_SUBOPTIMAL_KHR )
@@ -98,6 +99,7 @@ namespace VX
         m_presentResult = m_SwapChain->PresentImage({m_SyncManager.GetRenderFinishedSemaphore()});
         if(m_presentResult == VK_ERROR_OUT_OF_DATE_KHR || m_presentResult == VK_SUBOPTIMAL_KHR || m_framebufferResized)
         {
+            //VX_CORE_TRACE("Vulkan Context: Display() present image out of date, resizing...");
             m_framebufferResized = false;
             resizeHelper();
         }else if(m_presentResult != VK_SUCCESS)
@@ -137,7 +139,15 @@ namespace VX
 
     void VulkanContext::resizeHelper()
     {
-        VX_CORE_INFO("Vulkan: Resize helper delivering...");
+        //VX_CORE_TRACE("Vulkan: Resize helper delivering...");
+
+        // if zero extent, wait, as Vulkan not allow zero extent swap chain
+        if (!m_Surface.ValidateExtent())
+        {
+            m_framebufferResized = true;
+            return;
+        }
+
         /* recreate swap chain */
         vkDeviceWaitIdle(m_Device.LogicalDevice); // prevent touching resources that are still in used
         

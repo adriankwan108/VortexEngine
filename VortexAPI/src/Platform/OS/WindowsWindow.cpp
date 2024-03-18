@@ -163,10 +163,6 @@ namespace VX
     void WindowsWindow::Resize(unsigned int width, unsigned int height)
     {
         m_GraphicsContext->Resize(width, height);
-        if(width == 0 || height == 0)
-        {
-            glfwWaitEvents();
-        }
     }
 
     void WindowsWindow::SetVSync(bool enabled)
