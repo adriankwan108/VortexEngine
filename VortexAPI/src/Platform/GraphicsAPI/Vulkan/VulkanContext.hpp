@@ -28,6 +28,7 @@ namespace VX
         virtual void Init() override;
         virtual void Display() override;
         virtual void End() override;
+        virtual void Resize(unsigned int width, unsigned int height) override;
         
         const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -74,8 +75,16 @@ namespace VX
         
     private: // var
         uint32_t m_currentRenderingFrame = 0;
+        VkResult m_acquireNextImageResult;
+        VkResult m_presentResult;
+        bool m_framebufferResized = false;
+        
+        // window size
+        unsigned int m_width;
+        unsigned int m_height;
         
     private:
+        void resizeHelper();
         
         void createRenderPass();
         void createFrameBuffers();

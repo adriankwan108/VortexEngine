@@ -16,20 +16,20 @@ namespace VX
     VulkanContext::~VulkanContext()
     {
         delete triangleShader;
-
+        
         for(auto framebuffer: m_FrameBuffers)
         {
             delete framebuffer;
-        }
-
-        if(m_SwapChain != nullptr)
-        {
-            delete m_SwapChain;
         }
         
         if(m_RenderPass != nullptr)
         {
             delete  m_RenderPass;
+        }
+        
+        if(m_SwapChain != nullptr)
+        {
+            delete m_SwapChain;
         }
 
         VX_CORE_INFO("Vulkan: Resources cleared.");
@@ -60,15 +60,24 @@ namespace VX
     {
         // all operations in display are asynchronous, inflight frames enabled
         
-        // sync manager operates with current rendering frame
+        // sync manager operates objects with current rendering frame (i.e. fence, semaphores)
         // VX_CORE_INFO("Current frame: {0}", m_currentRenderingFrame);
         m_SyncManager.WaitForFences();
-        m_SyncManager.ResetFences();
         
-        m_SwapChain->AcquireNextImage(m_SyncManager.GetImageAvailableSemaphore()); // current frame's image available semaphore
+        m_acquireNextImageResult = m_SwapChain->AcquireNextImage(m_SyncManager.GetImageAvailableSemaphore());
+        if( m_acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR) // btw the return state is not guranteed by drivers / platforms
+        {
+            resizeHelper();
+            return;
+        }else if(m_acquireNextImageResult != VK_SUCCESS && m_acquireNextImageResult != VK_SUBOPTIMAL_KHR )
+        {
+            VX_CORE_ERROR("Vulkan Context: Failed to acquire swap chain.");
+            throw std::runtime_error("Vulkan Context: Failed to acquire swap chain.");
+        }
+        m_SyncManager.ResetFences();
         // VX_CORE_INFO("FrameBuffer Index: {0}", m_SwapChain->AvailableImageIndex);
         
-        // cmd manager operates with current rendering frame (current rendering cmd buffer)
+        // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
         m_CommandManager.Reset();
         m_CommandManager.BeginRecordCommands();
         m_CommandManager.BeginRenderPass(
@@ -86,13 +95,29 @@ namespace VX
             {m_SyncManager.GetRenderFinishedSemaphore()},
             m_SyncManager.GetInFlightFence()
         );
-        m_SwapChain->PresentImage({m_SyncManager.GetRenderFinishedSemaphore()});
+        m_presentResult = m_SwapChain->PresentImage({m_SyncManager.GetRenderFinishedSemaphore()});
+        if(m_presentResult == VK_ERROR_OUT_OF_DATE_KHR || m_presentResult == VK_SUBOPTIMAL_KHR || m_framebufferResized)
+        {
+            m_framebufferResized = false;
+            resizeHelper();
+        }else if(m_presentResult != VK_SUCCESS)
+        {
+            VX_CORE_ERROR("Vulkan Context: Failed to present swapchain.");
+            throw std::runtime_error("Vulkan Context: Failed to present swapchain.");
+        }
         m_currentRenderingFrame = (m_currentRenderingFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
     void VulkanContext::End()
     {
         vkDeviceWaitIdle(m_Device.LogicalDevice);
+    }
+
+    void VulkanContext::Resize(unsigned int width, unsigned int height)
+    {
+        m_framebufferResized = true;
+        m_Surface.SetExtent(width, height);
+        VX_CORE_INFO("Vulkan Context: Resize variable set.");
     }
 
     void VulkanContext::createRenderPass()
@@ -108,6 +133,39 @@ namespace VX
         m_RenderPass->AddSubpass(GeometrySubpass);
         m_RenderPass->AddDependency();
         m_RenderPass->Create();
+    }
+
+    void VulkanContext::resizeHelper()
+    {
+        VX_CORE_INFO("Vulkan: Resize helper delivering...");
+        /* recreate swap chain */
+        vkDeviceWaitIdle(m_Device.LogicalDevice); // prevent touching resources that are still in used
+        
+        // clean up
+        for(auto framebuffer: m_FrameBuffers)
+        {
+            delete framebuffer;
+        }
+        
+        if(m_RenderPass != nullptr)
+        {
+            delete  m_RenderPass;
+        }
+        
+        if(m_SwapChain != nullptr)
+        {
+            delete m_SwapChain;
+        }
+        
+        // recreate all necessary resources
+        m_SwapChain = new vkclass::VulkanSwapChain(&m_Surface);
+        m_SwapChain->CreateSwapChain();
+        
+        // in theory, when moving a window from standard to HDR monitor, render pass should be recreated
+        m_RenderPass = new vkclass::VulkanRenderPass();
+        createRenderPass();
+        
+        createFrameBuffers();
     }
 
     void VulkanContext::createFrameBuffers()

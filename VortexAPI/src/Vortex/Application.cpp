@@ -36,6 +36,7 @@ namespace VX
     {
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+        dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
         // VX_CORE_TRACE("{0}", e);
 
         for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
@@ -52,9 +53,12 @@ namespace VX
 
         while(m_Running)
         {
-            for (Layer* layer: m_LayerStack)
+            if(!m_Minimized)
             {
-                layer->OnUpdate();
+                for (Layer* layer: m_LayerStack)
+                {
+                    layer->OnUpdate();
+                }
             }
             m_Window->OnUpdate();
         }
@@ -64,5 +68,19 @@ namespace VX
     {
         m_Running = false;
         return true;
+    }
+
+    bool Application::OnWindowResize(WindowResizeEvent &event)
+    {
+        if(event.GetWidth() == 0 || event.GetHeight() == 0)
+        {
+            m_Minimized = true;
+            VX_CORE_INFO("Window minimized...");
+            return false;
+        }
+        
+        m_Minimized = false;
+        m_Window->Resize(event.GetWidth(), event.GetHeight());
+        return false;
     }
 }

@@ -11,16 +11,20 @@ namespace vkclass
     {
     public:
         const VkSurfaceKHR& Surface = m_surface;
-        GLFWwindow* Window = m_window;
 
         explicit VulkanSurface(GLFWwindow* window, vkclass::VulkanInstance* instance);
         ~VulkanSurface();
+        
+        void SetExtent(unsigned int width, unsigned int height);
+        VkExtent2D GetExtent();
         
     private:
         GLFWwindow* m_window;
         
         VkSurfaceKHR m_surface;
         vkclass::VulkanInstance* m_instance;
+        
+        VkExtent2D m_extent;
     };
 }
 

@@ -38,7 +38,6 @@ namespace VX
 
         // if use Vulkan
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // as Vulkan handles window resize with special care
         
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
         glfwMakeContextCurrent(m_Window);
@@ -159,6 +158,15 @@ namespace VX
         glfwPollEvents();
         // glfwSwapBuffers(m_Window);
         m_GraphicsContext->Display();
+    }
+
+    void WindowsWindow::Resize(unsigned int width, unsigned int height)
+    {
+        m_GraphicsContext->Resize(width, height);
+        if(width == 0 || height == 0)
+        {
+            glfwWaitEvents();
+        }
     }
 
     void WindowsWindow::SetVSync(bool enabled)

@@ -19,11 +19,16 @@ namespace VX
         void PushLayer(Layer* layer);
         void PushOverlay(Layer* layer);
     private:
-        std::unique_ptr<Window> m_Window;
+        // status
         bool m_Running = true;
+        bool m_Minimized = false;
+        
+        // props
+        std::unique_ptr<Window> m_Window;
         LayerStack m_LayerStack;
         
         bool OnWindowClose(WindowCloseEvent& event);
+        bool OnWindowResize(WindowResizeEvent& event);
     };
 
     // To be defined by client (global)

@@ -24,13 +24,13 @@ namespace vkclass
         m_device = device;
     }
 
-    void VulkanSwapChain::AcquireNextImage(VkSemaphore semaphore)
+    VkResult VulkanSwapChain::AcquireNextImage(VkSemaphore semaphore)
     {
         // timeout disabled
-        vkAcquireNextImageKHR(m_device->LogicalDevice, m_swapChain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &m_availableImageIndex);
+        return vkAcquireNextImageKHR(m_device->LogicalDevice, m_swapChain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &m_availableImageIndex);
     }
 
-    void VulkanSwapChain::PresentImage(std::vector<VkSemaphore> signalSemaphores)
+    VkResult VulkanSwapChain::PresentImage(std::vector<VkSemaphore> signalSemaphores)
     {
         VkPresentInfoKHR presentInfo{};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -44,7 +44,7 @@ namespace vkclass
         presentInfo.pImageIndices = &m_availableImageIndex;
         presentInfo.pResults = nullptr; // Optional
         
-        vkQueuePresentKHR(m_device->PresentQueue, &presentInfo);
+        return vkQueuePresentKHR(m_device->PresentQueue, &presentInfo);
     }
 
     void VulkanSwapChain::CreateSwapChain()
@@ -180,19 +180,12 @@ namespace vkclass
             return capabilities.currentExtent;
         } else
         {
-            // TODO: ask Windows/Mac Window for width & height with glfw
-            // instead of calling glfw here
-            int width, height;
-            glfwGetFramebufferSize(m_surface->Window, &width, &height);
+            VkExtent2D actualExtent{};
+            auto surfaceWidth = m_surface->GetExtent().width;
+            auto surfaceHeight = m_surface->GetExtent().height;
 
-            VkExtent2D actualExtent =
-            {
-                static_cast<uint32_t>(width),
-                static_cast<uint32_t>(height)
-            };
-
-            actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-            actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+            actualExtent.width = std::clamp(surfaceWidth, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+            actualExtent.height = std::clamp(surfaceHeight, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
             return actualExtent;
         }

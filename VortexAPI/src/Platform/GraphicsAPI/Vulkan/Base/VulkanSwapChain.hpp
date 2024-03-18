@@ -21,8 +21,8 @@ namespace vkclass
         
         static void Init(vkclass::VulkanDevice* device);
         
-        void AcquireNextImage(VkSemaphore semaphore);
-        void PresentImage(std::vector<VkSemaphore> signalSemaphores);
+        VkResult AcquireNextImage(VkSemaphore semaphore);
+        VkResult PresentImage(std::vector<VkSemaphore> signalSemaphores);
         void CreateSwapChain();
         
     public:

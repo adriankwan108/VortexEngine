@@ -20,4 +20,18 @@ namespace vkclass
         vkDestroySurfaceKHR(m_instance->Instance, m_surface, nullptr);
         VX_CORE_INFO("Vulkan: Surface destroyed.");
     }
+
+    void VulkanSurface::SetExtent(unsigned int width, unsigned int height)
+    {
+        m_extent =
+        {
+            static_cast<uint32_t>(width),
+            static_cast<uint32_t>(height)
+        };
+    }
+
+    VkExtent2D VulkanSurface::GetExtent()
+    {
+        return m_extent;
+    }
 }
