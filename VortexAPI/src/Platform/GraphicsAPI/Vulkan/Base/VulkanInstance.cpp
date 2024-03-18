@@ -2,12 +2,23 @@
 
 namespace vkclass
 {
-    VulkanInstance::VulkanInstance(VkApplicationInfo appInfo, bool enableValidation):m_enableValidation(enableValidation)
+    VulkanInstance::VulkanInstance(bool enableValidation):m_enableValidation(enableValidation)
     {
+        VkApplicationInfo appInfo{};
+        appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+        appInfo.apiVersion = VK_API_VERSION_1_0;
+        
+        appInfo.pApplicationName = "temp app"; // TODO: should be Window Data
+        appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0); // TODO: follow cmake
+        
+        appInfo.pEngineName = "temp engine";
+        appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0); // TODO: follow cmake
+        
         getSupportedExtensions();
         getRequiredExtensions();
         enableExtensions();
         createInstance(appInfo);
+        VX_CORE_INFO("Vulkan Instance created.");
     }
 
     VulkanInstance::~VulkanInstance()
@@ -142,7 +153,6 @@ namespace vkclass
 
         }
         VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &m_Instance));
-        VX_CORE_INFO("VulkanInstance: Instance created successfully.");
 
         if(m_enableValidation)
         {

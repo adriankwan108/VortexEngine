@@ -2,42 +2,43 @@
 
 namespace vkclass
 {
-    VulkanDevice::VulkanDevice(VkInstance instance, std::vector<const char *> requiredDeviceExtensions, VkSurfaceKHR surface, bool enableValidation): m_enableValidation(enableValidation), m_surface(surface)
+    VulkanDevice::VulkanDevice(vkclass::VulkanInstance* instance, vkclass::VulkanSurface* surface, bool enableValidation): m_enableValidation(enableValidation), m_surface(surface)
     {
-        VX_CORE_ASSERT(instance!=VK_NULL_HANDLE, "Vulkan Device: Null instance");
+        VX_CORE_ASSERT(instance->Instance!=VK_NULL_HANDLE, "Vulkan Device: Null instance");
         
-        getPhysicalDevice(instance);
-        createLogicalDevice(requiredDeviceExtensions);
+        getPhysicalDevice(instance->Instance);
+        createLogicalDevice(instance->RequiredDeviceExtensions);
+        VX_CORE_INFO("Vulkan Device created.");
     }
 
     VulkanDevice::~VulkanDevice()
     {
         vkDestroyDevice(m_logicalDevice, nullptr);
-        VX_CORE_INFO("Vulkan Device: Logical device destroyed.");
+        VX_CORE_INFO("Vulkan Device destroyed.");
     }
 
     SwapChainSupportDetails VulkanDevice::QuerySwapChainSupport(VkPhysicalDevice device)
     {
         SwapChainSupportDetails details;
 
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface, &details.capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface->Surface, &details.capabilities);
         
         uint32_t formatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &formatCount, nullptr);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface->Surface, &formatCount, nullptr);
 
         if (formatCount != 0)
         {
             details.formats.resize(formatCount);
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &formatCount, details.formats.data());
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface->Surface, &formatCount, details.formats.data());
         }
         
         uint32_t presentModeCount;
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface, &presentModeCount, nullptr);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface->Surface, &presentModeCount, nullptr);
 
         if (presentModeCount != 0)
         {
             details.presentModes.resize(presentModeCount);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface, &presentModeCount, details.presentModes.data());
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface->Surface, &presentModeCount, details.presentModes.data());
         }
         
         return details;
@@ -179,7 +180,7 @@ namespace vkclass
             // Iterate over each queue to learn whether it supports presenting:
             // Will be used to present the swap chain images to the windowing system
             VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface, &presentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface->Surface, &presentSupport);
             
             if (presentSupport)
             {

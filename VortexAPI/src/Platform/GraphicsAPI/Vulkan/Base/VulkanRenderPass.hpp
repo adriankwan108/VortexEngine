@@ -13,17 +13,19 @@ namespace vkclass
     class VulkanRenderPass
     {
     public:
-        VulkanRenderPass(VkDevice device);
+        VulkanRenderPass();
         ~VulkanRenderPass();
         
-        void AddSubpass(vkclass::VulkanSubpass subpass);
+        static void Init(VkDevice device);
+        
+        void AddSubpass(vkclass::VulkanSubpass& subpass);
         void AddDependency();
         void Create();
         
         const VkRenderPass& RenderPass = m_renderPass;
         
     private:
-        VkDevice m_device;
+        static VkDevice m_device;
         
         std::string m_name = "default";
         

@@ -26,7 +26,8 @@ namespace vkclass
         void BeginRenderPass(VkRenderPass renderPass, VkFramebuffer frameBuffer, VkExtent2D extent);
         void Reset();
         void Submit(std::vector<VkSemaphore> waitSemaphores, std::vector<VkSemaphore> signalSemaphores, VkFence fence);
-        void End();
+        void EndRenderPass();
+        void EndCommandBuffer();
 
         void BindPipeline(VkPipeline pipeline); // TODO: bind with vertex buffer, index buffer, etc; and bind with related cmd buffer
         void Draw(VkExtent2D extent);

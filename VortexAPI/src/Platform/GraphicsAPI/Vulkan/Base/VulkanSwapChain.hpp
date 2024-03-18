@@ -1,8 +1,8 @@
 #pragma once
 #include "VortexPCH.hpp"
 #include "vulkan/vulkan.h"
-#include "VulkanDevice.hpp"
 
+#include "VulkanDevice.hpp"
 #include "VulkanSurface.hpp"
 #include <GLFW/glfw3.h>
 
@@ -16,13 +16,18 @@ namespace vkclass
     class VulkanSwapChain
     {
     public:
-        explicit VulkanSwapChain(vkclass::VulkanSurface* surface, vkclass::VulkanDevice* device);
+        VulkanSwapChain(vkclass::VulkanSurface* surface);
         ~VulkanSwapChain();
+        
+        static void Init(vkclass::VulkanDevice* device);
         
         void AcquireNextImage(VkSemaphore semaphore);
         void PresentImage(std::vector<VkSemaphore> signalSemaphores);
+        void CreateSwapChain();
         
     public:
+        static vkclass::VulkanDevice* m_device;
+        
         const uint32_t& ImageCount = m_imageCount;
         const uint32_t& AvailableImageIndex = m_availableImageIndex;
         
@@ -32,11 +37,10 @@ namespace vkclass
         
     private:
         vkclass::VulkanSurface* m_surface;
-        vkclass::VulkanDevice* m_device;
         
-        VkSurfaceFormatKHR m_surfaceFormat;
-        VkPresentModeKHR m_presentMode;
-        VkExtent2D m_extent;
+        VkSurfaceFormatKHR m_surfaceFormat{};
+        VkPresentModeKHR m_presentMode{};
+        VkExtent2D m_extent{};
         
         uint32_t m_imageCount; // equal to SwapChainBuffers size
         uint32_t m_availableImageIndex; // index of the swap chain image that has become available.
@@ -54,6 +58,5 @@ namespace vkclass
         // @brief resolution of swapchain images
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
         
-        void createSwapChain(SwapChainSupportDetails details);
     };
 }

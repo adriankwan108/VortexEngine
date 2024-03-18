@@ -3,13 +3,14 @@
 #include "vulkan/vulkan.h"
 #include "VulkanInitializer.hpp"
 #include "VulkanTools.hpp"
+#include "VulkanDevice.hpp"
 
 namespace vkclass
 {
     class VulkanSyncManager
     {
     public:
-        VulkanSyncManager(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame);
+        VulkanSyncManager(vkclass::VulkanDevice* device, const int maxFramesInFlight, uint32_t& currentFrame);
         ~VulkanSyncManager();
         
         void WaitForFences();
@@ -23,7 +24,7 @@ namespace vkclass
         const VkSemaphore& GetRenderFinishedSemaphore() const { return m_renderFinishedSemaphores[m_currentFrame]; }
         const VkFence& GetInFlightFence() const { return m_inFlightFences[m_currentFrame]; }
     private:
-        VkDevice m_device;
+        vkclass::VulkanDevice* m_device;
         
         std::vector<VkSemaphore> m_imageAvailableSemaphores;
         std::vector<VkSemaphore> m_renderFinishedSemaphores;

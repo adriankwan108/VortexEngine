@@ -2,23 +2,25 @@
 #include "VortexPCH.hpp"
 #include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
+#include "VulkanInstance.hpp"
 
 namespace vkclass
 {
+    /** @brief Abstract type of surface for rendering*/
     class VulkanSurface
     {
     public:
         const VkSurfaceKHR& Surface = m_surface;
         GLFWwindow* Window = m_window;
 
-        explicit VulkanSurface(GLFWwindow* window, VkInstance instance);
+        explicit VulkanSurface(GLFWwindow* window, vkclass::VulkanInstance* instance);
         ~VulkanSurface();
         
     private:
         GLFWwindow* m_window;
         
         VkSurfaceKHR m_surface;
-        VkInstance m_instance;
+        vkclass::VulkanInstance* m_instance;
     };
 }
 

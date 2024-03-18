@@ -2,10 +2,10 @@
 
 namespace vkclass
 {
-    VulkanSurface::VulkanSurface(GLFWwindow* window, VkInstance instance):m_window(window),m_instance(instance)
+    VulkanSurface::VulkanSurface(GLFWwindow* window, vkclass::VulkanInstance* instance):m_window(window),m_instance(instance)
     {
         // create surface
-        if (glfwCreateWindowSurface(instance, window, nullptr, &m_surface) != VK_SUCCESS)
+        if (glfwCreateWindowSurface(instance->Instance, window, nullptr, &m_surface) != VK_SUCCESS)
         {
             VX_CORE_ERROR("Vulkan Surface: Failed to create surface!");
             throw std::runtime_error("failed to create window surface!");
@@ -17,7 +17,7 @@ namespace vkclass
 
     VulkanSurface::~VulkanSurface()
     {
-        vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+        vkDestroySurfaceKHR(m_instance->Instance, m_surface, nullptr);
         VX_CORE_INFO("Vulkan: Surface destroyed.");
     }
 }

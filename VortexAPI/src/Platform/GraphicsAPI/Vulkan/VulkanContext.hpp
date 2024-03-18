@@ -55,40 +55,30 @@ namespace VX
         // useDynamicRendering
 
     private:
+        // ref
         GLFWwindow* m_Window = nullptr;
-        vkclass::VulkanInstance* m_VulkanInstance = nullptr;
-        vkclass::VulkanSurface* m_VulkanSurface = nullptr;
-        vkclass::VulkanDevice* m_VulkanDevice = nullptr;
-        vkclass::VulkanSwapChain* m_VulkanSwapChain = nullptr;
         
-        vkclass::VulkanRenderPass* m_RenderPass = nullptr;
-        std::vector<vkclass::VulkanFrameBuffer*> m_VulkanFrameBuffers;
+        // prop
+        vkclass::VulkanInstance m_Instance;
+        vkclass::VulkanSurface m_Surface;
+        vkclass::VulkanDevice m_Device;
+        vkclass::VulkanSyncManager m_SyncManager;
+        vkclass::VulkanCommandManager m_CommandManager;
         
-        vkclass::VulkanCommandManager* m_VulkanCommandManager = nullptr;
-        vkclass::VulkanSyncManager* m_VulkanSyncManager = nullptr;
-        
+        // dynamic life-time, due to recreation by window resize
+        vkclass::VulkanSwapChain* m_SwapChain;
+        vkclass::VulkanRenderPass* m_RenderPass;
+        std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;
+
         vkclass::VulkanShader* triangleShader = nullptr;
         
     private: // var
         uint32_t m_currentRenderingFrame = 0;
         
     private:
-        /** @brief Create app info and create the encapsulated instance with that info*/
-        void initInstance();
         
-        /** @brief Create an abstract type of surface for rendering*/
-        void initSurface();
-        
-        /** @brief Create the encapsulated device (physical and logical device) */
-        void initDevice();
-        
-        void initSwapChain();
-        
-        void initFrameBuffers();
-        
-        void initCommandManager();
-        
-        void initSyncManager();
+        void createRenderPass();
+        void createFrameBuffers();
         
         void prepareTriangle();
         void drawTriangle();

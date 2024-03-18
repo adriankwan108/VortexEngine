@@ -2,16 +2,12 @@
 
 namespace vkclass
 {
-    VulkanFrameBuffer::VulkanFrameBuffer(vkclass::VulkanDevice* device, vkclass::VulkanSwapChain* swapChain):
-        m_device(device), m_swapChain(swapChain)
+    VulkanFrameBuffer::VulkanFrameBuffer(vkclass::VulkanDevice* device, uint32_t width, uint32_t height):
+        m_device(device)
     {
-        m_device = device;
         
-        Width = m_swapChain->Extent.width;
-        Height = m_swapChain->Extent.height;
-        
-        m_extent.width = Width;
-        m_extent.height = Height;
+        m_extent.width = width;
+        m_extent.height = height;
     }
 
     VulkanFrameBuffer::~VulkanFrameBuffer()
@@ -33,8 +29,8 @@ namespace vkclass
         framebufferInfo.pAttachments = imageViews.data();
          framebufferInfo.attachmentCount = static_cast<uint32_t>(imageViews.size());
 //        framebufferInfo.attachmentCount = 1;
-        framebufferInfo.width = Width;
-        framebufferInfo.height = Height;
+        framebufferInfo.width = m_extent.width;
+        framebufferInfo.height = m_extent.height;
         framebufferInfo.layers = 1;
 //        framebufferInfo.layers = maxLayers;
         VK_CHECK_RESULT(vkCreateFramebuffer(m_device->LogicalDevice, &framebufferInfo, nullptr, &m_frameBuffer));

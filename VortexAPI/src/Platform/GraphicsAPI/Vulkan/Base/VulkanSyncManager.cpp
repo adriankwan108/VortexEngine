@@ -2,7 +2,7 @@
 
 namespace vkclass
 {
-    VulkanSyncManager::VulkanSyncManager(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame):m_device(device), m_maxFramesInFlight(maxFramesInFlight), m_currentFrame(currentFrame)
+    VulkanSyncManager::VulkanSyncManager(vkclass::VulkanDevice* device, const int maxFramesInFlight, uint32_t& currentFrame):m_device(device), m_maxFramesInFlight(maxFramesInFlight), m_currentFrame(currentFrame)
     {
         m_imageAvailableSemaphores.resize(m_maxFramesInFlight);
         m_renderFinishedSemaphores.resize(m_maxFramesInFlight);
@@ -15,11 +15,11 @@ namespace vkclass
         
         for(size_t i = 0; i < m_maxFramesInFlight; i++)
         {
-            VK_CHECK_RESULT(vkCreateSemaphore(m_device, &semaphoreCreateInfo, nullptr, &m_imageAvailableSemaphores[i]));
+            VK_CHECK_RESULT(vkCreateSemaphore(m_device->LogicalDevice, &semaphoreCreateInfo, nullptr, &m_imageAvailableSemaphores[i]));
             
-            VK_CHECK_RESULT(vkCreateSemaphore(m_device, &semaphoreCreateInfo, nullptr, &m_renderFinishedSemaphores[i]));
+            VK_CHECK_RESULT(vkCreateSemaphore(m_device->LogicalDevice, &semaphoreCreateInfo, nullptr, &m_renderFinishedSemaphores[i]));
             
-            VK_CHECK_RESULT(vkCreateFence(m_device, &fenceCreateInfo, nullptr, &m_inFlightFences[i]));
+            VK_CHECK_RESULT(vkCreateFence(m_device->LogicalDevice, &fenceCreateInfo, nullptr, &m_inFlightFences[i]));
         }
         
         VX_CORE_INFO("Vulkan Sync Manager created");
@@ -29,9 +29,9 @@ namespace vkclass
     {
         for(size_t i = 0; i < m_maxFramesInFlight; i++)
         {
-            vkDestroySemaphore(m_device, m_imageAvailableSemaphores[i], nullptr);
-            vkDestroySemaphore(m_device, m_renderFinishedSemaphores[i], nullptr);
-            vkDestroyFence(m_device, m_inFlightFences[i], nullptr);
+            vkDestroySemaphore(m_device->LogicalDevice, m_imageAvailableSemaphores[i], nullptr);
+            vkDestroySemaphore(m_device->LogicalDevice, m_renderFinishedSemaphores[i], nullptr);
+            vkDestroyFence(m_device->LogicalDevice, m_inFlightFences[i], nullptr);
         }
         VX_CORE_INFO("Vulkan Sync Manager: destroyed.");
     }
@@ -39,11 +39,11 @@ namespace vkclass
     void VulkanSyncManager::WaitForFences()
     {
         // wait for all fences without timeout
-        vkWaitForFences(m_device, 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX); // but only one fence created
+        vkWaitForFences(m_device->LogicalDevice, 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX); // but only one fence created
     }
 
     void VulkanSyncManager::ResetFences()
     {
-        vkResetFences(m_device, 1, &m_inFlightFences[m_currentFrame]);
+        vkResetFences(m_device->LogicalDevice, 1, &m_inFlightFences[m_currentFrame]);
     }
 }

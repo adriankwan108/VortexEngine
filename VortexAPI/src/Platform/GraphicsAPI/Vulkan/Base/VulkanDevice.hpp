@@ -5,6 +5,8 @@
 #include <set>
 #include "vulkan/vulkan.h"
 #include "VulkanTools.hpp"
+#include "VulkanInstance.hpp"
+#include "VulkanSurface.hpp"
 
 namespace vkclass
 {
@@ -38,11 +40,12 @@ namespace vkclass
         std::vector<VkPresentModeKHR> presentModes;
     };
 
+    /** @brief Encapsulated device (physical and logical device), and command queue query functions */
     class VulkanDevice
     {
     public:
-//        explicit VulkanDevice(VkPhysicalDevice gpu);
-        explicit VulkanDevice(VkInstance instance, std::vector<const char *> requiredDeviceExtensions, VkSurfaceKHR surface, bool enableValidation);
+
+        VulkanDevice(vkclass::VulkanInstance* instance, vkclass::VulkanSurface* surface, bool enableValidation);
         ~VulkanDevice();
         
         const VkPhysicalDevice& PhysicalDevice = m_physicalDevice;
@@ -64,7 +67,7 @@ namespace vkclass
         };
         
         // ref
-        VkSurfaceKHR m_surface;
+        vkclass::VulkanSurface* m_surface;
         
         // properties
         VkPhysicalDevice m_physicalDevice;

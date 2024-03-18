@@ -15,15 +15,14 @@ namespace vkclass
     {
     public:
         // actually we use swapchain only for extent, this should be cleaned up
-        explicit VulkanFrameBuffer(vkclass::VulkanDevice* device, vkclass::VulkanSwapChain* swapchain);
+        explicit VulkanFrameBuffer(vkclass::VulkanDevice* device, uint32_t width, uint32_t height);
         ~VulkanFrameBuffer();
         
         void AddRenderPass(vkclass::VulkanRenderPass* renderPass);
         void SetUpFrameBuffer(std::vector<VkImageView> imageViews);
         
     public:
-        // changable extent for offscreen rendering, default set as swapchain extent2D
-        uint32_t Width, Height;
+
         const VkRenderPass& RenderPass = m_renderPass;
         const VkFramebuffer& FrameBuffer = m_frameBuffer;
         const VkExtent2D& Extent = m_extent; // equal to width and height
@@ -32,7 +31,6 @@ namespace vkclass
     private:
         // reference
         vkclass::VulkanDevice* m_device;
-        vkclass::VulkanSwapChain* m_swapChain;
         
         // props
         VkFramebuffer m_frameBuffer;

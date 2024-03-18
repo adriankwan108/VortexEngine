@@ -4,7 +4,16 @@ namespace vkclass
 {
     VulkanCommandManager::VulkanCommandManager(vkclass::VulkanDevice* device, const int maxFramesInFlight, uint32_t& currentFrame):m_device(device), m_maxFramesInFlight(maxFramesInFlight), m_currentFrame(currentFrame)
     {
+        if(device->QueueIndices.QueueFamilyIndices::isComplete())
+        {
+            CreateCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+        }else
+        {
+            VX_CORE_ERROR("Vulkan: Init command buffers incomplete: queue family not complete.");
+        }
         
+        CreateCommandBuffers();
+        VX_CORE_INFO("CommandManager initiated.");
     }
 
     VulkanCommandManager::~VulkanCommandManager()
@@ -93,9 +102,13 @@ namespace vkclass
         VK_CHECK_RESULT(vkQueueSubmit(m_device->GraphicsQueue, 1, &submitInfo, fence));
     }
 
-    void VulkanCommandManager::End()
+    void VulkanCommandManager::EndRenderPass()
     {
         vkCmdEndRenderPass(m_commandBuffers[m_currentFrame]);
+    }
+
+    void VulkanCommandManager::EndCommandBuffer()
+    {
         VK_CHECK_RESULT(vkEndCommandBuffer(m_commandBuffers[m_currentFrame]));
     }
 

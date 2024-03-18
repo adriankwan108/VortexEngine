@@ -2,7 +2,9 @@
 
 namespace vkclass
 {
-    VulkanRenderPass::VulkanRenderPass(VkDevice device): m_device(device)
+    VkDevice vkclass::VulkanRenderPass::m_device = VK_NULL_HANDLE;
+
+    VulkanRenderPass::VulkanRenderPass()
     {
         
     }
@@ -14,7 +16,12 @@ namespace vkclass
         VX_CORE_INFO("VulkanRenderPass: RenderPass destroyed");
     }
 
-    void VulkanRenderPass::AddSubpass(vkclass::VulkanSubpass subpass)
+    void VulkanRenderPass::Init(VkDevice device)
+    {
+        m_device = device;
+    }
+
+    void VulkanRenderPass::AddSubpass(vkclass::VulkanSubpass& subpass)
     {
         m_subpasses.push_back(subpass.Subpass);
         for(const auto& attachment: subpass.Attachments)

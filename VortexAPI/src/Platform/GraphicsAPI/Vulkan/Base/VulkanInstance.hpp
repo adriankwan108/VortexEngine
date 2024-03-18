@@ -9,10 +9,13 @@
 
 namespace vkclass
 {
+    /**
+      Encapsulated Instance with extension query functions
+     */
     class VulkanInstance
     {
     public:
-        VulkanInstance(VkApplicationInfo appInfo, bool enableValidation);
+        VulkanInstance(bool enableValidation);
         ~VulkanInstance();
     
         const VkInstance& Instance = m_Instance;
