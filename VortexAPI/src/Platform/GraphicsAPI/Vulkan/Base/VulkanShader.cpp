@@ -3,6 +3,7 @@
 namespace vkclass
 {
     VkDevice vkclass::VulkanShader::m_device = VK_NULL_HANDLE;
+    vkclass::VulkanCommandManager* vkclass::VulkanShader::m_commandBufferManager = nullptr;
 
     VulkanShader::VulkanShader(const std::string& vertFilePath, const std::string fragFilePath)
         :m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
@@ -49,12 +50,12 @@ namespace vkclass
         if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
         {
             m_isValid = false;
-            VX_CORE_ERROR("VulkanShader: Failed to create pipeline layout!");
-            throw std::runtime_error("failed to create pipeline layout!");
+            VX_CORE_WARN("VulkanShader: Failed to create pipeline layout!");
             return;;
         }
         
         m_isValid = true;
+        // TODO: if not valid, try default shader
     }
 
     VulkanShader::~VulkanShader()
@@ -70,14 +71,16 @@ namespace vkclass
         }
     }
 
-    void VulkanShader::Init(VkDevice device)
+    void VulkanShader::Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager)
     {
         m_device = device;
+        m_commandBufferManager = commandBufferManager;
     }
 
     void VulkanShader::Bind()
     {
         // vkcmdbindpipeline
+        m_commandBufferManager->BindPipeline(m_pipeline);
     }
 
     void VulkanShader::UnBind()

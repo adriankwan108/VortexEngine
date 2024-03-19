@@ -6,6 +6,7 @@
 #include "VulkanInitializer.hpp"
 #include "VulkanTools.hpp"
 #include "VulkanPipelineBuilder.hpp"
+#include "VulkanCommandManager.hpp";
 
 namespace vkclass
 {
@@ -15,7 +16,7 @@ namespace vkclass
         VulkanShader(const std::string& vertFilePath, const std::string fragFilePath);
         ~VulkanShader();
         
-        static void Init(VkDevice device);
+        static void Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager);
         
         void Bind();
         void UnBind();
@@ -30,6 +31,7 @@ namespace vkclass
         
     private:
         static VkDevice m_device;
+        static vkclass::VulkanCommandManager* m_commandBufferManager;
         
         // props
         uint32_t m_RendererID = 0;

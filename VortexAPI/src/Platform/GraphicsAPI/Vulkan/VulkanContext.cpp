@@ -42,7 +42,7 @@ namespace VX
         
         vkclass::VulkanSwapChain::Init(&m_Device);
         vkclass::VulkanRenderPass::Init(m_Device.LogicalDevice);
-        vkclass::VulkanShader::Init(m_Device.LogicalDevice);
+        vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager);
         vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
         
         m_SwapChain = new vkclass::VulkanSwapChain(&m_Surface);
@@ -88,7 +88,8 @@ namespace VX
         );
 
         drawTriangle();
-        
+        m_CommandManager.Draw(m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent);
+
         m_CommandManager.EndRenderPass();
         m_CommandManager.EndCommandBuffer();
         m_CommandManager.Submit(
@@ -217,11 +218,6 @@ namespace VX
 
     void VulkanContext::drawTriangle()
     {
-        if(!triangleShader->Valid)
-        {
-            return;
-        }
-        m_CommandManager.BindPipeline(triangleShader->Pipeline);
-        m_CommandManager.Draw(m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent);
+        triangleShader->Bind();
     }
 }
