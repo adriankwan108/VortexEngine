@@ -2,6 +2,9 @@
 #include "VortexPCH.hpp"
 #include "Renderer/GraphicsContext.hpp"
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+
 #include "vulkan/vulkan.h"
 #include "Base/VulkanDebug.hpp"
 #include "Base/VulkanTools.hpp"
@@ -19,6 +22,9 @@
 #include "Base/VulkanPipelineBuilder.hpp"
 #include "Base/VulkanBuffer.hpp"
 #include "Base/VulkanGeometry.hpp"
+
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace VX
 {
@@ -89,11 +95,11 @@ namespace VX
         unsigned int m_height;
         
         // temp
-        const std::vector<Geometry::Vertex> triangleVertices =
+        std::vector<Geometry::Vertex> triangleVertices =
         {
-            {{ 0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+            {{ 0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
             {{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}
+            {{-0.5f,  0.5f}, {1.0f, 0.0f, 1.0f}}
         };
         
     private:

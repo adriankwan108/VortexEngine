@@ -95,7 +95,7 @@ namespace vkclass
         // TODO: Set input layout explicitly
         auto bindingDescription = Geometry::Vertex::getBindingDescription();
         auto attributeDesciption = Geometry::Vertex::getAttributeDescriptions();
-        m_pipelineBuilder.SetVertexInput(&bindingDescription, &attributeDesciption);
+        m_pipelineBuilder.SetVertexInput(&bindingDescription, attributeDesciption);
         
         m_pipeline = m_pipelineBuilder.BuildPipeline(m_pipelineLayout, renderPass);
     }

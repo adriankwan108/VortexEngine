@@ -45,6 +45,7 @@ namespace VX
         vkclass::VulkanRenderPass::Init(m_Device.LogicalDevice);
         vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager);
         vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
+        vkclass::VulkanBuffer::Init(&m_Device);
         
         m_SwapChain = new vkclass::VulkanSwapChain(&m_Surface);
         m_SwapChain->CreateSwapChain();
@@ -218,10 +219,10 @@ namespace VX
         triangleShader->CreatePipeline(m_RenderPass->RenderPass);
         
         
-        vertexBuffer = new vkclass::VulkanBuffer(sizeof(triangleVertices[0] * triangleVertices.size()), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+        vertexBuffer = new vkclass::VulkanBuffer(sizeof(triangleVertices[0]) * triangleVertices.size(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
         vertexBuffer->Bind();
         vertexBuffer->Map();
-        vertexBuffer->SetData(triangleVertices.data(), sizeof(triangleVertices[0] * triangleVertices.size()));
+        vertexBuffer->SetData(triangleVertices.data(), sizeof(triangleVertices[0]) * triangleVertices.size());
         vertexBuffer->Unmap();
     }
 
