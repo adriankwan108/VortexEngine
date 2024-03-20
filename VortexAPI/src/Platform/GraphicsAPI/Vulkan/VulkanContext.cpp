@@ -15,6 +15,7 @@ namespace VX
 
     VulkanContext::~VulkanContext()
     {
+        delete vertexBuffer;
         delete triangleShader;
         
         for(auto framebuffer: m_FrameBuffers)
@@ -81,6 +82,7 @@ namespace VX
         // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
         m_CommandManager.Reset();
         m_CommandManager.BeginRecordCommands();
+        m_CommandManager.SetExtent(m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent);
         m_CommandManager.BeginRenderPass(
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->RenderPass,
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->FrameBuffer,
@@ -88,7 +90,7 @@ namespace VX
         );
 
         drawTriangle();
-        m_CommandManager.Draw(m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent);
+        m_CommandManager.Draw();
 
         m_CommandManager.EndRenderPass();
         m_CommandManager.EndCommandBuffer();
@@ -214,10 +216,19 @@ namespace VX
         }
 
         triangleShader->CreatePipeline(m_RenderPass->RenderPass);
+        
+        
+        vertexBuffer = new vkclass::VulkanBuffer(sizeof(triangleVertices[0] * triangleVertices.size()), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+        vertexBuffer->Bind();
+        vertexBuffer->Map();
+        vertexBuffer->SetData(triangleVertices.data(), sizeof(triangleVertices[0] * triangleVertices.size()));
+        vertexBuffer->Unmap();
     }
 
     void VulkanContext::drawTriangle()
     {
         triangleShader->Bind();
+
+        m_CommandManager.BindVertexBuffer({vertexBuffer->Buffer}, {0});
     }
 }

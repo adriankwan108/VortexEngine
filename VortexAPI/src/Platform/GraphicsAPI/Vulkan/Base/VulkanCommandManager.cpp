@@ -80,6 +80,23 @@ namespace vkclass
         vkResetCommandBuffer(m_commandBuffers[m_currentFrame], 0);
     }
 
+    void VulkanCommandManager::SetExtent(VkExtent2D extent)
+    {
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(extent.width);
+        viewport.height = static_cast<float>(extent.height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(m_commandBuffers[m_currentFrame], 0, 1, &viewport);
+
+        VkRect2D scissor{};
+        scissor.offset = { 0, 0 };
+        scissor.extent = extent;
+        vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &scissor);
+    }
+
     void VulkanCommandManager::Submit(std::vector<VkSemaphore> waitSemaphores, std::vector<VkSemaphore> signalSemaphores, VkFence fence)
     {
         VkSubmitInfo submitInfo{};
@@ -117,22 +134,13 @@ namespace vkclass
         vkCmdBindPipeline(m_commandBuffers[m_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
     }
 
-    void VulkanCommandManager::Draw(VkExtent2D extent)
+    void VulkanCommandManager::BindVertexBuffer(std::vector<VkBuffer> vertexBuffers, std::vector<VkDeviceSize> offsets)
     {
-        VkViewport viewport{};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = static_cast<float>(extent.width);
-        viewport.height = static_cast<float>(extent.height);
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        vkCmdSetViewport(m_commandBuffers[m_currentFrame], 0, 1, &viewport);
+        vkCmdBindVertexBuffers(m_commandBuffers[m_currentFrame], 0, 1, vertexBuffers.data(), offsets.data());
+    }
 
-        VkRect2D scissor{};
-        scissor.offset = { 0, 0 };
-        scissor.extent = extent;
-        vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &scissor);
-
+    void VulkanCommandManager::Draw()
+    {
         vkCmdDraw(m_commandBuffers[m_currentFrame], 3, 1, 0, 0);
     }
 

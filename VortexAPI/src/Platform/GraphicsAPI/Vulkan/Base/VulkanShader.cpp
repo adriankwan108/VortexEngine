@@ -91,6 +91,12 @@ namespace vkclass
     void VulkanShader::CreatePipeline(VkRenderPass renderPass)
     {
         m_pipelineBuilder.SetShaders(m_vertModule, m_fragModule);
+        
+        // TODO: Set input layout explicitly
+        auto bindingDescription = Geometry::Vertex::getBindingDescription();
+        auto attributeDesciption = Geometry::Vertex::getAttributeDescriptions();
+        m_pipelineBuilder.SetVertexInput(&bindingDescription, &attributeDesciption);
+        
         m_pipeline = m_pipelineBuilder.BuildPipeline(m_pipelineLayout, renderPass);
     }
 

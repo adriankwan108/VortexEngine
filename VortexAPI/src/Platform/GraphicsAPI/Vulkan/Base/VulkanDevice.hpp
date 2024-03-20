@@ -57,8 +57,8 @@ namespace vkclass
         
     public:
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-        
         SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+        void GetMemoryInfo(VkBuffer buffer, VkMemoryPropertyFlags targetProps, VkDeviceSize& allocSize, uint32_t& memTypeIndex);
 
     private:
         bool m_enableValidation = true;
@@ -93,11 +93,12 @@ namespace vkclass
         std::vector<VkQueueFamilyProperties> m_QueueFamilyProperties;
         QueueFamilyIndices m_QueueFamilyIndices;
         
-        /** @brief Memory types and heaps of the physical device */
-        VkPhysicalDeviceMemoryProperties memoryProperties;
-        
         /** @brief List of extensions supported by the device */
         std::vector<std::string> m_supportedDeviceExtensions;
+        
+//        /** @brief Memory types and heaps of the physical device */
+//        VkMemoryRequirements m_memoryRequirements;
+//        VkPhysicalDeviceMemoryProperties m_memoryProperties;
         
         
     private:
@@ -109,5 +110,6 @@ namespace vkclass
         void createLogicalDevice(std::vector<const char *> requiredDeviceExtensions);
         bool isGpuExtensionSupported(std::string extension);
         
+        uint32_t findMemoryType(uint32_t typeFilter, VkPhysicalDeviceMemoryProperties memProperties, VkMemoryPropertyFlags targetProperties);
     };
 }

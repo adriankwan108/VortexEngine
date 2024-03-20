@@ -98,6 +98,12 @@ namespace vkclass
         VX_CORE_INFO("PipelineBuilder: Shaders set.");
     }
 
+    void VulkanPipelineBuilder::SetVertexInput(VkVertexInputBindingDescription* binding, VkVertexInputAttributeDescription* attribute)
+    {
+        m_vertexInputInfo.pVertexBindingDescriptions = binding;
+        m_vertexInputInfo.pVertexAttributeDescriptions = attribute;
+    }
+
     void VulkanPipelineBuilder::SetInputTopology(VkPrimitiveTopology topology)
     {
         m_inputAssembly.topology = topology;

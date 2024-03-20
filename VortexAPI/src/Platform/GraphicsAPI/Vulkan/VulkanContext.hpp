@@ -14,8 +14,11 @@
 #include "Base/VulkanRenderPass.hpp"
 #include "Base/VulkanCommandManager.hpp"
 #include "Base/VulkanSyncManager.hpp"
+
 #include "Base/VulkanShader.hpp"
 #include "Base/VulkanPipelineBuilder.hpp"
+#include "Base/VulkanBuffer.hpp"
+#include "Base/VulkanGeometry.hpp"
 
 namespace VX
 {
@@ -71,7 +74,9 @@ namespace VX
         vkclass::VulkanRenderPass* m_RenderPass;
         std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;
 
+        // a triangle resources
         vkclass::VulkanShader* triangleShader = nullptr;
+        vkclass::VulkanBuffer* vertexBuffer = nullptr;
         
     private: // var
         uint32_t m_currentRenderingFrame = 0;
@@ -82,6 +87,14 @@ namespace VX
         // window size
         unsigned int m_width;
         unsigned int m_height;
+        
+        // temp
+        const std::vector<Geometry::Vertex> triangleVertices =
+        {
+            {{ 0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+            {{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
+            {{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}
+        };
         
     private:
         void resizeHelper();

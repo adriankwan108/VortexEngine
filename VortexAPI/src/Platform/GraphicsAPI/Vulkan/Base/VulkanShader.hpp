@@ -6,7 +6,9 @@
 #include "VulkanInitializer.hpp"
 #include "VulkanTools.hpp"
 #include "VulkanPipelineBuilder.hpp"
-#include "VulkanCommandManager.hpp";
+#include "VulkanCommandManager.hpp"
+
+#include "VulkanGeometry.hpp"
 
 namespace vkclass
 {

@@ -44,6 +44,18 @@ namespace vkclass
         return details;
     }
 
+    void VulkanDevice::GetMemoryInfo(VkBuffer buffer, VkMemoryPropertyFlags targetProps, VkDeviceSize& allocSize, uint32_t& memTypeIndex)
+    {
+        VkMemoryRequirements memRequirements;
+        vkGetBufferMemoryRequirements(m_logicalDevice, buffer, &memRequirements);
+        
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
+        
+        allocSize = memRequirements.size;
+        memTypeIndex = findMemoryType(memRequirements.memoryTypeBits, memProperties, targetProps);
+    }
+
     void VulkanDevice::getPhysicalDevice(VkInstance instance)
     {
         // get number of available GPUs with Vulkan support
@@ -281,5 +293,23 @@ namespace vkclass
     bool VulkanDevice::isGpuExtensionSupported(std::string extension)
     {
         return (std::find(m_supportedDeviceExtensions.begin(), m_supportedDeviceExtensions.end(), extension) != m_supportedDeviceExtensions.end());
+    }
+
+    uint32_t VulkanDevice::findMemoryType(uint32_t typeFilter, VkPhysicalDeviceMemoryProperties memProperties, VkMemoryPropertyFlags targetProperties)
+    {
+        bool validate = false;
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+        {
+            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & targetProperties) == targetProperties)
+            {
+                validate = true;
+                return i;
+            }
+        }
+        if(validate == false)
+        {
+            VX_CORE_ERROR("Vulkan Device: Failed to find suitable memory type!");
+            throw std::runtime_error("Vulkan Device: Failed to find suitable memory type!");
+        }
     }
 }
