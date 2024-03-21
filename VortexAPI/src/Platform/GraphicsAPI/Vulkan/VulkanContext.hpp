@@ -79,6 +79,9 @@ namespace VX
         vkclass::VulkanSwapChain* m_SwapChain;
         vkclass::VulkanRenderPass* m_RenderPass;
         std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;
+        
+        // helpers
+        vkclass::VulkanPipelineBuilder m_pipelineBuilder;
 
         // a triangle resources
         vkclass::VulkanShader* triangleShader = nullptr;

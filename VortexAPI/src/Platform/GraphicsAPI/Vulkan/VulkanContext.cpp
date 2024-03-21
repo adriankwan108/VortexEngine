@@ -206,6 +206,7 @@ namespace VX
 
     void VulkanContext::prepareTriangle()
     {
+        // load shader
         triangleShader = new vkclass::VulkanShader(
             VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/vert.spv"),
             VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/frag.spv")
@@ -216,8 +217,23 @@ namespace VX
             return;
         }
 
-        triangleShader->CreatePipeline(m_RenderPass->RenderPass);
+        /* Pipeline */
+        m_pipelineBuilder.SetShaders(triangleShader->VertModule, triangleShader->FragModule);
+        // transfer struct Vertex(ShaderDataType) to Layout(GLM)
         
+        // load layout to pipeline builder
+        auto bindingDescription = Geometry::Vertex::getBindingDescription();
+        auto attributeDesciption = Geometry::Vertex::getAttributeDescriptions();
+        m_pipelineBuilder.SetVertexInput(&bindingDescription, attributeDesciption);
+        
+        VkPipeline pipeline = m_pipelineBuilder.BuildPipeline(triangleShader->PipelineLayout, m_RenderPass->RenderPass);
+        triangleShader->SetPipeline(pipeline);
+        
+        // load vertex input layout to vertexBuffer for vertex array
+        // for each vertex buffer,
+        //      offset
+        //      push_back(buffer)
+        //      offset += layout.GetStride()
         
         vertexBuffer = new vkclass::VulkanBuffer(sizeof(triangleVertices[0]) * triangleVertices.size(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
         vertexBuffer->Bind();

@@ -22,12 +22,13 @@ namespace vkclass
         
         void Bind();
         void UnBind();
-        void CreatePipeline(VkRenderPass renderPass);
+        void SetPipeline(VkPipeline pipeline);
         
     public:
         const VkShaderModule& VertModule = m_vertModule;
         const VkShaderModule& FragModule = m_fragModule;
         const VkPipeline& Pipeline = m_pipeline;
+        const VkPipelineLayout& PipelineLayout = m_pipelineLayout;
         
         bool& Valid = m_isValid;
         
@@ -49,6 +50,5 @@ namespace vkclass
         VkShaderModule m_vertModule = VK_NULL_HANDLE;
         VkShaderModule m_fragModule = VK_NULL_HANDLE;
         bool m_isValid = false;
-        vkclass::VulkanPipelineBuilder m_pipelineBuilder;
     };
 }
