@@ -22,7 +22,10 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # vulkan
 find_package(Vulkan REQUIRED)
-find_package(glm REQUIRED)
+
+if(APPLE)
+    find_package(glm REQUIRED)
+endif()
 
 # libaries
 add_library(VortexAPI SHARED)
@@ -35,11 +38,20 @@ target_sources(VortexAPI PRIVATE
 set_target_properties(VortexAPI PROPERTIES VERSION 0.1.1)
 
 add_subdirectory("vendor/glfw")
-target_link_libraries(VortexAPI PUBLIC
-    glfw
-    Vulkan::Vulkan
-    glm::glm
-)
+if(MSVC)
+    target_link_libraries(VortexAPI PUBLIC
+        glfw
+        Vulkan::Vulkan
+    )
+else()
+    if(APPLE)
+        target_link_libraries(VortexAPI PUBLIC
+            glfw
+            Vulkan::Vulkan
+            glm::glm
+        )
+    endif()
+endif()
 
 # additional include directories (for #include)
 target_include_directories(VortexAPI PUBLIC
