@@ -73,5 +73,11 @@ namespace VX
 #endif
         }
 
+        template <typename T>
+        size_t CalculateMemorySize(const std::vector<T>& v)
+        {
+            return sizeof(v[0]) * v.size();
+        }
+#define MEM_SIZE(...)    ::VX::Utils::CalculateMemorySize(__VA_ARGS__)
     }
 }

@@ -28,6 +28,35 @@ namespace vkclass
         VK_CHECK_RESULT(vkAllocateMemory(m_device->LogicalDevice, &allocInfo, nullptr, &m_memory));
     }
 
+    VulkanBuffer::VulkanBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags flags):
+        m_size(size)
+    {
+        // buffer
+        VkBufferCreateInfo bufferCI{};
+        bufferCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferCI.size = m_size;
+        bufferCI.usage = flags;
+        bufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        VK_CHECK_RESULT(vkCreateBuffer(m_device->LogicalDevice, &bufferCI, nullptr, &m_buffer));
+
+        // memory
+        VkDeviceSize allocationSize; // depends on OS
+        uint32_t memoryType;
+        m_device->GetMemoryInfo(m_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, allocationSize, memoryType);
+        
+        VkMemoryAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = allocationSize;
+        allocInfo.memoryTypeIndex = memoryType;
+        
+        VK_CHECK_RESULT(vkAllocateMemory(m_device->LogicalDevice, &allocInfo, nullptr, &m_memory));
+        
+        Bind();
+        Map();
+        SetData(data, size);
+        Unmap();
+    }
+
     VulkanBuffer::~VulkanBuffer()
     {
         if(m_buffer)
@@ -59,7 +88,10 @@ namespace vkclass
 
     void VulkanBuffer::Unmap()
     {
-        vkUnmapMemory(m_device->LogicalDevice, m_memory);
+        if(m_memory)
+        {
+            vkUnmapMemory(m_device->LogicalDevice, m_memory);
+        }
     }
 
     void VulkanBuffer::SetData(void* data, VkDeviceSize size)
@@ -78,5 +110,4 @@ namespace vkclass
         mappedRange.size = size;
         vkFlushMappedMemoryRanges(m_device->LogicalDevice, 1, &mappedRange);
     }
-
 }

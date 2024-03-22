@@ -206,7 +206,15 @@ namespace VX
 
     void VulkanContext::prepareTriangle()
     {
-        // load shader
+        // simulate data
+        std::vector<Geometry::Vertex> triangleVertices =
+        {
+            {{ 0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+            {{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
+            {{-0.5f,  0.5f}, {1.0f, 0.0f, 1.0f}}
+        };
+        
+        /* load shader */
         triangleShader = new vkclass::VulkanShader(
             VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/vert.spv"),
             VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/frag.spv")
@@ -219,11 +227,21 @@ namespace VX
 
         /* Pipeline */
         m_pipelineBuilder.SetShaders(triangleShader->VertModule, triangleShader->FragModule);
-        // transfer struct Vertex(ShaderDataType) to Layout(GLM)
         
-        // load layout to pipeline builder
-        auto bindingDescription = Geometry::Vertex::getBindingDescription();
-        auto attributeDesciption = Geometry::Vertex::getAttributeDescriptions();
+        // TODO: Vertex to BufferLayout(ShaderLayout) transformer
+        
+        // this would be the creation of layout in application side
+        VX::BufferLayout ShaderLayout = {
+            {VX::ShaderDataType::Float2, "pos"},
+            {VX::ShaderDataType::Float3, "color"}
+        };
+        
+        // create vertex buffer with layout
+        vertexBuffer = new vkclass::VulkanVertexBuffer(triangleVertices.data(), MEM_SIZE(triangleVertices));
+        vertexBuffer->SetLayout(ShaderLayout);
+        
+        auto bindingDescription  = vertexBuffer->GetLayout().Binding;
+        auto attributeDesciption = vertexBuffer->GetLayout().Attributes;
         m_pipelineBuilder.SetVertexInput(&bindingDescription, attributeDesciption);
         
         VkPipeline pipeline = m_pipelineBuilder.BuildPipeline(triangleShader->PipelineLayout, m_RenderPass->RenderPass);
@@ -235,11 +253,6 @@ namespace VX
         //      push_back(buffer)
         //      offset += layout.GetStride()
         
-        vertexBuffer = new vkclass::VulkanBuffer(sizeof(triangleVertices[0]) * triangleVertices.size(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-        vertexBuffer->Bind();
-        vertexBuffer->Map();
-        vertexBuffer->SetData(triangleVertices.data(), sizeof(triangleVertices[0]) * triangleVertices.size());
-        vertexBuffer->Unmap();
     }
 
     void VulkanContext::drawTriangle()

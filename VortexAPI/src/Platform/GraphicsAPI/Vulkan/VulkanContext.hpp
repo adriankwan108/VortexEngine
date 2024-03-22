@@ -85,7 +85,7 @@ namespace VX
 
         // a triangle resources
         vkclass::VulkanShader* triangleShader = nullptr;
-        vkclass::VulkanBuffer* vertexBuffer = nullptr;
+        vkclass::VulkanVertexBuffer* vertexBuffer = nullptr;
         
     private: // var
         uint32_t m_currentRenderingFrame = 0;
@@ -96,14 +96,6 @@ namespace VX
         // window size
         unsigned int m_width;
         unsigned int m_height;
-        
-        // temp
-        std::vector<Geometry::Vertex> triangleVertices =
-        {
-            {{ 0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-            {{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f,  0.5f}, {1.0f, 0.0f, 1.0f}}
-        };
         
     private:
         void resizeHelper();

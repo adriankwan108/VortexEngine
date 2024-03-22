@@ -1,17 +1,23 @@
 #pragma once
 #include "VortexPCH.hpp"
+
 #include "vulkan/vulkan.h"
+#include <glm/glm.hpp>
+
+#include "Renderer/Buffer.hpp"
+
 #include "VulkanInitializer.hpp"
 #include "VulkanTools.hpp"
 #include "VulkanDevice.hpp"
+#include "VulkanBufferLayout.hpp"
 
 namespace vkclass
 {
-    
     class VulkanBuffer
     {
     public:
-        VulkanBuffer(VkDeviceSize size, VkBufferUsageFlags flags); // prop flags ?
+        VulkanBuffer(VkDeviceSize size, VkBufferUsageFlags flags); // bind, map... explicitly
+        VulkanBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags flags); // map implicitly
         ~VulkanBuffer();
         
         const VkBuffer& Buffer = m_buffer;
@@ -47,13 +53,29 @@ namespace vkclass
         void* m_data;
     };
 
-    class VulkanVertexBuffer
+    class VulkanVertexBuffer : public VulkanBuffer, public VX::VertexBuffer
     {
+    public:
+        VulkanVertexBuffer(VkDeviceSize size, VkBufferUsageFlags flags = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+            : VulkanBuffer(size, flags)
+        {
+        }
+        VulkanVertexBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags flags = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+            : VulkanBuffer(data, size, flags)
+        {
+        }
         
+        const vkclass::VulkanBufferLayout& GetLayout() const { return m_Layout; }
+        
+        // transform general buffer layout to vulkan buffer layout implicitly
+        virtual void SetLayout(const VX::BufferLayout& layout) override { m_Layout = layout; }
+    private:
+        vkclass::VulkanBufferLayout m_Layout;
     };
 
     class VulkanIndexBuffer
     {
         
     };
+
 }
