@@ -144,4 +144,47 @@ namespace vkclass
         vkCmdDraw(m_commandBuffers[m_currentFrame], 3, 1, 0, 0);
     }
 
+    VkCommandBuffer VulkanCommandManager::CreateCommandBuffer()
+    {
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = m_commandPool;
+        allocInfo.commandBufferCount = 1;
+
+        VkCommandBuffer commandBuffer;
+        vkAllocateCommandBuffers(m_device->LogicalDevice, &allocInfo, &commandBuffer);
+        
+        return commandBuffer;
+    }
+
+    void VulkanCommandManager::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+    {
+        auto cb = CreateCommandBuffer();
+        
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        vkBeginCommandBuffer(cb, &beginInfo);
+        
+        VkBufferCopy copyRegion{};
+        copyRegion.srcOffset = 0; // Optional
+        copyRegion.dstOffset = 0; // Optional
+        copyRegion.size = size;
+        vkCmdCopyBuffer(cb, srcBuffer, dstBuffer, 1, &copyRegion);
+        
+        vkEndCommandBuffer(cb);
+        
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &cb;
+
+        vkQueueSubmit(m_device->GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(m_device->GraphicsQueue);
+        
+        vkFreeCommandBuffers(m_device->LogicalDevice, m_commandPool, 1, &cb);
+    }
+
 }

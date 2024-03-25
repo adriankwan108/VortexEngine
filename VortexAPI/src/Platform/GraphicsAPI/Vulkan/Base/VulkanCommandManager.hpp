@@ -21,7 +21,7 @@ namespace vkclass
         // so if we want to record command buffers from multiple threads, then we will need more command pools, one per thread
         
         void CreateCommandPool(VkCommandPoolCreateFlags flags);
-        void CreateCommandBuffers();
+        void CreateCommandBuffers(); // this is only for rendering commands
         void BeginRecordCommands();
         void BeginRenderPass(VkRenderPass renderPass, VkFramebuffer frameBuffer, VkExtent2D extent);
         void Reset();
@@ -33,6 +33,9 @@ namespace vkclass
         void BindPipeline(VkPipeline pipeline); // TODO: bind with vertex buffer, index buffer, etc; and bind with related cmd buffer
         void BindVertexBuffer(std::vector<VkBuffer> vertexBuffers, std::vector<VkDeviceSize> offsets);
         void Draw();
+        
+        VkCommandBuffer CreateCommandBuffer(); // general command buffer, may need to use thread index as para in future
+        void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
         
     private:
         // references

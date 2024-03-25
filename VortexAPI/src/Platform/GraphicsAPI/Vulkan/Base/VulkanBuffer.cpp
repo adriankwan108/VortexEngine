@@ -3,8 +3,9 @@
 namespace vkclass
 {
     vkclass::VulkanDevice* VulkanBuffer::m_device = nullptr;
+    vkclass::VulkanCommandManager* VulkanBuffer::m_cmdManager = nullptr;
 
-    VulkanBuffer::VulkanBuffer(VkDeviceSize size, VkBufferUsageFlags flags):
+    VulkanBuffer::VulkanBuffer(VkDeviceSize size, VkMemoryPropertyFlags props, VkBufferUsageFlags flags):
         m_size(size)
     {
         // buffer
@@ -18,7 +19,7 @@ namespace vkclass
         // memory
         VkDeviceSize allocationSize; // depends on OS
         uint32_t memoryType;
-        m_device->GetMemoryInfo(m_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, allocationSize, memoryType);
+        m_device->GetMemoryInfo(m_buffer, props, allocationSize, memoryType);
         
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -26,9 +27,11 @@ namespace vkclass
         allocInfo.memoryTypeIndex = memoryType;
         
         VK_CHECK_RESULT(vkAllocateMemory(m_device->LogicalDevice, &allocInfo, nullptr, &m_memory));
+        
+        Bind();
     }
 
-    VulkanBuffer::VulkanBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags flags):
+    VulkanBuffer::VulkanBuffer(void* data, VkDeviceSize size, VkMemoryPropertyFlags props, VkBufferUsageFlags flags):
         m_size(size)
     {
         // buffer
@@ -42,7 +45,7 @@ namespace vkclass
         // memory
         VkDeviceSize allocationSize; // depends on OS
         uint32_t memoryType;
-        m_device->GetMemoryInfo(m_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, allocationSize, memoryType);
+        m_device->GetMemoryInfo(m_buffer, props, allocationSize, memoryType);
         
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -70,9 +73,10 @@ namespace vkclass
         }
     }
 
-    void VulkanBuffer::Init(vkclass::VulkanDevice *device)
+    void VulkanBuffer::Init(vkclass::VulkanDevice *device, vkclass::VulkanCommandManager* cmdManager)
     {
         m_device = device;
+        m_cmdManager = cmdManager;
     }
 
     void VulkanBuffer::Bind(VkDeviceSize offset)
@@ -109,5 +113,15 @@ namespace vkclass
         mappedRange.offset = offset;
         mappedRange.size = size;
         vkFlushMappedMemoryRanges(m_device->LogicalDevice, 1, &mappedRange);
+    }
+
+    VulkanVertexBuffer::VulkanVertexBuffer(void* data, VkDeviceSize size)
+        :VulkanBuffer(size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+    {
+        // staging in CPU accesible memory
+        VulkanBuffer stagingBuffer = VulkanBuffer(data, size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        
+        // copy data from staging buffer to device local final vertex buffer
+        m_cmdManager->CopyBuffer(stagingBuffer.Buffer, this->Buffer, size);
     }
 }

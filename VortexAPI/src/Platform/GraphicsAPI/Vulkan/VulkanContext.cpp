@@ -45,7 +45,7 @@ namespace VX
         vkclass::VulkanRenderPass::Init(m_Device.LogicalDevice);
         vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager);
         vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
-        vkclass::VulkanBuffer::Init(&m_Device);
+        vkclass::VulkanBuffer::Init(&m_Device, &m_CommandManager);
         
         m_SwapChain = new vkclass::VulkanSwapChain(&m_Surface);
         m_SwapChain->CreateSwapChain();
