@@ -85,9 +85,11 @@ namespace vkclass
         vkclass::VulkanBufferLayout m_Layout;
     };
 
-    class VulkanIndexBuffer
+    class VulkanIndexBuffer : public VulkanBuffer
     {
-        
+    public:
+        // optimized, device local final vertex buffer
+        VulkanIndexBuffer(void* data, VkDeviceSize size);
     };
 
 }

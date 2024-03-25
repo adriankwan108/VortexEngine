@@ -124,4 +124,12 @@ namespace vkclass
         // copy data from staging buffer to device local final vertex buffer
         m_cmdManager->CopyBuffer(stagingBuffer.Buffer, this->Buffer, size);
     }
+
+    VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size)
+        :VulkanBuffer(size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
+    {
+        VulkanBuffer stagingBuffer = VulkanBuffer(data, size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        
+        m_cmdManager->CopyBuffer(stagingBuffer.Buffer, this->Buffer, size);
+    }
 }

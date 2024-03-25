@@ -15,6 +15,7 @@ namespace VX
 
     VulkanContext::~VulkanContext()
     {
+        delete indexBuffer;
         delete vertexBuffer;
         delete triangleShader;
         
@@ -91,7 +92,6 @@ namespace VX
         );
 
         drawTriangle();
-        m_CommandManager.Draw();
 
         m_CommandManager.EndRenderPass();
         m_CommandManager.EndCommandBuffer();
@@ -206,13 +206,6 @@ namespace VX
 
     void VulkanContext::prepareTriangle()
     {
-        // simulate data
-        std::vector<Geometry::Vertex> triangleVertices =
-        {
-            {{ 0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-            {{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f,  0.5f}, {1.0f, 0.0f, 1.0f}}
-        };
         
         /* load shader */
         triangleShader = new vkclass::VulkanShader(
@@ -240,6 +233,8 @@ namespace VX
         vertexBuffer = new vkclass::VulkanVertexBuffer(triangleVertices.data(), MEM_SIZE(triangleVertices));
         vertexBuffer->SetLayout(ShaderLayout);
         
+        indexBuffer = new vkclass::VulkanIndexBuffer(triangleIndices.data(), MEM_SIZE(triangleIndices));
+        
         auto bindingDescription  = vertexBuffer->GetLayout().Binding;
         auto attributeDesciption = vertexBuffer->GetLayout().Attributes;
         m_pipelineBuilder.SetVertexInput(&bindingDescription, attributeDesciption);
@@ -260,5 +255,8 @@ namespace VX
         triangleShader->Bind();
 
         m_CommandManager.BindVertexBuffer({vertexBuffer->Buffer}, {0});
+        m_CommandManager.BindIndexBuffer(indexBuffer->Buffer, 0);
+        
+        m_CommandManager.Draw(static_cast<uint32_t>(triangleIndices.size()));
     }
 }

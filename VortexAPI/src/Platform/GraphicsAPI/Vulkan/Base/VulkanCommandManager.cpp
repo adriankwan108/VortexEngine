@@ -139,9 +139,15 @@ namespace vkclass
         vkCmdBindVertexBuffers(m_commandBuffers[m_currentFrame], 0, 1, vertexBuffers.data(), offsets.data());
     }
 
-    void VulkanCommandManager::Draw()
+    void VulkanCommandManager::BindIndexBuffer(VkBuffer indexBuffer, VkDeviceSize offset)
     {
-        vkCmdDraw(m_commandBuffers[m_currentFrame], 3, 1, 0, 0);
+        vkCmdBindIndexBuffer(m_commandBuffers[m_currentFrame], indexBuffer, offset, VK_INDEX_TYPE_UINT16);
+    }
+
+    void VulkanCommandManager::Draw(uint32_t indexSize)
+    {
+//        vkCmdDraw(m_commandBuffers[m_currentFrame], 1, 1, 0, 0);
+        vkCmdDrawIndexed(m_commandBuffers[m_currentFrame], indexSize, 1, 0, 0, 0);
     }
 
     VkCommandBuffer VulkanCommandManager::CreateCommandBuffer()
