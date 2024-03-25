@@ -31,11 +31,21 @@ namespace VX
         std::vector<BufferElement> m_Elements;
     };
 
-    // this just works as an interface
+    // api agnostic interface
     class VertexBuffer
     {
     public:
+        // virtual ~VertexBuffer() = default;
         virtual void SetLayout(const BufferLayout& layout) = 0;
+        
+        static VertexBuffer* Create();
+    };
+
+    // api agnostic interface
+    class IndexBuffer
+    {
+    public:
+        static IndexBuffer* Create();
     };
 
 }

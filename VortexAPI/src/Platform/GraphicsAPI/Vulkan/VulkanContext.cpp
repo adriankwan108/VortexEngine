@@ -82,6 +82,7 @@ namespace VX
         // VX_CORE_INFO("FrameBuffer Index: {0}", m_SwapChain->AvailableImageIndex);
         
         // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
+        // TODO: Codes are kinds of disgusting, but clear instruction at the same time => clean up and hide info if free
         m_CommandManager.Reset();
         m_CommandManager.BeginRecordCommands();
         m_CommandManager.SetExtent(m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent);
