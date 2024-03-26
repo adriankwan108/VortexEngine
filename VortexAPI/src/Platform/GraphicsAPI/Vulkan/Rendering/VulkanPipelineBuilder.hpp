@@ -1,8 +1,10 @@
 #pragma once
 #include "VortexPCH.hpp"
+
 #include "vulkan/vulkan.h"
-#include "VulkanInitializer.hpp"
-#include "VulkanTools.hpp"
+
+#include "Core/VulkanInitializer.hpp"
+#include "Core/VulkanTools.hpp"
 
 namespace vkclass
 {

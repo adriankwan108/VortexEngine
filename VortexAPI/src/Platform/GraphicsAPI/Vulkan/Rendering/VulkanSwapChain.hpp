@@ -1,10 +1,11 @@
 #pragma once
 #include "VortexPCH.hpp"
-#include "vulkan/vulkan.h"
 
-#include "VulkanDevice.hpp"
-#include "VulkanSurface.hpp"
+#include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
+
+#include "Core/VulkanDevice.hpp"
+#include "Core/VulkanSurface.hpp"
 
 namespace vkclass
 {

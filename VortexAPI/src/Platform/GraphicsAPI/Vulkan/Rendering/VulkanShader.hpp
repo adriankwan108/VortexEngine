@@ -3,12 +3,13 @@
 #include "Vortex/Utils.hpp"
 
 #include "vulkan/vulkan.h"
-#include "VulkanInitializer.hpp"
-#include "VulkanTools.hpp"
-#include "VulkanPipelineBuilder.hpp"
-#include "VulkanCommandManager.hpp"
 
-#include "VulkanGeometry.hpp"
+#include "Core/VulkanInitializer.hpp"
+#include "Core/VulkanTools.hpp"
+#include "Core/VulkanCommandManager.hpp"
+#include "VulkanPipelineBuilder.hpp"
+
+#include "Geometry/VulkanGeometry.hpp"
 
 namespace vkclass
 {

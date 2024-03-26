@@ -1,11 +1,12 @@
 #pragma once
 #include "VortexPCH.hpp"
+
 #include <memory>
 #include <vector>
 #include "vulkan/vulkan.h"
 
-#include "VulkanTools.hpp"
-#include "VulkanBuffer.hpp"
+#include "Core/VulkanTools.hpp"
+#include "Core/VulkanBuffer.hpp"
 
 #include "Renderer/VertexArray.hpp"
 

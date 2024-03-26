@@ -1,6 +1,8 @@
 #pragma once
 #include "VortexPCH.hpp"
+
 #include "vulkan/vulkan.h"
+
 #include "VulkanInitializer.hpp"
 #include "VulkanTools.hpp"
 #include "VulkanDevice.hpp"

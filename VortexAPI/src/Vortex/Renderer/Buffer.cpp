@@ -1,5 +1,5 @@
 #include "Buffer.hpp"
-#include "Platform/GraphicsAPI/Vulkan/Base/VulkanBuffer.hpp"
+#include "Platform/GraphicsAPI/Vulkan/Core/VulkanBuffer.hpp"
 
 namespace VX
 {

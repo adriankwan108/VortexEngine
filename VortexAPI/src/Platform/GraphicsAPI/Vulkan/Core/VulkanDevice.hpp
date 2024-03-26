@@ -1,9 +1,11 @@
 #pragma once
 
 #include "VortexPCH.hpp"
+
 #include <map>
 #include <set>
 #include "vulkan/vulkan.h"
+
 #include "VulkanTools.hpp"
 #include "VulkanInstance.hpp"
 #include "VulkanSurface.hpp"

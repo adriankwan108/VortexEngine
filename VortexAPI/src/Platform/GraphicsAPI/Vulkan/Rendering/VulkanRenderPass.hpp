@@ -1,11 +1,12 @@
 #pragma once
 #include "VortexPCH.hpp"
+
 #include "vulkan/vulkan.h"
 
+#include "Core/VulkanDevice.hpp"
+#include "Core/VulkanTools.hpp"
+#include "Core/VulkanInitializer.hpp"
 #include "VulkanSwapChain.hpp"
-#include "VulkanDevice.hpp"
-#include "VulkanTools.hpp"
-#include "VulkanInitializer.hpp"
 #include "VulkanSubpass.hpp"
 
 namespace vkclass

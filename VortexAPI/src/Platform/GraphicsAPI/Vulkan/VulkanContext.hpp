@@ -1,30 +1,33 @@
 #pragma once
-#include "VortexPCH.hpp"
-#include "Renderer/GraphicsContext.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
-#include "vulkan/vulkan.h"
-#include "Base/VulkanDebug.hpp"
-#include "Base/VulkanTools.hpp"
-#include "Base/VulkanInstance.hpp"
-#include "Base/VulkanSurface.hpp"
-#include "Base/VulkanDevice.hpp"
-#include "Base/VulkanSwapChain.hpp"
-#include "Base/VulkanFrameBuffer.hpp"
-#include "Base/VulkanSubpass.hpp"
-#include "Base/VulkanRenderPass.hpp"
-#include "Base/VulkanCommandManager.hpp"
-#include "Base/VulkanSyncManager.hpp"
+#include "VortexPCH.hpp"
 
-#include "Base/VulkanShader.hpp"
-#include "Base/VulkanPipelineBuilder.hpp"
-#include "Base/VulkanBuffer.hpp"
-#include "Base/VulkanGeometry.hpp"
-
+#include "Renderer/GraphicsContext.hpp"
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
+
+#include "vulkan/vulkan.h"
+#include "Core/VulkanDebug.hpp"
+#include "Core/VulkanTools.hpp"
+#include "Core/VulkanInstance.hpp"
+#include "Core/VulkanSurface.hpp"
+#include "Core/VulkanDevice.hpp"
+#include "Core/VulkanCommandManager.hpp"
+#include "Core/VulkanSyncManager.hpp"
+
+#include "Core/VulkanBuffer.hpp"
+
+#include "Rendering/VulkanFrameBuffer.hpp"
+#include "Rendering/VulkanSwapChain.hpp"
+#include "Rendering/VulkanSubpass.hpp"
+#include "Rendering/VulkanRenderPass.hpp"
+#include "Rendering/VulkanShader.hpp"
+#include "Rendering/VulkanPipelineBuilder.hpp"
+
+#include "Geometry/VulkanGeometry.hpp"
 
 namespace VX
 {
