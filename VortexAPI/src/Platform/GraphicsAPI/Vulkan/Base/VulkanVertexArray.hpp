@@ -21,7 +21,7 @@ namespace vkclass
         virtual void Unbind() const override;
         
         virtual void AddVertexBuffer(std::shared_ptr<VX::VertexBuffer>& vertexBuffer) override;
-        virtual void SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer) const override;
+        virtual void SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer) override;
 //        virtual void SetLayout(const BufferLayout layout) override;
         
     private:

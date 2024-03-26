@@ -40,7 +40,7 @@ namespace vkclass
         m_VertexBuffers.push_back(vertexBuffer);
     }
 
-    void VulkanVertexArray::SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer) const
+    void VulkanVertexArray::SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer)
     {
         
     }

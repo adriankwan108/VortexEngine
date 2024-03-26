@@ -17,14 +17,13 @@ namespace VX
     class VertexArray
     {
     public:
-        virtual ~VertexArray();
         
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
         
         // TODO: use ref,
         virtual void AddVertexBuffer(std::shared_ptr<VertexBuffer>& vertexBuffer) = 0;
-        virtual void SetIndexBuffer(std::shared_ptr<IndexBuffer>& indexBuffer) const = 0;
+        virtual void SetIndexBuffer(std::shared_ptr<IndexBuffer>& indexBuffer) = 0;
         virtual void SetLayout(const BufferLayout layout) = 0;
         
         static VertexArray* Create(float* vertices, uint32_t size);
