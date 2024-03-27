@@ -3,7 +3,7 @@
 #include "VortexPCH.hpp"
 #include "RendererAPI.hpp"
 
-namespace vkclass
+namespace VX
 {
     /*
     *   This should manage scene data and ops

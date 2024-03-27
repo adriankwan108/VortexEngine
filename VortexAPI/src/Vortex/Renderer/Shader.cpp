@@ -2,7 +2,7 @@
 
 #include "Renderer.hpp"
 
-namespace vkclass
+namespace VX
 {
     Shader* Shader::Create(const std::string& name, const std::string& vertexFilePath, const std::string& fragFilePath)
     {

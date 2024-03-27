@@ -1,6 +1,6 @@
 #include "RendererAPI.hpp"
 
-namespace vkclass
+namespace VX
 {
     RendererAPI::API RendererAPI::s_API = RendererAPI::API::Vulkan;
 

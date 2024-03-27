@@ -2,7 +2,7 @@
 
 #include "VortexPCH.hpp"
 
-namespace vkclass
+namespace VX
 {
     class RendererAPI
     {

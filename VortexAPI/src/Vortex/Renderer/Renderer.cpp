@@ -1,6 +1,6 @@
 #include "Renderer.hpp"
 
-namespace vkclass
+namespace VX
 {
 
 }
