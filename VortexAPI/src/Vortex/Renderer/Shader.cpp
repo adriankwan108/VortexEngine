@@ -1,6 +1,7 @@
 #include "Shader.hpp"
 
 #include "Renderer.hpp"
+#include "Platform/GraphicsAPI/Vulkan/Rendering/VulkanShader.hpp"
 
 namespace VX
 {
@@ -13,7 +14,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            return nullptr;
+            return new vkclass::VulkanShader(name, vertexFilePath, fragFilePath);
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is currently not supported!");

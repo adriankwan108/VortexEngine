@@ -5,8 +5,8 @@ namespace vkclass
     VkDevice vkclass::VulkanShader::m_device = VK_NULL_HANDLE;
     vkclass::VulkanCommandManager* vkclass::VulkanShader::m_commandBufferManager = nullptr;
 
-    VulkanShader::VulkanShader(const std::string& vertFilePath, const std::string fragFilePath)
-        :m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
+    VulkanShader::VulkanShader(const std::string& name, const std::string& vertFilePath, const std::string fragFilePath)
+        : m_Name(name), m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
     {
         // read file
         std::vector<char> vertShaderCode = VX::Utils::readFile(m_vertFilePath);
@@ -14,7 +14,7 @@ namespace vkclass
         
         if (vertShaderCode.empty() || fragShaderCode.empty())
         {
-            VX_CORE_WARN("Shader files require both .vert & .frag");
+            VX_CORE_WARN("Vulkan Shader: Read failed. Shader files require both non-empty .vert & .frag");
             return;
         }
         
@@ -25,7 +25,7 @@ namespace vkclass
         if(vkCreateShaderModule(m_device, &vertModuleCI, nullptr, &m_vertModule) != VK_SUCCESS)
         {
             m_isValid = false;
-            VX_CORE_INFO("Failed to create vert shader module");
+            VX_CORE_INFO("Vulkan Shader: Failed to create vert shader module");
             return;
         }
         
@@ -36,7 +36,7 @@ namespace vkclass
         if(vkCreateShaderModule(m_device, &fragModuleCI, nullptr, &m_fragModule) != VK_SUCCESS)
         {
             m_isValid = false;
-            VX_CORE_INFO("Failed to create frag shader module");
+            VX_CORE_INFO("Vulkan Shader: Failed to create frag shader module");
             return;
         }
         
@@ -77,13 +77,13 @@ namespace vkclass
         m_commandBufferManager = commandBufferManager;
     }
 
-    void VulkanShader::Bind()
+    void VulkanShader::Bind() const
     {
         // vkcmdbindpipeline
         m_commandBufferManager->BindPipeline(m_pipeline);
     }
 
-    void VulkanShader::UnBind()
+    void VulkanShader::UnBind() const
     {
         
     }

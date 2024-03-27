@@ -4,6 +4,7 @@
 
 #include "vulkan/vulkan.h"
 
+#include "Renderer/Shader.hpp"
 #include "Core/VulkanInitializer.hpp"
 #include "Core/VulkanTools.hpp"
 #include "Core/VulkanCommandManager.hpp"
@@ -13,25 +14,29 @@
 
 namespace vkclass
 {
-    class VulkanShader
+    class VulkanShader : public VX::Shader
     {
     public:
-        VulkanShader(const std::string& vertFilePath, const std::string fragFilePath);
+        VulkanShader(const std::string& name, const std::string& vertFilePath, const std::string fragFilePath);
         ~VulkanShader();
         
-        static void Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager);
+        virtual void Bind() const override;
+        virtual void UnBind() const override;
         
-        void Bind();
-        void UnBind();
-        void SetPipeline(VkPipeline pipeline);
+        virtual const std::string& GetName() const override { return m_Name; }
         
     public:
         const VkShaderModule& VertModule = m_vertModule;
         const VkShaderModule& FragModule = m_fragModule;
         const VkPipeline& Pipeline = m_pipeline;
         const VkPipelineLayout& PipelineLayout = m_pipelineLayout;
-        
+    
         bool& Valid = m_isValid;
+        
+        void SetPipeline(VkPipeline pipeline);
+        
+    public:
+        static void Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager);
         
     private:
         static VkDevice m_device;
