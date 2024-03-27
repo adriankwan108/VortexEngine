@@ -8,3 +8,9 @@
 #include "Vortex/LayerStack.hpp"
 
 #include "Vortex/Renderer/Shader.hpp"
+#include "Vortex/Renderer/Buffer.hpp"
+#include "Vortex/Renderer/VertexArray.hpp"
+
+#include "Vortex/Geometry/Geometry.hpp"
+
+#include "Vortex/Utils.hpp"

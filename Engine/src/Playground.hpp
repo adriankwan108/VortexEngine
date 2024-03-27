@@ -16,8 +16,9 @@ public:
     
 private:
     // prepare resources here
+    std::unique_ptr<VX::Shader> m_basicShader;
+    std::unique_ptr<VX::VertexArray> m_vertexArray;
+    std::unique_ptr<VX::VertexBuffer> m_vertexBuffer;
     
-    // shader
-    // vertex array
 };
 

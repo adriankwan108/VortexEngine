@@ -27,7 +27,7 @@
 #include "Rendering/VulkanShader.hpp"
 #include "Rendering/VulkanPipelineBuilder.hpp"
 
-#include "Geometry/VulkanGeometry.hpp"
+#include "Vortex/Geometry/Geometry.hpp"
 
 namespace VX
 {
@@ -87,9 +87,9 @@ namespace VX
         vkclass::VulkanPipelineBuilder m_pipelineBuilder;
 
         // a triangle resources
-        vkclass::VulkanShader* triangleShader = nullptr;
-        vkclass::VulkanVertexBuffer* vertexBuffer = nullptr;
-        vkclass::VulkanIndexBuffer* indexBuffer = nullptr;
+//        vkclass::VulkanShader* triangleShader = nullptr;
+//        vkclass::VulkanVertexBuffer* vertexBuffer = nullptr;
+//        vkclass::VulkanIndexBuffer* indexBuffer = nullptr;
         
     private: // var
         uint32_t m_currentRenderingFrame = 0;
@@ -102,17 +102,17 @@ namespace VX
         unsigned int m_height;
         
         // simulate data
-        std::vector<Geometry::Vertex> triangleVertices =
-        {
-            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
-        };
-        
-        std::vector<uint16_t> triangleIndices = {
-            0, 1, 2, 2, 3, 0
-        };
+//        std::vector<Geometry::Vertex> triangleVertices =
+//        {
+//            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+//            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+//            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+//            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+//        };
+//
+//        std::vector<uint16_t> triangleIndices = {
+//            0, 1, 2, 2, 3, 0
+//        };
         
     private:
         void resizeHelper();

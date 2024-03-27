@@ -15,9 +15,9 @@ namespace VX
 
     VulkanContext::~VulkanContext()
     {
-        delete indexBuffer;
-        delete vertexBuffer;
-        delete triangleShader;
+//        delete indexBuffer;
+//        delete vertexBuffer;
+//        delete triangleShader;
         
         for(auto framebuffer: m_FrameBuffers)
         {
@@ -92,7 +92,7 @@ namespace VX
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent
         );
 
-        drawTriangle();
+//        drawTriangle();
 
         m_CommandManager.EndRenderPass();
         m_CommandManager.EndCommandBuffer();
@@ -208,56 +208,34 @@ namespace VX
     void VulkanContext::prepareTriangle()
     {
         
-        /* load shader */
-        triangleShader = new vkclass::VulkanShader(
-            VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/vert.spv"),
-            VX::Utils::AbsolutePath("Resources/VortexAPI/shaders/frag.spv")
-        );
-
-        if (!triangleShader->Valid)
-        {
-            return;
-        }
 
         /* Pipeline */
-        m_pipelineBuilder.SetShaders(triangleShader->VertModule, triangleShader->FragModule);
+//        m_pipelineBuilder.SetShaders(triangleShader->VertModule, triangleShader->FragModule);
         
         // TODO: Vertex to BufferLayout(ShaderLayout) transformer
         
-        // this would be the creation of layout in application side
-        VX::BufferLayout ShaderLayout = {
-            {VX::ShaderDataType::Float2, "pos"},
-            {VX::ShaderDataType::Float3, "color"}
-        };
         
         // create vertex buffer with layout
-        vertexBuffer = new vkclass::VulkanVertexBuffer(triangleVertices.data(), MEM_SIZE(triangleVertices));
-        vertexBuffer->SetLayout(ShaderLayout);
-        
-        indexBuffer = new vkclass::VulkanIndexBuffer(triangleIndices.data(), MEM_SIZE(triangleIndices));
-        
-        auto bindingDescription  = vertexBuffer->GetLayout().Binding;
-        auto attributeDesciption = vertexBuffer->GetLayout().Attributes;
-        m_pipelineBuilder.SetVertexInput(&bindingDescription, attributeDesciption);
-        
-        VkPipeline pipeline = m_pipelineBuilder.BuildPipeline(triangleShader->PipelineLayout, m_RenderPass->RenderPass);
-        triangleShader->SetPipeline(pipeline);
-        
-        // load vertex input layout to vertexBuffer for vertex array
-        // for each vertex buffer,
-        //      offset
-        //      push_back(buffer)
-        //      offset += layout.GetStride()
+
+
+//        indexBuffer = new vkclass::VulkanIndexBuffer(triangleIndices.data(), MEM_SIZE(triangleIndices));
+//
+//        auto bindingDescription  = vertexBuffer->GetLayout().Binding;
+//        auto attributeDesciption = vertexBuffer->GetLayout().Attributes;
+//        m_pipelineBuilder.SetVertexInput(&bindingDescription, attributeDesciption);
+//
+//        VkPipeline pipeline = m_pipelineBuilder.BuildPipeline(triangleShader->PipelineLayout, m_RenderPass->RenderPass);
+//        triangleShader->SetPipeline(pipeline);
         
     }
 
     void VulkanContext::drawTriangle()
     {
-        triangleShader->Bind();
-
-        m_CommandManager.BindVertexBuffer({vertexBuffer->Buffer}, {0});
-        m_CommandManager.BindIndexBuffer(indexBuffer->Buffer, 0);
-        
-        m_CommandManager.Draw(static_cast<uint32_t>(triangleIndices.size()));
+//        triangleShader->Bind();
+//
+//        m_CommandManager.BindVertexBuffer({vertexBuffer->Buffer}, {0});
+//        m_CommandManager.BindIndexBuffer(indexBuffer->Buffer, 0);
+//
+//        m_CommandManager.Draw(static_cast<uint32_t>(triangleIndices.size()));
     }
 }

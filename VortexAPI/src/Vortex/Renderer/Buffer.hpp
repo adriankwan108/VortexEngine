@@ -24,6 +24,7 @@ namespace VX
     {
     public:
         BufferLayout(){}
+        virtual ~BufferLayout() = default;
         BufferLayout(std::initializer_list<BufferElement> elements):m_Elements(elements){}
         
         const std::vector<BufferElement>& Elements = m_Elements;
@@ -35,16 +36,25 @@ namespace VX
     class VertexBuffer
     {
     public:
-        // virtual ~VertexBuffer() = default;
-        virtual void SetLayout(const BufferLayout& layout) = 0;
+        virtual ~VertexBuffer() = default;
         
-        static VertexBuffer* Create();
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
+        
+        virtual void SetData(const void* data, uint64_t size) = 0;
+        
+        virtual void SetLayout(const BufferLayout& layout) = 0;
+        virtual const BufferLayout& GetLayout() const = 0;
+        
+        static VertexBuffer* Create(void* data, uint64_t size);
     };
 
     // api agnostic interface
     class IndexBuffer
     {
     public:
+        virtual ~IndexBuffer() = default;
+        
         static IndexBuffer* Create();
     };
 

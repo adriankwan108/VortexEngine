@@ -1,7 +1,6 @@
 #pragma once
 #include "VortexPCH.hpp"
 
-#include "vulkan/vulkan.h"
 #include <glm/glm.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>

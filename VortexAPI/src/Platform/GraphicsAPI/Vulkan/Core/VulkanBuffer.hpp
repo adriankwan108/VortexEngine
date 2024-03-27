@@ -9,7 +9,7 @@
 #include "VulkanInitializer.hpp"
 #include "VulkanTools.hpp"
 #include "VulkanDevice.hpp"
-#include "VulkanBufferLayout.hpp"
+
 #include "VulkanCommandManager.hpp"
 
 namespace vkclass
@@ -24,14 +24,18 @@ namespace vkclass
     class VulkanBuffer
     {
     public:
-        VulkanBuffer(VkDeviceSize size, VkMemoryPropertyFlags props,VkBufferUsageFlags flags); // bind, map... explicitly
-        VulkanBuffer(void* data, VkDeviceSize size, VkMemoryPropertyFlags props, VkBufferUsageFlags flags); // map implicitly
-        ~VulkanBuffer();
+        VulkanBuffer() = default;
+        VulkanBuffer(VkDeviceSize size, VkMemoryPropertyFlags props,VkBufferUsageFlags usage); // bind, map... explicitly
+        VulkanBuffer(void* data, VkDeviceSize size, VkMemoryPropertyFlags props, VkBufferUsageFlags usage); // map implicitly
+        virtual ~VulkanBuffer();
         
         const VkBuffer& Buffer = m_buffer;
         // get memory()
         // get size
         // get data
+       
+        // this is a delay construction
+        void Setup(VkDeviceSize size, VkMemoryPropertyFlags props,VkBufferUsageFlags usage);
         
         void Bind(VkDeviceSize offset = 0);
         void Map();
@@ -42,6 +46,7 @@ namespace vkclass
 //        void update();
         
         static void Init(vkclass::VulkanDevice* device, vkclass::VulkanCommandManager* cmdManager);
+        static void CopyTo(VulkanBuffer* srcBuffer, VulkanBuffer* dstBuffer, VkDeviceSize size);
     protected:
         // status
 //        bool mapped = false;
@@ -59,30 +64,40 @@ namespace vkclass
         // props
         VkBuffer m_buffer = VK_NULL_HANDLE;
         VkDeviceMemory m_memory = VK_NULL_HANDLE;
-        void* m_data;
+        void* m_data = nullptr;
+        
+    private:
+        void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage);
+        void createMemory(VkMemoryPropertyFlags props);
     };
 
-    class VulkanVertexBuffer : public VulkanBuffer, public VX::VertexBuffer
+    class VulkanVertexBuffer : public VX::VertexBuffer
     {
     public:
-        VulkanVertexBuffer(VkDeviceSize size, VkMemoryPropertyFlags props, VkBufferUsageFlags flags = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
-            : VulkanBuffer(size, props, flags)
-        {
-        }
-        VulkanVertexBuffer(void* data, VkDeviceSize size, VkMemoryPropertyFlags props, VkBufferUsageFlags flags = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
-            : VulkanBuffer(data, size, props, flags)
-        {
-        }
-        
-        // optimized, device local final vertex buffer
         VulkanVertexBuffer(void* data, VkDeviceSize size);
+        virtual ~VulkanVertexBuffer() = default;
         
-        const vkclass::VulkanBufferLayout& GetLayout() const { return m_Layout; }
+        virtual void Bind() const override;
+        virtual void Unbind() const override;
         
-        // transform general buffer layout to vulkan buffer layout implicitly
-        virtual void SetLayout(const VX::BufferLayout& layout) override { m_Layout = layout; }
+        virtual void SetData(const void* data, uint64_t size) override;
+
+        virtual void SetLayout(const VX::BufferLayout& layout) override;
+        virtual const VX::BufferLayout& GetLayout() const override { return m_Layout; }
+        
+    public:
+        VkVertexInputBindingDescription GetBinding() const { return m_bindingDescription; }
+        std::vector<VkVertexInputAttributeDescription> GetAttributes() const { return m_attributeDescrtiptions; }
+        uint32_t GetStride() const { return m_stride; }
+        
     private:
-        vkclass::VulkanBufferLayout m_Layout;
+        VulkanBuffer m_vertexBuffer; // optimized, device local final vertex buffer
+        VX::BufferLayout m_Layout;
+        
+    private:
+        VkVertexInputBindingDescription m_bindingDescription;
+        std::vector<VkVertexInputAttributeDescription> m_attributeDescrtiptions;
+        uint32_t m_stride = 0;
     };
 
     class VulkanIndexBuffer : public VulkanBuffer

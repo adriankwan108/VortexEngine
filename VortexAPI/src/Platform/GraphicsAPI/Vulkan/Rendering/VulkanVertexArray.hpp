@@ -23,11 +23,14 @@ namespace vkclass
         
         virtual void AddVertexBuffer(std::shared_ptr<VX::VertexBuffer>& vertexBuffer) override;
         virtual void SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer) override;
-//        virtual void SetLayout(const BufferLayout layout) override;
+        
+        virtual const std::vector<std::shared_ptr<VX::VertexBuffer>>& GetVertexBuffer() const override { return m_VertexBuffers; }
+        
+        virtual const std::shared_ptr<VX::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
         
     private:
         std::vector<std::shared_ptr<VX::VertexBuffer>> m_VertexBuffers;
-        std::vector<std::shared_ptr<VX::IndexBuffer>> m_IndexBuffers;
+        std::shared_ptr<VX::IndexBuffer> m_IndexBuffer;
         
     };
 }

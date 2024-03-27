@@ -10,7 +10,7 @@
 #include "Core/VulkanCommandManager.hpp"
 #include "VulkanPipelineBuilder.hpp"
 
-#include "Geometry/VulkanGeometry.hpp"
+#include "Vortex/Geometry/Geometry.hpp"
 
 namespace vkclass
 {
