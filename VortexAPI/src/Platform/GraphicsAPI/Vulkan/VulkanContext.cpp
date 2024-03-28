@@ -44,7 +44,7 @@ namespace VX
         
         vkclass::VulkanSwapChain::Init(&m_Device);
         vkclass::VulkanRenderPass::Init(m_Device.LogicalDevice);
-        vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager);
+
         vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
         vkclass::VulkanBuffer::Init(&m_Device, &m_CommandManager);
         
@@ -54,9 +54,9 @@ namespace VX
         m_RenderPass = new vkclass::VulkanRenderPass();
         createRenderPass();
         
+        vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager, m_RenderPass->RenderPass);
+        
         createFrameBuffers();
-
-        prepareTriangle();
     }
 
     void VulkanContext::Display()
@@ -207,17 +207,6 @@ namespace VX
 
     void VulkanContext::prepareTriangle()
     {
-        
-
-        /* Pipeline */
-//        m_pipelineBuilder.SetShaders(triangleShader->VertModule, triangleShader->FragModule);
-        
-        // TODO: Vertex to BufferLayout(ShaderLayout) transformer
-        
-        
-        // create vertex buffer with layout
-
-
 //        indexBuffer = new vkclass::VulkanIndexBuffer(triangleIndices.data(), MEM_SIZE(triangleIndices));
 //
 //        auto bindingDescription  = vertexBuffer->GetLayout().Binding;

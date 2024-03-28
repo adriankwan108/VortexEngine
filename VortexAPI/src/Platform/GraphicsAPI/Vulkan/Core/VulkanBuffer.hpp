@@ -85,19 +85,9 @@ namespace vkclass
         virtual void SetLayout(const VX::BufferLayout& layout) override;
         virtual const VX::BufferLayout& GetLayout() const override { return m_Layout; }
         
-    public:
-        VkVertexInputBindingDescription GetBinding() const { return m_bindingDescription; }
-        std::vector<VkVertexInputAttributeDescription> GetAttributes() const { return m_attributeDescrtiptions; }
-        uint32_t GetStride() const { return m_stride; }
-        
     private:
         VulkanBuffer m_vertexBuffer; // optimized, device local final vertex buffer
         VX::BufferLayout m_Layout;
-        
-    private:
-        VkVertexInputBindingDescription m_bindingDescription;
-        std::vector<VkVertexInputAttributeDescription> m_attributeDescrtiptions;
-        uint32_t m_stride = 0;
     };
 
     class VulkanIndexBuffer : public VulkanBuffer

@@ -4,13 +4,14 @@
 
 #include "vulkan/vulkan.h"
 
+#include "Vortex/Geometry/Geometry.hpp"
 #include "Renderer/Shader.hpp"
+
 #include "Core/VulkanInitializer.hpp"
 #include "Core/VulkanTools.hpp"
 #include "Core/VulkanCommandManager.hpp"
 #include "VulkanPipelineBuilder.hpp"
-
-#include "Vortex/Geometry/Geometry.hpp"
+#include "VulkanShaderLayout.hpp"
 
 namespace vkclass
 {
@@ -22,6 +23,7 @@ namespace vkclass
         
         virtual void Bind() const override;
         virtual void UnBind() const override;
+        virtual void SetPipeline(VX::BufferLayout layout) override;
         
         virtual const std::string& GetName() const override { return m_Name; }
         
@@ -33,14 +35,13 @@ namespace vkclass
     
         bool& Valid = m_isValid;
         
-        void SetPipeline(VkPipeline pipeline);
-        
     public:
-        static void Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager);
+        static void Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager, VkRenderPass renderPass);
         
     private:
         static VkDevice m_device;
         static vkclass::VulkanCommandManager* m_commandBufferManager;
+        static VkRenderPass s_RenderPass;
         
         // props
         uint32_t m_RendererID = 0;
@@ -49,12 +50,15 @@ namespace vkclass
         std::string m_vertFilePath;
         std::string m_fragFilePath;
         
+        vkclass::VulkanShaderLayout m_ShaderLayout;
         VkPipelineLayout m_pipelineLayout;
         VkPipeline m_pipeline;
         
         // private var
         VkShaderModule m_vertModule = VK_NULL_HANDLE;
         VkShaderModule m_fragModule = VK_NULL_HANDLE;
+        
+        
         bool m_isValid = false;
     };
 }

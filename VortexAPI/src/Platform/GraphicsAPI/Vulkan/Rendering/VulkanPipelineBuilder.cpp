@@ -98,11 +98,11 @@ namespace vkclass
         VX_CORE_INFO("PipelineBuilder: Shaders set.");
     }
 
-    void VulkanPipelineBuilder::SetVertexInput(VkVertexInputBindingDescription* bindings, std::vector<VkVertexInputAttributeDescription>& attributes)
+    void VulkanPipelineBuilder::SetVertexInput(VkVertexInputBindingDescription bindings, std::vector<VkVertexInputAttributeDescription> attributes)
     {
         //m_vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindings.size());
         m_vertexInputInfo.vertexBindingDescriptionCount = 1;
-        m_vertexInputInfo.pVertexBindingDescriptions = bindings;
+        m_vertexInputInfo.pVertexBindingDescriptions = &bindings;
         m_vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributes.size());
         m_vertexInputInfo.pVertexAttributeDescriptions = attributes.data();
     }

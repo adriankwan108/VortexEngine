@@ -51,22 +51,6 @@ namespace VX
         // extensions required by os
         // std::vector<const char*> m_requiredDeviceExtensions = {};
 
-        
-    private: // vulkan objects that are required to be exposed for imgui
-        // VkInstance m_Instance = VK_NULL_HANDLE;
-//        VkPhysicalDevice m_gpu = VK_NULL_HANDLE;
-//        VkDevice m_LogicalDevice = VK_NULL_HANDLE;
-        // queue family
-        // queue
-        // descriptor pool
-        // render pass
-        // min image count
-        // image count
-        // msaa samples
-        // pipeline cache
-        // subpass
-        // useDynamicRendering
-
     private:
         // ref
         GLFWwindow* m_Window = nullptr;
@@ -84,12 +68,7 @@ namespace VX
         std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;
         
         // helpers
-        vkclass::VulkanPipelineBuilder m_pipelineBuilder;
-
-        // a triangle resources
-//        vkclass::VulkanShader* triangleShader = nullptr;
-//        vkclass::VulkanVertexBuffer* vertexBuffer = nullptr;
-//        vkclass::VulkanIndexBuffer* indexBuffer = nullptr;
+//        vkclass::VulkanPipelineBuilder m_pipelineBuilder;
         
     private: // var
         uint32_t m_currentRenderingFrame = 0;
@@ -100,19 +79,6 @@ namespace VX
         // window size
         unsigned int m_width;
         unsigned int m_height;
-        
-        // simulate data
-//        std::vector<Geometry::Vertex> triangleVertices =
-//        {
-//            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-//            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-//            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-//            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
-//        };
-//
-//        std::vector<uint16_t> triangleIndices = {
-//            0, 1, 2, 2, 3, 0
-//        };
         
     private:
         void resizeHelper();

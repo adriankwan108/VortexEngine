@@ -4,6 +4,7 @@ namespace vkclass
 {
     VkDevice vkclass::VulkanShader::m_device = VK_NULL_HANDLE;
     vkclass::VulkanCommandManager* vkclass::VulkanShader::m_commandBufferManager = nullptr;
+    VkRenderPass vkclass::VulkanShader::s_RenderPass = VK_NULL_HANDLE;
 
     VulkanShader::VulkanShader(const std::string& name, const std::string& vertFilePath, const std::string fragFilePath)
         : m_Name(name), m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
@@ -71,10 +72,11 @@ namespace vkclass
         }
     }
 
-    void VulkanShader::Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager)
+    void VulkanShader::Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager, VkRenderPass renderPass)
     {
         m_device = device;
         m_commandBufferManager = commandBufferManager;
+        s_RenderPass = renderPass;
     }
 
     void VulkanShader::Bind() const
@@ -88,17 +90,17 @@ namespace vkclass
         
     }
 
-    void VulkanShader::SetPipeline(VkPipeline pipeline)
+    void VulkanShader::SetPipeline(VX::BufferLayout layout)
     {
-        m_pipeline = pipeline;
-//        m_pipelineBuilder.SetShaders(m_vertModule, m_fragModule);
-//
-//        // TODO: Set input layout explicitly
-//        auto bindingDescription = Geometry::Vertex::getBindingDescription();
-//        auto attributeDesciption = Geometry::Vertex::getAttributeDescriptions();
-//        m_pipelineBuilder.SetVertexInput(&bindingDescription, attributeDesciption);
-//
-//        m_pipeline = m_pipelineBuilder.BuildPipeline(m_pipelineLayout, renderPass);
+        VulkanPipelineBuilder builder;
+        
+        builder.SetShaders(m_vertModule, m_fragModule);
+        m_ShaderLayout.SetLayout(layout);
+        
+        builder.SetVertexInput(m_ShaderLayout.GetBinding(), m_ShaderLayout.GetAttributes());
+        m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
+        VX_CORE_TRACE("set pipeline");
+        
     }
 
 }

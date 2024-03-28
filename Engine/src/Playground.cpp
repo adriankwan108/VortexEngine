@@ -3,16 +3,12 @@
 Playground::Playground()
     : VX::Layer("Playground")
 {
+    // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
     // define shader layout
     VX::BufferLayout layout = {
         {VX::ShaderDataType::Float2, "pos"},
         {VX::ShaderDataType::Float3, "color"}
     };
-    
-    // create vertex array
-    m_vertexArray = std::unique_ptr<VX::VertexArray>(
-        VX::VertexArray::Create()
-    );
     
     // simulate vertices data
     std::vector<Geometry::Vertex> vertices =
@@ -28,17 +24,21 @@ Playground::Playground()
         0, 1, 2, 2, 3, 0
     };
     
-    // create vertex buffer (data)
-    m_vertexBuffer = std::unique_ptr<VX::VertexBuffer>(VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices)));
-    m_vertexBuffer->SetLayout(layout);
+    m_vertexArray = std::unique_ptr<VX::VertexArray>(
+        VX::VertexArray::Create()
+    );
     
-//    m_vertexArray->AddVertexBuffer(m_vertexBuffer);
-    // vertex array -> add vertex buffer
-    
-    // load shader
-    m_basicShader = std::unique_ptr<VX::Shader>(
+    // properly use a material system to create pipeline would be better
+    m_basicShader = std::shared_ptr<VX::Shader>(
         VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv")
     );
+    m_basicShader->SetPipeline(layout);
+    
+    m_vertexBuffer = std::shared_ptr<VX::VertexBuffer>(VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices)));
+    // m_vertexBuffer->SetLayout(layout);
+    
+    m_vertexArray->AddVertexBuffer(m_vertexBuffer);
+    
     
     VX_CORE_INFO("{0}: Created", GetName());
 }
@@ -58,13 +58,18 @@ void Playground::OnDetach()
 
 void Playground::OnUpdate()
 {
+    // renderer::BeginScene(camera, environment)
+    
     // update camera
     
-    // renderer cmd
     // set clear color
-    // begin scene
+
     
-    // submit (shader, vertex array)
+    // submit (mesh/vertices / material(shader, layout, should be inside of this) )
+    
+    // renderer::EndScene();
+    
+    // renderer::Flush
 }
 
 void Playground::OnEvent(VX::Event& event)

@@ -5,43 +5,6 @@ namespace vkclass
     vkclass::VulkanDevice* VulkanBuffer::m_device = nullptr;
     vkclass::VulkanCommandManager* VulkanBuffer::m_cmdManager = nullptr;
 
-    static VkFormat ShaderDataTypeToVulkanFormat(VX::ShaderDataType type)
-    {
-        switch (type)
-        {
-            case VX::ShaderDataType::None:     return VK_FORMAT_UNDEFINED;
-            case VX::ShaderDataType::Float:    return VK_FORMAT_R32_SFLOAT;
-            case VX::ShaderDataType::Float2:   return VK_FORMAT_R32G32_SFLOAT;
-            case VX::ShaderDataType::Float3:   return VK_FORMAT_R32G32B32_SFLOAT;
-            case VX::ShaderDataType::Float4:   return VK_FORMAT_R32G32B32A32_SFLOAT;
-            case VX::ShaderDataType::Mat3:     return VK_FORMAT_R32G32B32_SFLOAT;
-            case VX::ShaderDataType::Mat4:     return VK_FORMAT_R32G32B32A32_SFLOAT;
-            case VX::ShaderDataType::Int:      return VK_FORMAT_R32_SINT;
-            case VX::ShaderDataType::Int2:     return VK_FORMAT_R32G32_SINT;
-            case VX::ShaderDataType::Int3:     return VK_FORMAT_R32G32B32_SINT;
-            case VX::ShaderDataType::Int4:     return VK_FORMAT_R32G32B32A32_SINT;
-            case VX::ShaderDataType::Bool:     return VK_FORMAT_R8_UINT;
-        }
-    }
-
-    static uint32_t ShaderDataTypeSize(VX::ShaderDataType type)
-    {
-        switch (type)
-        {
-            case VX::ShaderDataType::Float:    return 4;
-            case VX::ShaderDataType::Float2:   return 4 * 2;
-            case VX::ShaderDataType::Float3:   return 4 * 3;
-            case VX::ShaderDataType::Float4:   return 4 * 4;
-            case VX::ShaderDataType::Mat3:     return 4 * 3 * 3;
-            case VX::ShaderDataType::Mat4:     return 4 * 4 * 4;
-            case VX::ShaderDataType::Int:      return 4;
-            case VX::ShaderDataType::Int2:     return 4 * 2;
-            case VX::ShaderDataType::Int3:     return 4 * 3;
-            case VX::ShaderDataType::Int4:     return 4 * 4;
-            case VX::ShaderDataType::Bool:     return 1;
-            default:                       VX_CORE_ASSERT(false, "Unknown Shader data type.");
-        }
-    }
 
     VulkanBuffer::VulkanBuffer(VkDeviceSize size, VkMemoryPropertyFlags props, VkBufferUsageFlags usage):
         m_size(size)
@@ -187,32 +150,7 @@ namespace vkclass
 
     void VulkanVertexBuffer::SetLayout(const VX::BufferLayout& layout)
     {
-//        m_Layout = layout; // really don't know why this line gives error
-        
-        int stride = 0;
-        int offset = 0;
-        
-        int locationIndex = 0;
-        
-        for(const auto& element: layout.Elements)
-        {
-            VkVertexInputAttributeDescription attribute;
-            attribute.binding = 0;
-            attribute.location = locationIndex;
-            attribute.offset = offset;
-            attribute.format = ShaderDataTypeToVulkanFormat(element.Type);
-//            VX_CORE_INFO("{0}: offset {1}", element.Name, attribute.offset);
-            m_attributeDescrtiptions.push_back(attribute);
-            
-             offset += ShaderDataTypeSize(element.Type);
-             stride += ShaderDataTypeSize(element.Type);
-            locationIndex++;
-        }
-        
-        m_bindingDescription.binding = 0;
-        m_bindingDescription.stride = stride; // number of bytes from one entry to the next
-//        VX_CORE_INFO("Stride: {0}", stride);
-        m_bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // per-vertex data, TODO: change this for particle system
+        // m_Layout = layout; // really don't know why this line gives error
     }
 
     VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size)
