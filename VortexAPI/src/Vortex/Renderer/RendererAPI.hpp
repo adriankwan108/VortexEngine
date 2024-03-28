@@ -1,6 +1,8 @@
 #pragma once
 
 #include "VortexPCH.hpp"
+#include <glm/glm.hpp>
+#include "VertexArray.hpp"
 
 namespace VX
 {
@@ -17,9 +19,9 @@ namespace VX
     public:
         virtual ~RendererAPI() = default;
 
-        // ops
-        // drawIndexed
-        // drawlines
+        virtual void SetClearColor(const glm::vec4& color) = 0;
+        virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) = 0;
+        virtual void Clear() = 0;
 
         static API GetAPI() { return s_API; }
         static RendererAPI* Create();
