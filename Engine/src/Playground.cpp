@@ -3,6 +3,7 @@
 Playground::Playground()
     : VX::Layer("Playground")
 {
+    VX_INFO("{0}: Creating...", GetName());
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
     // define shader layout
     VX::BufferLayout layout = {
@@ -40,20 +41,22 @@ Playground::Playground()
     m_vertexArray->AddVertexBuffer(m_vertexBuffer);
     
     
-    VX_CORE_INFO("{0}: Created", GetName());
+    VX_INFO("{0}: Created", GetName());
 }
 
 void Playground::OnAttach()
 {
-    VX_CORE_INFO("{0}: Attached", GetName());
+    VX_INFO("{0}: Attaching...", GetName());
+    VX_INFO("{0}: Attached", GetName());
 }
 
 void Playground::OnDetach()
 {
+    VX_INFO("{0}: Detaching...", GetName());
     m_basicShader.reset(); // temp usage, should use a reference counter inside API
     m_vertexArray.reset();
     m_vertexBuffer.reset();
-    VX_CORE_INFO("{0}: Detached", GetName());
+    VX_INFO("{0}: Detached", GetName());
 }
 
 void Playground::OnUpdate()

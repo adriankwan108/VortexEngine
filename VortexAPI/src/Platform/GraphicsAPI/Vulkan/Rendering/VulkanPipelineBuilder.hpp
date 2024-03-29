@@ -20,7 +20,7 @@ namespace vkclass
         
         // parameter setters
         void SetShaders(VkShaderModule vertexShader, VkShaderModule fragmentShader);
-        void SetVertexInput(VkVertexInputBindingDescription bindings, std::vector<VkVertexInputAttributeDescription> attributes); // TODO: this should be set automatically after setting input layout in creating shader
+        void SetVertexInput(const VkVertexInputBindingDescription& bindings, const std::vector<VkVertexInputAttributeDescription>& attributes); // TODO: this should be set automatically after setting input layout in creating shader
         void SetInputTopology(VkPrimitiveTopology topology);
         void SetPolygonMode(VkPolygonMode mode);
         void SetCullMode(VkCullModeFlags cullMode, VkFrontFace frontFace);

@@ -16,6 +16,10 @@ namespace vkclass
 
     VkPipeline VulkanPipelineBuilder::BuildPipeline(VkPipelineLayout layout, VkRenderPass renderPass)
     {
+        if (renderPass == VK_NULL_HANDLE || layout == VK_NULL_HANDLE)
+        {
+            VX_CORE_ASSERT(false, "Pipeline Builder: Building with null render pass...");
+        }
         VkGraphicsPipelineCreateInfo pipelineInfo = vkclass::initializers::pipelineCreateInfo(layout, renderPass);
         pipelineInfo.subpass = 0; // we will need a graphics pipeline for every subpass if we intend to use it multiple times within a single render pass or different incompatible render passes
         
@@ -36,7 +40,7 @@ namespace vkclass
         pipelineInfo.pDynamicState = &dynamicaStateInfo;
         
         VkPipeline newPipeline;
-        vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline);
+        VK_CHECK_RESULT(vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline));
         return newPipeline;
     }
 
@@ -95,16 +99,17 @@ namespace vkclass
         fragShaderStageInfo.pName = "main";
         
         m_shaderStages.push_back(fragShaderStageInfo);
-        VX_CORE_INFO("PipelineBuilder: Shaders set.");
+        VX_CORE_INFO("Pipeline Builder: Shaders set.");
     }
 
-    void VulkanPipelineBuilder::SetVertexInput(VkVertexInputBindingDescription bindings, std::vector<VkVertexInputAttributeDescription> attributes)
+    void VulkanPipelineBuilder::SetVertexInput(const VkVertexInputBindingDescription& bindings, const std::vector<VkVertexInputAttributeDescription>& attributes)
     {
-        //m_vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindings.size());
         m_vertexInputInfo.vertexBindingDescriptionCount = 1;
         m_vertexInputInfo.pVertexBindingDescriptions = &bindings;
         m_vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributes.size());
         m_vertexInputInfo.pVertexAttributeDescriptions = attributes.data();
+        
+        VX_CORE_INFO("Pipeline Builder: Vertex input set.");
     }
 
     void VulkanPipelineBuilder::SetInputTopology(VkPrimitiveTopology topology)

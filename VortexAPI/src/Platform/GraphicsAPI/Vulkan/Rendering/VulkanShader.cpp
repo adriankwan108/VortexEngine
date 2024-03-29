@@ -92,14 +92,16 @@ namespace vkclass
 
     void VulkanShader::SetPipeline(VX::BufferLayout layout)
     {
+        VX_CORE_TRACE("Vulkan Shader: Creating pipeline...");
         VulkanPipelineBuilder builder;
         
         builder.SetShaders(m_vertModule, m_fragModule);
         m_ShaderLayout.SetLayout(layout);
-        
+
         builder.SetVertexInput(m_ShaderLayout.GetBinding(), m_ShaderLayout.GetAttributes());
+
         m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
-        VX_CORE_TRACE("set pipeline");
+        VX_CORE_TRACE("Vulkan Shader: Pipeline set");
         
     }
 
