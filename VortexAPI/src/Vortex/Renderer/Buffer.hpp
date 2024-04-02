@@ -54,8 +54,13 @@ namespace VX
     {
     public:
         virtual ~IndexBuffer() = default;
+
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
+
+        virtual uint32_t GetCount() const = 0;
         
-        static IndexBuffer* Create();
+        static IndexBuffer* Create(void* data, uint64_t size);
     };
 
 }

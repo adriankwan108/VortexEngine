@@ -42,6 +42,6 @@ namespace vkclass
 
     void VulkanVertexArray::SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer)
     {
-        
+        m_IndexBuffer = indexBuffer;
     }
 }

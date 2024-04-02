@@ -153,11 +153,22 @@ namespace vkclass
         // m_Layout = layout; // really don't know why this line gives error
     }
 
-    VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size)
-        :VulkanBuffer(size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
+    VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size):
+        m_Count(size)
     {
         VulkanBuffer stagingBuffer = VulkanBuffer(data, size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         
-        m_cmdManager->CopyBuffer(stagingBuffer.Buffer, this->Buffer, size);
+        m_indexBuffer.Setup(size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+        VulkanBuffer::CopyTo(&stagingBuffer, &m_indexBuffer, size);
+    }
+
+    void VulkanIndexBuffer::Bind() const
+    {
+        // no op in Vulkan,
+    }
+
+    void VulkanIndexBuffer::Unbind() const
+    {
+        // no op in vulkan,
     }
 }

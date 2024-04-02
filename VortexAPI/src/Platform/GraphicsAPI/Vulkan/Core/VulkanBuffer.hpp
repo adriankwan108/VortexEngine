@@ -90,11 +90,21 @@ namespace vkclass
         VX::BufferLayout m_Layout;
     };
 
-    class VulkanIndexBuffer : public VulkanBuffer
+    class VulkanIndexBuffer : public VX::IndexBuffer
     {
     public:
         // optimized, device local final vertex buffer
         VulkanIndexBuffer(void* data, VkDeviceSize size);
+        virtual ~VulkanIndexBuffer() = default;
+
+        virtual void Bind() const override;
+        virtual void Unbind() const override;
+
+        virtual uint32_t GetCount() const override { return m_Count; }
+
+    private:
+        VulkanBuffer m_indexBuffer;
+        uint32_t m_Count;
     };
 
 }

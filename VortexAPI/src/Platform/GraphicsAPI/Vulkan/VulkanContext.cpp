@@ -207,14 +207,6 @@ namespace VX
 
     void VulkanContext::prepareTriangle()
     {
-//        indexBuffer = new vkclass::VulkanIndexBuffer(triangleIndices.data(), MEM_SIZE(triangleIndices));
-//
-//        auto bindingDescription  = vertexBuffer->GetLayout().Binding;
-//        auto attributeDesciption = vertexBuffer->GetLayout().Attributes;
-//        m_pipelineBuilder.SetVertexInput(&bindingDescription, attributeDesciption);
-//
-//        VkPipeline pipeline = m_pipelineBuilder.BuildPipeline(triangleShader->PipelineLayout, m_RenderPass->RenderPass);
-//        triangleShader->SetPipeline(pipeline);
         
     }
 

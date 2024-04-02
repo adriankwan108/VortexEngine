@@ -19,6 +19,6 @@ private:
     std::shared_ptr<VX::Shader> m_basicShader;
     std::shared_ptr<VX::VertexArray> m_vertexArray;
     std::shared_ptr<VX::VertexBuffer> m_vertexBuffer;
-    
+    std::shared_ptr<VX::IndexBuffer> m_indexBuffer;
 };
 
