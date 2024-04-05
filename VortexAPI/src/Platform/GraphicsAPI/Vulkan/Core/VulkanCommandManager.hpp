@@ -2,6 +2,7 @@
 #include "VortexPCH.hpp"
 
 #include "vulkan/vulkan.h"
+#include <glm/glm.hpp>
 
 #include "VulkanInitializer.hpp"
 #include "VulkanTools.hpp"
@@ -39,6 +40,7 @@ namespace vkclass
         
         VkCommandBuffer CreateCommandBuffer(); // general command buffer, may need to use thread index as para in future
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+        void SetClearColor(const glm::vec4 &color);
         
     private:
         // references
@@ -52,5 +54,7 @@ namespace vkclass
 //        VkCommandBuffer m_commandBuffer = VK_NULL_HANDLE;
         std::vector<VkCommandBuffer> m_commandBuffers;
         
+        VkClearColorValue m_ClearColorValue = {0.0f, 0.0f, 0.0f, 1.0f};
+        VkClearDepthStencilValue m_ClearDepthStencilValue = {1.0f, 0};
     };
 }

@@ -1,5 +1,7 @@
 #include "RendererAPI.hpp"
 
+#include "Platform/GraphicsAPI/Vulkan/Rendering/VulkanRendererAPI.hpp"
+
 namespace VX
 {
     RendererAPI::API RendererAPI::s_API = RendererAPI::API::Vulkan;
@@ -13,8 +15,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            // this should return VulkanRendererAPI
-            return nullptr;
+            return new vkclass::VulkanRendererAPI();
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is not supported");

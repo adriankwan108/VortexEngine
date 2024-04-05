@@ -54,6 +54,8 @@ namespace VX
         m_RenderPass = new vkclass::VulkanRenderPass();
         createRenderPass();
         
+        vkclass::VulkanRendererAPI::SetCommandManager(&m_CommandManager);
+        
         vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager, m_RenderPass->RenderPass);
         
         createFrameBuffers();
@@ -203,11 +205,6 @@ namespace VX
         }
 
         VX_CORE_INFO("FrameBuffers initiated.");
-    }
-
-    void VulkanContext::prepareTriangle()
-    {
-        
     }
 
     void VulkanContext::drawTriangle()

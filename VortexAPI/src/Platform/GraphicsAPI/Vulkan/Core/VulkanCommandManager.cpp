@@ -67,7 +67,7 @@ namespace vkclass
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = extent; // swapchain extent
 
-        VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+        VkClearValue clearColor = { m_ClearColorValue };
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues = &clearColor;
 
@@ -191,6 +191,14 @@ namespace vkclass
         vkQueueWaitIdle(m_device->GraphicsQueue);
         
         vkFreeCommandBuffers(m_device->LogicalDevice, m_commandPool, 1, &cb);
+    }
+
+    void VulkanCommandManager::SetClearColor(const glm::vec4 &color)
+    {
+        m_ClearColorValue.float32[0] = color.r;
+        m_ClearColorValue.float32[1] = color.g;
+        m_ClearColorValue.float32[2] = color.b;
+        m_ClearColorValue.float32[3] = color.a;
     }
 
 }

@@ -64,17 +64,16 @@ void Playground::OnDetach()
 
 void Playground::OnUpdate()
 {
-    // renderer::BeginScene(camera, environment)
+    VX::Renderer::BeginScene();
     
     // update camera
     
     // set clear color
-
+    VX::RenderCommand::SetClearColor(glm::vec4(0.5f, 0.33f, 0.2f, 2.0f));
     
     // submit (mesh/vertices / material(shader, layout, should be inside of this) )
     
-    // renderer::EndScene();
-    
+    VX::Renderer::EndScene();
     // renderer::Flush
 }
 

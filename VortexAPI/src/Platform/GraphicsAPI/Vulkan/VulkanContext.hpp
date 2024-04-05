@@ -26,6 +26,7 @@
 #include "Rendering/VulkanRenderPass.hpp"
 #include "Rendering/VulkanShader.hpp"
 #include "Rendering/VulkanPipelineBuilder.hpp"
+#include "Rendering/VulkanRendererAPI.hpp"
 
 #include "Vortex/Geometry/Geometry.hpp"
 
@@ -86,7 +87,6 @@ namespace VX
         void createRenderPass();
         void createFrameBuffers();
         
-        void prepareTriangle();
         void drawTriangle();
     };
 }
