@@ -9,15 +9,27 @@ namespace VX
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
     Application::Application()
     {
-        VX_CORE_INFO("Initiating application...");
+        VX_CORE_INFO("Application: Initiating...");
+        
+        VX_CORE_INFO("Application: Creating window...");
         m_Window = std::unique_ptr<Window>(Window::Create());
+        
+        VX_CORE_INFO("Application: Binding events...");
         m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+        
+        VX_CORE_INFO("Application: preparing renderer...");
+        Renderer::Init();
+        
+        // layer of gui
+        
         VX_CORE_INFO("Application initiated.");
     }
 
     Application::~Application()
     {
-        VX_CORE_INFO("Application closed...");
+        VX_CORE_INFO("Application closing...");
+        Renderer::ShutDown();
+        VX_CORE_INFO("Application closed.");
     }
 
     void Application::PushLayer(Layer* layer)
@@ -57,10 +69,10 @@ namespace VX
             {
                 for (Layer* layer: m_LayerStack)
                 {
-                    layer->OnUpdate();
+                    layer->OnUpdate(); // playground: update
                 }
             }
-            m_Window->OnUpdate();
+            m_Window->OnUpdate(); // context: display
         }
     }
 

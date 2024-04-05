@@ -3,6 +3,7 @@
 #include "Window.hpp"
 #include "Events/ApplicationEvent.hpp"
 #include "LayerStack.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace VX
 {
