@@ -19,6 +19,7 @@ namespace VX
     public:
         virtual ~VertexArray() = default;
         
+        // the binding serves for different concept for different API, but this will be called on update
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
         

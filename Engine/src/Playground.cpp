@@ -25,7 +25,7 @@ Playground::Playground()
         0, 1, 2, 2, 3, 0
     };
     
-    m_vertexArray = std::unique_ptr<VX::VertexArray>(
+    m_vertexArray = std::shared_ptr<VX::VertexArray>(
         VX::VertexArray::Create()
     );
     
@@ -36,7 +36,8 @@ Playground::Playground()
     m_basicShader->SetPipeline(layout);
     
     m_vertexBuffer = std::shared_ptr<VX::VertexBuffer>(VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices)));
-    // m_vertexBuffer->SetLayout(layout);
+    m_vertexBuffer->SetLayout(layout);
+    
     m_indexBuffer = std::shared_ptr<VX::IndexBuffer>(VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices)));
     
     m_vertexArray->AddVertexBuffer(m_vertexBuffer);
@@ -69,9 +70,9 @@ void Playground::OnUpdate()
     // update camera
     
     // set clear color
-    VX::RenderCommand::SetClearColor(glm::vec4(0.5f, 0.33f, 0.2f, 2.0f));
+    VX::RenderCommand::SetClearColor(glm::vec4(0.5f, 0.33f, 0.2f, 1.0f));
     
-    // submit (mesh/vertices / material(shader, layout, should be inside of this) )
+    VX::Renderer::Submit(m_vertexArray);
     
     VX::Renderer::EndScene();
     // renderer::Flush

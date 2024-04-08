@@ -72,7 +72,7 @@ namespace VX
                     layer->OnUpdate(); // playground: update
                 }
             }
-            m_Window->OnUpdate(); // context: display
+            m_Window->OnUpdate(); // rendering api context: display
         }
     }
 

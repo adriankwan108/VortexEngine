@@ -14,29 +14,18 @@ namespace vkclass
 
     void VulkanVertexArray::Bind() const
     {
-        // glbindvertexarray(rendererid)
+        // OpenGL: Binding VAO, each vbo bind in their related buffer
+        // Vulkan: No VAO => no operations, But binding VBOs to command buffers in the caller
     }
 
     void VulkanVertexArray::Unbind() const
     {
-        // hlbindvertexarray(0)
+        
     }
 
     void VulkanVertexArray::AddVertexBuffer(std::shared_ptr<VX::VertexBuffer>& vertexBuffer)
     {
-        // vertexbuffer->Bind
-        // uint32_t index = 0;
-        // get layout
-        // for element in layout
-        //    glenableVertexAttributeArray(index)
-        //    glvertexAttrtibutePointer(
-        //        element.componentCount,
-        //        Change datatype to vulkan format,
-        //        normal,
-        //        getStride,
-        //        offset
-        //    )
-        //    index++
+        vertexBuffer->Bind();
         m_VertexBuffers.push_back(vertexBuffer);
     }
 

@@ -25,7 +25,6 @@ namespace vkclass
         virtual void SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer) override;
         
         virtual const std::vector<std::shared_ptr<VX::VertexBuffer>>& GetVertexBuffer() const override { return m_VertexBuffers; }
-        
         virtual const std::shared_ptr<VX::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
         
     private:

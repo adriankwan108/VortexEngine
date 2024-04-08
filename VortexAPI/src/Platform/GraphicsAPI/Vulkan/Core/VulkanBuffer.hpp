@@ -37,7 +37,7 @@ namespace vkclass
         // this is a delay construction
         void Setup(VkDeviceSize size, VkMemoryPropertyFlags props,VkBufferUsageFlags usage);
         
-        void Bind(VkDeviceSize offset = 0);
+        void Bind(VkDeviceSize offset = 0); // binding to memory
         void Map();
         void Unmap();
         void SetData(void* data, VkDeviceSize size);

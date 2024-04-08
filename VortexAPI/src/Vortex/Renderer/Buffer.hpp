@@ -28,6 +28,15 @@ namespace VX
         BufferLayout(std::initializer_list<BufferElement> elements):m_Elements(elements){}
         
         const std::vector<BufferElement>& Elements = m_Elements;
+        
+        BufferLayout& operator=(const BufferLayout& other)
+        {
+            if(this != &other)
+            {
+                m_Elements = other.m_Elements;
+            }
+            return *this;
+        }
     protected:
         std::vector<BufferElement> m_Elements;
     };
@@ -38,6 +47,7 @@ namespace VX
     public:
         virtual ~VertexBuffer() = default;
         
+        // the binding serves for different concept for different API, but this will be called when added to vertex array
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
         

@@ -131,7 +131,9 @@ namespace vkclass
 
     void VulkanVertexBuffer::Bind() const
     {
-        // no op in Vulkan,
+        // called when added to vertex array
+        // OpenGL: Binding VBO, each vbo bind in their related buffer
+        // Vulkan: VBOs binding occur on vertex array, so no operations here
     }
 
     void VulkanVertexBuffer::Unbind() const
@@ -150,7 +152,7 @@ namespace vkclass
 
     void VulkanVertexBuffer::SetLayout(const VX::BufferLayout& layout)
     {
-        // m_Layout = layout; // really don't know why this line gives error
+        m_Layout = layout;
     }
 
     VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size):

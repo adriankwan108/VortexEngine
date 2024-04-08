@@ -66,13 +66,14 @@ namespace VX
         // all operations in display are asynchronous, inflight frames enabled
         
         // sync manager operates objects with current rendering frame (i.e. fence, semaphores)
-        // VX_CORE_INFO("Current frame: {0}", m_currentRenderingFrame);
+        // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
+        
         m_SyncManager.WaitForFences();
         
         m_acquireNextImageResult = m_SwapChain->AcquireNextImage(m_SyncManager.GetImageAvailableSemaphore());
         if( m_acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR) // btw the return state is not guranteed by drivers / platforms
         {
-            //VX_CORE_TRACE("Vulkan Context: Display() acquire image out of date, resizing...");
+            VX_CORE_INFO("Vulkan Context: Display() acquire image out of date, resizing...");
             resizeHelper();
             return;
         }else if(m_acquireNextImageResult != VK_SUCCESS && m_acquireNextImageResult != VK_SUBOPTIMAL_KHR )
@@ -81,9 +82,11 @@ namespace VX
             throw std::runtime_error("Vulkan Context: Failed to acquire swap chain.");
         }
         m_SyncManager.ResetFences();
+        
+        // VX_CORE_INFO("Current frame: {0}", m_currentRenderingFrame);
         // VX_CORE_INFO("FrameBuffer Index: {0}", m_SwapChain->AvailableImageIndex);
         
-        // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
+        
         // TODO: Codes are kinds of disgusting, but clear instruction at the same time => clean up and hide info if free
         m_CommandManager.Reset();
         m_CommandManager.BeginRecordCommands();
