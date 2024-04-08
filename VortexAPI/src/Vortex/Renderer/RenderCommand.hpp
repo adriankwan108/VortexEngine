@@ -9,7 +9,7 @@ namespace VX
     /*
      *  This is a static wrapper
      */
-    class RenderCommand
+    class VX_API RenderCommand
     {
     public:
         static void Init()
