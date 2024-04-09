@@ -153,11 +153,21 @@ namespace VX
         glfwTerminate();
     }
 
-    void MacWindow::OnUpdate()
+    void MacWindow::OnUpdateStart()
     {
         glfwPollEvents();
+        m_GraphicsContext->DisplayStart();
+    }
+
+    void MacWindow::OnUpdate()
+    {
+
+    }
+
+    void MacWindow::OnUpdateEnd()
+    {
         // glfwSwapBuffers(m_Window);
-        m_GraphicsContext->Display();
+        m_GraphicsContext->DisplayEnd();
     }
 
     void MacWindow::Resize(unsigned int width, unsigned int height)

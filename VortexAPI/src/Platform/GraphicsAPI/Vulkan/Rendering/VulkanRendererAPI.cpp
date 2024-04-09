@@ -19,7 +19,10 @@ namespace vkclass
 
     void VulkanRendererAPI::DrawIndexed(const std::shared_ptr<VX::VertexArray> &vertexArray)
     {
-        
+        // m_CommandManager.BindVertexBuffer({vertexBuffer->Buffer}, {0});
+        // m_CommandManager.BindIndexBuffer(indexBuffer->Buffer, 0);
+        //
+        // m_CommandManager.Draw(static_cast<uint32_t>(triangleIndices.size()));
     }
 
     void VulkanRendererAPI::Clear()

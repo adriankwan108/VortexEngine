@@ -39,7 +39,8 @@ namespace VX
         ~VulkanContext();
 
         virtual void Init() override;
-        virtual void Display() override;
+        virtual void DisplayStart() override;
+        virtual void DisplayEnd() override;
         virtual void End() override;
         virtual void Resize(unsigned int width, unsigned int height) override;
         
@@ -86,7 +87,5 @@ namespace VX
         
         void createRenderPass();
         void createFrameBuffers();
-        
-        void drawTriangle();
     };
 }

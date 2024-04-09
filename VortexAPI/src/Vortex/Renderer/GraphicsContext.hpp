@@ -10,7 +10,8 @@ namespace VX
         virtual ~GraphicsContext() = default;
 
         virtual void Init() = 0;
-        virtual void Display() = 0;
+        virtual void DisplayStart() = 0;
+        virtual void DisplayEnd() = 0;
         virtual void End() = 0;
         virtual void Resize(unsigned int width, unsigned int height) = 0;
 

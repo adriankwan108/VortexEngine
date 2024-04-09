@@ -65,6 +65,7 @@ namespace VX
 
         while(m_Running)
         {
+            m_Window->OnUpdateStart();
             if(!m_Minimized)
             {
                 for (Layer* layer: m_LayerStack)
@@ -72,7 +73,8 @@ namespace VX
                     layer->OnUpdate(); // playground: update
                 }
             }
-            m_Window->OnUpdate(); // rendering api context: display
+            m_Window->OnUpdate(); // 
+            m_Window->OnUpdateEnd();
         }
     }
 

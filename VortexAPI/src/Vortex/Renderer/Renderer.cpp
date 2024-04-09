@@ -33,9 +33,12 @@ namespace VX
 //        VX_CORE_INFO("Renderer: Ending Scene...");
     }
 
-    void Renderer::Submit(const std::shared_ptr<VertexArray> &vertexArray)
+    void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray> &vertexArray)
     {
-        VX_CORE_INFO("Renderer:: Submiting...");
+        VX_CORE_TRACE("Renderer:: Submiting...");
+        shader->Bind();
+        
         // RenderCommand::DrawIndex()
+        VX_CORE_TRACE("Renderer:: Submited...");
     }
 }

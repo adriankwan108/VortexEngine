@@ -16,7 +16,10 @@ namespace VX
         MacWindow(const WindowProps& props);
         virtual ~MacWindow();
         
+        void OnUpdateStart() override;
         void OnUpdate() override;
+        void OnUpdateEnd() override;
+        
         void Resize(unsigned int width, unsigned int height) override;
         
         inline unsigned int GetWidth() const override { return m_Data.Width; }

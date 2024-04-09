@@ -153,11 +153,21 @@ namespace VX
         glfwTerminate();
     }
 
-    void WindowsWindow::OnUpdate()
+    void WindowsWindow::OnUpdateStart()
     {
         glfwPollEvents();
+        m_GraphicsContext->DisplayStart();
+    }
+
+    void WindowsWindow::OnUpdate()
+    {
+
+    }
+
+    void WindowsWindow::OnUpdateEnd()
+    {
         // glfwSwapBuffers(m_Window);
-        m_GraphicsContext->Display();
+        m_GraphicsContext->DisplayEnd();
     }
 
     void WindowsWindow::Resize(unsigned int width, unsigned int height)

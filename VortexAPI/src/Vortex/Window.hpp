@@ -28,7 +28,10 @@ namespace VX
         
         virtual ~Window() {}
         
+        virtual void OnUpdateStart() = 0;
         virtual void OnUpdate() = 0;
+        virtual void OnUpdateEnd() = 0;
+        
         virtual void Resize(unsigned int width, unsigned int height) = 0;
         
         virtual unsigned int GetWidth() const = 0;

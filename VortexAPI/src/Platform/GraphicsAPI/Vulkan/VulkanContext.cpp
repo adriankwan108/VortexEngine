@@ -61,10 +61,9 @@ namespace VX
         createFrameBuffers();
     }
 
-    void VulkanContext::Display()
+    void VulkanContext::DisplayStart()
     {
         // all operations in display are asynchronous, inflight frames enabled
-        
         // sync manager operates objects with current rendering frame (i.e. fence, semaphores)
         // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
         
@@ -82,13 +81,11 @@ namespace VX
             throw std::runtime_error("Vulkan Context: Failed to acquire swap chain.");
         }
         m_SyncManager.ResetFences();
+        m_CommandManager.Reset();
         
         // VX_CORE_INFO("Current frame: {0}", m_currentRenderingFrame);
         // VX_CORE_INFO("FrameBuffer Index: {0}", m_SwapChain->AvailableImageIndex);
         
-        
-        // TODO: Codes are kinds of disgusting, but clear instruction at the same time => clean up and hide info if free
-        m_CommandManager.Reset();
         m_CommandManager.BeginRecordCommands();
         m_CommandManager.SetExtent(m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent);
         m_CommandManager.BeginRenderPass(
@@ -96,9 +93,10 @@ namespace VX
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->FrameBuffer,
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent
         );
+    }
 
-//        drawTriangle();
-
+    void VulkanContext::DisplayEnd()
+    {
         m_CommandManager.EndRenderPass();
         m_CommandManager.EndCommandBuffer();
         m_CommandManager.Submit(
@@ -208,15 +206,5 @@ namespace VX
         }
 
         VX_CORE_INFO("FrameBuffers initiated.");
-    }
-
-    void VulkanContext::drawTriangle()
-    {
-//        triangleShader->Bind();
-//
-//        m_CommandManager.BindVertexBuffer({vertexBuffer->Buffer}, {0});
-//        m_CommandManager.BindIndexBuffer(indexBuffer->Buffer, 0);
-//
-//        m_CommandManager.Draw(static_cast<uint32_t>(triangleIndices.size()));
     }
 }

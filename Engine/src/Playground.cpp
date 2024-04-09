@@ -72,7 +72,7 @@ void Playground::OnUpdate()
     // set clear color
     VX::RenderCommand::SetClearColor(glm::vec4(0.5f, 0.33f, 0.2f, 1.0f));
     
-    VX::Renderer::Submit(m_vertexArray);
+    VX::Renderer::Submit(m_basicShader ,m_vertexArray);
     
     VX::Renderer::EndScene();
     // renderer::Flush
