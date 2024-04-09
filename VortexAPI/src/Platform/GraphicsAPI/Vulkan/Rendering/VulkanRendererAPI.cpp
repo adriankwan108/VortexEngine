@@ -1,4 +1,5 @@
 #include "VulkanRendererAPI.hpp"
+#include "VulkanVertexArray.hpp"
 
 namespace vkclass
 {
@@ -19,10 +20,12 @@ namespace vkclass
 
     void VulkanRendererAPI::DrawIndexed(const std::shared_ptr<VX::VertexArray> &vertexArray)
     {
-        // m_CommandManager.BindVertexBuffer({vertexBuffer->Buffer}, {0});
-        // m_CommandManager.BindIndexBuffer(indexBuffer->Buffer, 0);
-        //
-        // m_CommandManager.Draw(static_cast<uint32_t>(triangleIndices.size()));
+        auto va = std::static_pointer_cast<VulkanVertexArray>(vertexArray);
+        
+        s_CommandManager->BindVertexBuffer(va->GetVertexBuffers(), va->GetVBsOffsets());
+        s_CommandManager->BindIndexBuffer(va->GetIndexBuffer());
+        
+        s_CommandManager->Draw(va->GetIndicesSize());
     }
 
     void VulkanRendererAPI::Clear()

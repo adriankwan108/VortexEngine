@@ -27,10 +27,22 @@ namespace vkclass
     {
         vertexBuffer->Bind();
         m_VertexBuffers.push_back(vertexBuffer);
+        
+        auto vkVB = std::static_pointer_cast<VulkanVertexBuffer>(vertexBuffer);
+        m_VkVertexBuffers.push_back(vkVB->Buffer);
+        
+        m_VkVBsOffsets.push_back(static_cast<VkDeviceSize>(m_LastStride));
+        m_LastStride += vkVB->GetLayout().GetStride();
     }
 
     void VulkanVertexArray::SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer)
     {
         m_IndexBuffer = indexBuffer;
+        m_VkIndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(m_IndexBuffer)->GetBuffer();
+    }
+
+    uint32_t VulkanVertexArray::GetIndicesSize()
+    {
+        return m_IndexBuffer->GetCount();
     }
 }

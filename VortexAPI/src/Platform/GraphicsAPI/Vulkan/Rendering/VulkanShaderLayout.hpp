@@ -49,23 +49,4 @@ namespace vkclass
             default: VX_CORE_ASSERT(false, "Layout: Unknown Shader data type.");
         }
     }
-
-    static uint32_t ShaderDataTypeSize(VX::ShaderDataType type)
-    {
-        switch (type)
-        {
-            case VX::ShaderDataType::Float:    return 4;
-            case VX::ShaderDataType::Float2:   return 4 * 2;
-            case VX::ShaderDataType::Float3:   return 4 * 3;
-            case VX::ShaderDataType::Float4:   return 4 * 4;
-            case VX::ShaderDataType::Mat3:     return 4 * 3 * 3;
-            case VX::ShaderDataType::Mat4:     return 4 * 4 * 4;
-            case VX::ShaderDataType::Int:      return 4;
-            case VX::ShaderDataType::Int2:     return 4 * 2;
-            case VX::ShaderDataType::Int3:     return 4 * 3;
-            case VX::ShaderDataType::Int4:     return 4 * 4;
-            case VX::ShaderDataType::Bool:     return 1;
-            default: VX_CORE_ASSERT(false, "Layout: Unknown Shader data type.");
-        }
-    }
 }

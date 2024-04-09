@@ -35,7 +35,7 @@ namespace VX
         return nullptr;
     }
 
-    IndexBuffer* IndexBuffer::Create(void* data, uint64_t size)
+    IndexBuffer* IndexBuffer::Create(void* data, uint64_t size, unsigned long count)
     {
         switch (Renderer::GetAPI()) {
             case RendererAPI::API::None:
@@ -43,7 +43,7 @@ namespace VX
                 return nullptr;
                 break;
             case RendererAPI::API::Vulkan:
-                return new vkclass::VulkanIndexBuffer(data, size);
+                return new vkclass::VulkanIndexBuffer(data, size, count);
                 return nullptr;
                 break;
             case RendererAPI::API::DX12:

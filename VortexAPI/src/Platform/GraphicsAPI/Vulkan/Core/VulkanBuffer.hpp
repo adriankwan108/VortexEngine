@@ -85,6 +85,8 @@ namespace vkclass
         virtual void SetLayout(const VX::BufferLayout& layout) override;
         virtual const VX::BufferLayout& GetLayout() const override { return m_Layout; }
         
+        const VkBuffer& Buffer = m_vertexBuffer.Buffer ;
+        
     private:
         VulkanBuffer m_vertexBuffer; // optimized, device local final vertex buffer
         VX::BufferLayout m_Layout;
@@ -94,13 +96,16 @@ namespace vkclass
     {
     public:
         // optimized, device local final vertex buffer
-        VulkanIndexBuffer(void* data, VkDeviceSize size);
+        VulkanIndexBuffer(void* data, VkDeviceSize size, unsigned long count);
         virtual ~VulkanIndexBuffer() = default;
 
         virtual void Bind() const override;
         virtual void Unbind() const override;
 
         virtual uint32_t GetCount() const override { return m_Count; }
+        
+    public:
+        VkBuffer GetBuffer() const { return m_indexBuffer.Buffer ;}
 
     private:
         VulkanBuffer m_indexBuffer;

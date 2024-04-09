@@ -155,8 +155,8 @@ namespace vkclass
         m_Layout = layout;
     }
 
-    VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size):
-        m_Count(size)
+    VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size, unsigned long count):
+        m_Count(static_cast<uint32_t>(count))
     {
         VulkanBuffer stagingBuffer = VulkanBuffer(data, size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         

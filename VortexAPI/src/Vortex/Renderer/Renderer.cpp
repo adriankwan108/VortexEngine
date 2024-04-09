@@ -37,8 +37,7 @@ namespace VX
     {
         VX_CORE_TRACE("Renderer:: Submiting...");
         shader->Bind();
-        
-        // RenderCommand::DrawIndex()
+        RenderCommand::DrawIndexed(vertexArray);
         VX_CORE_TRACE("Renderer:: Submited...");
     }
 }

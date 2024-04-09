@@ -27,9 +27,22 @@ namespace vkclass
         virtual const std::vector<std::shared_ptr<VX::VertexBuffer>>& GetVertexBuffer() const override { return m_VertexBuffers; }
         virtual const std::shared_ptr<VX::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
         
+    public:
+        std::vector<VkBuffer> GetVertexBuffers() { return m_VkVertexBuffers; }
+        std::vector<VkDeviceSize> GetVBsOffsets() { return m_VkVBsOffsets; }
+        VkBuffer GetIndexBuffer() { return m_VkIndexBuffer; }
+        uint32_t GetIndicesSize();
+        
     private:
         std::vector<std::shared_ptr<VX::VertexBuffer>> m_VertexBuffers;
         std::shared_ptr<VX::IndexBuffer> m_IndexBuffer;
         
+    private:
+        // TODO: use move semantics to get the ownership of buffers
+        std::vector<VkBuffer> m_VkVertexBuffers;
+        std::vector<VkDeviceSize> m_VkVBsOffsets;
+        uint32_t m_LastStride = 0;
+        
+        VkBuffer m_VkIndexBuffer;
     };
 }
