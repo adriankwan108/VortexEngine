@@ -38,7 +38,6 @@ namespace vkclass
         std::shared_ptr<VX::IndexBuffer> m_IndexBuffer;
         
     private:
-        // TODO: use move semantics to get the ownership of buffers
         std::vector<VkBuffer> m_VkVertexBuffers;
         std::vector<VkDeviceSize> m_VkVBsOffsets;
         uint32_t m_LastStride = 0;

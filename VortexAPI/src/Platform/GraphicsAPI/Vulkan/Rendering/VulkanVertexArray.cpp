@@ -29,7 +29,7 @@ namespace vkclass
         m_VertexBuffers.push_back(vertexBuffer);
         
         auto vkVB = std::static_pointer_cast<VulkanVertexBuffer>(vertexBuffer);
-        m_VkVertexBuffers.push_back(vkVB->Buffer);
+        m_VkVertexBuffers.push_back(vkVB->GetBuffer());
         
         m_VkVBsOffsets.push_back(static_cast<VkDeviceSize>(m_LastStride));
         m_LastStride += vkVB->GetLayout().GetStride();
