@@ -121,6 +121,7 @@ namespace VX
     void VulkanContext::End()
     {
         vkDeviceWaitIdle(m_Device.LogicalDevice);
+        VX_CORE_INFO("Vulkan Context: Wait Edle.");
     }
 
     void VulkanContext::Resize(unsigned int width, unsigned int height)

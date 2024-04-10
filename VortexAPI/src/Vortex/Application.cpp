@@ -28,6 +28,7 @@ namespace VX
     Application::~Application()
     {
         VX_CORE_INFO("Application closing...");
+        m_Window->OnClose(); // this is not inside OnWindowClose, as this is outside game loop
         Renderer::ShutDown();
         VX_CORE_INFO("Application closed.");
     }
@@ -81,6 +82,10 @@ namespace VX
     bool Application::OnWindowClose(WindowCloseEvent& event)
     {
         m_Running = false;
+        // below would be inside the last update of graphics api display loop
+        
+        // log anything needed
+        // confirm closed ?
         return true;
     }
 

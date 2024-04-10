@@ -148,7 +148,6 @@ namespace VX
 
     void MacWindow::Shutdown()
     {
-        m_GraphicsContext->End();
         glfwDestroyWindow(m_Window);
         glfwTerminate();
     }
@@ -177,6 +176,11 @@ namespace VX
         {
             glfwWaitEvents();
         }
+    }
+
+    void MacWindow::OnClose()
+    {
+        m_GraphicsContext->End();
     }
 
     void MacWindow::SetVSync(bool enabled)

@@ -148,7 +148,6 @@ namespace VX
 
     void WindowsWindow::Shutdown()
     {
-        m_GraphicsContext->End();
         glfwDestroyWindow(m_Window);
         glfwTerminate();
     }
@@ -173,6 +172,11 @@ namespace VX
     void WindowsWindow::Resize(unsigned int width, unsigned int height)
     {
         m_GraphicsContext->Resize(width, height);
+    }
+
+    void WindowsWindow::OnClose()
+    {
+        m_GraphicsContext->End();
     }
 
     void WindowsWindow::SetVSync(bool enabled)

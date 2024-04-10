@@ -35,9 +35,9 @@ namespace VX
 
     void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray> &vertexArray)
     {
-        VX_CORE_TRACE("Renderer:: Submiting...");
+        // VX_CORE_TRACE("Renderer:: Submiting...");
         shader->Bind();
         RenderCommand::DrawIndexed(vertexArray);
-        VX_CORE_TRACE("Renderer:: Submited...");
+        // VX_CORE_TRACE("Renderer:: Submited...");
     }
 }

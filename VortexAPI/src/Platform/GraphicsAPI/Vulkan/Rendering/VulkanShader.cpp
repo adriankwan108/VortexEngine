@@ -63,11 +63,15 @@ namespace vkclass
     {
         if (m_isValid)
         {
-            vkDestroyPipeline(m_device, m_pipeline, nullptr);
-            vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+            if(m_pipeline != VK_NULL_HANDLE)
+            {
+                vkDestroyPipeline(m_device, m_pipeline, nullptr);
+            }
             
-            vkDestroyShaderModule(m_device, m_vertModule, nullptr);
-            vkDestroyShaderModule(m_device, m_fragModule, nullptr);
+            if(m_pipelineLayout != VK_NULL_HANDLE)
+            {
+                vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+            }
             VX_CORE_INFO("VulkanShader: Pipeline & layout destroyed");
         }
     }
@@ -101,8 +105,10 @@ namespace vkclass
         builder.SetVertexInput(m_ShaderLayout.GetBinding(), m_ShaderLayout.GetAttributes());
 
         m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
-        VX_CORE_TRACE("Vulkan Shader: Pipeline set");
         
+        vkDestroyShaderModule(m_device, m_vertModule, nullptr);
+        vkDestroyShaderModule(m_device, m_fragModule, nullptr);
+        VX_CORE_TRACE("Vulkan Shader: Pipeline set");
     }
 
 }
