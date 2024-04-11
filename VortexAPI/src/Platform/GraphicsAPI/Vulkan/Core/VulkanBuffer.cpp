@@ -173,4 +173,22 @@ namespace vkclass
     {
         // no op in vulkan,
     }
+
+    VulkanUniformBuffer::VulkanUniformBuffer(VkDeviceSize size)
+    {
+        m_UniformBuffers.resize(VulkanBuffer::GetMaxFrameInFlight());
+        
+        for(auto buffer : m_UniformBuffers)
+        {
+            buffer.Setup(size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+            
+            // persistent mapping
+            buffer.Map();
+        }
+    }
+
+    void VulkanUniformBuffer::Update(void* data, uint64_t size)
+    {
+        m_UniformBuffers[VulkanBuffer::GetCurrentFrame()].SetData(data, size);
+    }
 }

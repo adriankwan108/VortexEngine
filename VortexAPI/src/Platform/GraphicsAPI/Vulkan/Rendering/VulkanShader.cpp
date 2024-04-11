@@ -41,20 +41,6 @@ namespace vkclass
             return;
         }
         
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0; // Optional
-        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
-        pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-        pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-
-        if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
-        {
-            m_isValid = false;
-            VX_CORE_WARN("VulkanShader: Failed to create pipeline layout!");
-            return;;
-        }
-        
         m_isValid = true;
         // TODO: if not valid, try default shader
     }
@@ -97,17 +83,34 @@ namespace vkclass
     void VulkanShader::SetPipeline(VX::BufferLayout layout)
     {
         VX_CORE_TRACE("Vulkan Shader: Creating pipeline...");
-        VulkanPipelineBuilder builder;
-        
-        builder.SetShaders(m_vertModule, m_fragModule);
         m_ShaderLayout.SetLayout(layout);
-
+        
+        // pipeline settings
+        VulkanPipelineBuilder builder;
+        builder.SetShaders(m_vertModule, m_fragModule);
         builder.SetVertexInput(m_ShaderLayout.GetBinding(), m_ShaderLayout.GetAttributes());
 
+        // layout settings
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 0; // Optional
+        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+        pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+        pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+        if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
+        {
+            m_isValid = false;
+            VX_CORE_WARN("VulkanShader: Failed to create pipeline layout!");
+            return;;
+        }
+        
+        // build operation
         m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
         
+        // destroy unused resources
         vkDestroyShaderModule(m_device, m_vertModule, nullptr);
         vkDestroyShaderModule(m_device, m_fragModule, nullptr);
+        
         VX_CORE_TRACE("Vulkan Shader: Pipeline set");
     }
 

@@ -1,6 +1,10 @@
 #pragma once
 #include "VortexPCH.hpp"
 
+/*
+ *  Below classes are api-agnostic interfaces
+ */
+
 namespace VX
 {
     enum class ShaderDataType
@@ -69,7 +73,6 @@ namespace VX
         uint32_t m_Stride = 0;
     };
 
-    // api agnostic interface
     class VertexBuffer
     {
     public:
@@ -87,7 +90,6 @@ namespace VX
         static VertexBuffer* Create(void* data, uint64_t size);
     };
 
-    // api agnostic interface
     class IndexBuffer
     {
     public:
@@ -101,4 +103,14 @@ namespace VX
         static IndexBuffer* Create(void* data, uint64_t size, unsigned long count);
     };
 
+    
+    class UniformBuffer
+    {
+    public:
+        virtual ~UniformBuffer() = default;
+        
+        virtual void Update(void* data, uint64_t size) = 0;
+        
+        static UniformBuffer* Create(uint64_t size);
+    };
 }

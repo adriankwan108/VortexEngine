@@ -47,6 +47,10 @@ namespace vkclass
         
         static void Init(vkclass::VulkanDevice* device, vkclass::VulkanCommandManager* cmdManager);
         static void CopyTo(VulkanBuffer* srcBuffer, VulkanBuffer* dstBuffer, VkDeviceSize size);
+        
+        static int GetMaxFrameInFlight() { return m_cmdManager->GetMaxFrameInFlight(); }
+        static uint32_t GetCurrentFrame() { return m_cmdManager->GetCurrentFrame(); }
+        
     protected:
         // status
 //        bool mapped = false;
@@ -110,6 +114,21 @@ namespace vkclass
     private:
         VulkanBuffer m_indexBuffer;
         uint32_t m_Count;
+    };
+
+    /*
+     *  Implicitly create uniform buffers for max frames in flight
+     */
+    class VulkanUniformBuffer : public VX::UniformBuffer
+    {
+    public:
+        VulkanUniformBuffer(VkDeviceSize size);
+        virtual ~VulkanUniformBuffer() = default;
+        
+        virtual void Update(void* data, uint64_t size) override;
+        
+    private:
+        std::vector<VulkanBuffer> m_UniformBuffers;
     };
 
 }

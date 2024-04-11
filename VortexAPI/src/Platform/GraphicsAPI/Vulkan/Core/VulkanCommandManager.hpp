@@ -42,6 +42,9 @@ namespace vkclass
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
         void SetClearColor(const glm::vec4 &color);
         
+        int GetMaxFrameInFlight() const { return m_maxFramesInFlight; }
+        uint32_t GetCurrentFrame() const { return m_currentFrame; }
+        
     private:
         // references
         vkclass::VulkanDevice* m_device;

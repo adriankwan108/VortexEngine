@@ -1,5 +1,11 @@
 #include "Playground.hpp"
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <chrono>
+
 Playground::Playground()
     : VX::Layer("Playground")
 {
@@ -33,10 +39,10 @@ Playground::Playground()
     m_basicShader = std::shared_ptr<VX::Shader>(
         VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv")
     );
-    m_basicShader->SetPipeline(layout);
+    m_basicShader->SetPipeline(layout); // for getting attributes, bindings
     
     m_vertexBuffer = std::shared_ptr<VX::VertexBuffer>(VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices)));
-    m_vertexBuffer->SetLayout(layout);
+    m_vertexBuffer->SetLayout(layout); // for getting stride
     
     m_indexBuffer = std::shared_ptr<VX::IndexBuffer>(VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices), triangleIndices.size()));
     
@@ -72,6 +78,8 @@ void Playground::OnUpdate()
     // set clear color
     VX::RenderCommand::SetClearColor(glm::vec4(0.5f, 0.33f, 0.2f, 1.0f));
     
+    UpdateUniformBuffer();
+    
     VX::Renderer::Submit(m_basicShader ,m_vertexArray);
     
     VX::Renderer::EndScene();
@@ -81,5 +89,20 @@ void Playground::OnUpdate()
 void Playground::OnEvent(VX::Event& event)
 {
     
+}
+
+void Playground::UpdateUniformBuffer()
+{
+    // update data
+    static auto startTime = std::chrono::high_resolution_clock::now();
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+    mvp.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    mvp.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    mvp.proj = glm::perspective(glm::radians(45.0f), 1920.0f/ 1080.0f, 0.1f, 10.0f); // should use swapchain extent
+    mvp.proj[1][1] *= -1;
+    
+    // update buffer
 }
 

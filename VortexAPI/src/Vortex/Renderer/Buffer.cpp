@@ -44,7 +44,6 @@ namespace VX
                 break;
             case RendererAPI::API::Vulkan:
                 return new vkclass::VulkanIndexBuffer(data, size, count);
-                return nullptr;
                 break;
             case RendererAPI::API::DX12:
                 VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::DX12 is currently not supported!");
@@ -56,6 +55,32 @@ namespace VX
                 break;
             default:
                 VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::<API> is not identified!");
+                return nullptr;
+                break;
+        }
+        return nullptr;
+    }
+
+    UniformBuffer* UniformBuffer::Create(uint64_t size)
+    {
+        switch (Renderer::GetAPI()) {
+            case RendererAPI::API::None:
+                VX_CORE_ASSERT(false, "Uniform Buffer: RendererAPI::None is currently not supported!");
+                return nullptr;
+                break;
+            case RendererAPI::API::Vulkan:
+                return new vkclass::VulkanUniformBuffer(size);
+                break;
+            case RendererAPI::API::DX12:
+                VX_CORE_ASSERT(false, "Uniform Buffer: RendererAPI::DX12 is currently not supported!");
+                return nullptr;
+                break;
+            case RendererAPI::API::OpenGL:
+                VX_CORE_ASSERT(false, "Uniform Buffer: RendererAPI::OpenGL is currently not supported!");
+                return nullptr;
+                break;
+            default:
+                VX_CORE_ASSERT(false, "Uniform Buffer: RendererAPI::<API> is not identified!");
                 return nullptr;
                 break;
         }
