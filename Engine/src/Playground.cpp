@@ -62,10 +62,7 @@ void Playground::OnAttach()
 void Playground::OnDetach()
 {
     VX_INFO("{0}: Detaching...", GetName());
-    m_basicShader.reset(); // temp usage, should use a reference counter inside API
-    m_vertexArray.reset();
-    m_vertexBuffer.reset();
-    m_indexBuffer.reset();
+
     VX_INFO("{0}: Detached", GetName());
 }
 
@@ -105,4 +102,3 @@ void Playground::UpdateUniformBuffer()
     
     // update buffer
 }
-
