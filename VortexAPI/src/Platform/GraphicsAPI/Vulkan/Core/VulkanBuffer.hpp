@@ -86,14 +86,14 @@ namespace vkclass
         
         virtual void SetData(const void* data, uint64_t size) override;
 
-        virtual void SetLayout(const VX::BufferLayout& layout) override;
-        virtual const VX::BufferLayout& GetLayout() const override { return m_Layout; }
+        virtual void SetLayout(const VX::VertexShaderLayout& layout) override;
+        virtual const VX::VertexShaderLayout& GetLayout() const override { return m_Layout; }
         
         VkBuffer GetBuffer() const { return m_vertexBuffer.Buffer; }
         
     private:
         VulkanBuffer m_vertexBuffer; // optimized, device local final vertex buffer
-        VX::BufferLayout m_Layout;
+        VX::VertexShaderLayout m_Layout;
     };
 
     class VulkanIndexBuffer : public VX::IndexBuffer

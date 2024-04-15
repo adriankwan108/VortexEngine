@@ -2,12 +2,12 @@
 
 namespace vkclass
 {
-    VulkanShaderLayout::VulkanShaderLayout(VX::BufferLayout layout)
+    VulkanVertexShaderLayout::VulkanVertexShaderLayout(VX::VertexShaderLayout layout)
     {
         SetLayout(layout);
     }
 
-    void VulkanShaderLayout::SetLayout(VX::BufferLayout layout)
+    void VulkanVertexShaderLayout::SetLayout(VX::VertexShaderLayout layout)
     {
         int stride = 0;
         int offset = 0;
@@ -33,5 +33,10 @@ namespace vkclass
         m_bindingDescription.stride = layout.GetStride(); // number of bytes from one entry to the next
         m_bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // per-vertex data, TODO: change this for particle system
         VX_CORE_TRACE("binding {0}: stride {1}", m_bindingDescription.binding, m_bindingDescription.stride);
+    }
+
+    void VulkanUniformLayout::SetLayout(VX::UniformShaderLayout layout)
+    {
+        
     }
 }

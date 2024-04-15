@@ -42,7 +42,8 @@ namespace vkclass
         }
         
         m_isValid = true;
-        // TODO: if not valid, try default shader
+        // TODO: if not valid, use default shader (guaranteed)
+        
     }
 
     VulkanShader::~VulkanShader()
@@ -80,17 +81,23 @@ namespace vkclass
         
     }
 
-    void VulkanShader::SetPipeline(VX::BufferLayout layout)
+    void VulkanShader::SetVertexLayout(VX::VertexShaderLayout layout)
     {
-        VX_CORE_TRACE("Vulkan Shader: Creating pipeline...");
-        m_ShaderLayout.SetLayout(layout);
-        
-        // pipeline settings
+        m_vertexLayout.SetLayout(layout);
+    }
+
+    void VulkanShader::SetUniformLayout(VX::UniformShaderLayout layout)
+    {
+        m_uniformLayout.SetLayout(layout);
+    }
+
+    void VulkanShader::Prepare()
+    {
+        VX_CORE_TRACE("Vulkan Shader: Preparing pipeline...");
         VulkanPipelineBuilder builder;
         builder.SetShaders(m_vertModule, m_fragModule);
-        builder.SetVertexInput(m_ShaderLayout.GetBinding(), m_ShaderLayout.GetAttributes());
-
-        // layout settings
+        builder.SetVertexInput(m_vertexLayout.GetBinding(), m_vertexLayout.GetAttributes());
+        
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 0; // Optional
@@ -113,5 +120,4 @@ namespace vkclass
         
         VX_CORE_TRACE("Vulkan Shader: Pipeline set");
     }
-
 }

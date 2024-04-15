@@ -23,7 +23,11 @@ namespace vkclass
         
         virtual void Bind() const override;
         virtual void UnBind() const override;
-        virtual void SetPipeline(VX::BufferLayout layout) override;
+//        virtual void SetPipeline(VX::ShaderLayout layout) override;
+        
+        virtual void SetVertexLayout(VX::VertexShaderLayout layout) override;
+        virtual void SetUniformLayout(VX::UniformShaderLayout layout) override;
+        virtual void Prepare() override;
         
         virtual const std::string& GetName() const override { return m_Name; }
         
@@ -50,7 +54,8 @@ namespace vkclass
         std::string m_vertFilePath;
         std::string m_fragFilePath;
         
-        vkclass::VulkanShaderLayout m_ShaderLayout;
+        vkclass::VulkanVertexShaderLayout m_vertexLayout;
+        vkclass::VulkanUniformLayout m_uniformLayout;
         VkPipelineLayout m_pipelineLayout;
         VkPipeline m_pipeline;
         

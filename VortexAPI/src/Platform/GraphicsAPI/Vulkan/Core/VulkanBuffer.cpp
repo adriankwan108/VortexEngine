@@ -150,7 +150,7 @@ namespace vkclass
         m_vertexBuffer.Unmap();
     }
 
-    void VulkanVertexBuffer::SetLayout(const VX::BufferLayout& layout)
+    void VulkanVertexBuffer::SetLayout(const VX::VertexShaderLayout& layout)
     {
         m_Layout = layout;
     }

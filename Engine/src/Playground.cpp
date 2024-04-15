@@ -12,9 +12,15 @@ Playground::Playground()
     VX_INFO("{0}: Creating...", GetName());
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
     // define shader layout
-    VX::BufferLayout layout = {
+    VX::VertexShaderLayout layout = {
         {VX::ShaderDataType::Float2, "pos"},
         {VX::ShaderDataType::Float3, "color"}
+    };
+    
+    VX::UniformShaderLayout uniformLayout = {
+        {VX::ShaderDataType::Float3, "model"},
+        {VX::ShaderDataType::Float3, "view"},
+        {VX::ShaderDataType::Float3, "proj"}
     };
     
     // simulate vertices data
@@ -39,7 +45,9 @@ Playground::Playground()
     m_basicShader = std::shared_ptr<VX::Shader>(
         VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv")
     );
-    m_basicShader->SetPipeline(layout); // for getting attributes, bindings
+    m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
+    m_basicShader->SetUniformLayout(uniformLayout);
+    m_basicShader->Prepare();
     
     m_vertexBuffer = std::shared_ptr<VX::VertexBuffer>(VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices)));
     m_vertexBuffer->SetLayout(layout); // for getting stride

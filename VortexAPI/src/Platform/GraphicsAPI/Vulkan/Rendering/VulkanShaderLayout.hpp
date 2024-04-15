@@ -7,14 +7,14 @@
 
 namespace vkclass
 {
-    class VulkanShaderLayout
+    class VulkanVertexShaderLayout
     {
     public:
-        VulkanShaderLayout() = default;
-        VulkanShaderLayout(VX::BufferLayout layout);
-        ~VulkanShaderLayout() = default;
+        VulkanVertexShaderLayout() = default;
+        VulkanVertexShaderLayout(VX::VertexShaderLayout layout);
+        ~VulkanVertexShaderLayout() = default;
         
-        void SetLayout(VX::BufferLayout layout);
+        void SetLayout(VX::VertexShaderLayout layout);
         
         const VkVertexInputBindingDescription& GetBinding() const { return m_bindingDescription; }
         const std::vector<VkVertexInputAttributeDescription>& GetAttributes() const { return m_attributeDescriptions; }
@@ -25,6 +25,15 @@ namespace vkclass
         std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
         uint32_t m_stride = 0;
     };
+
+class VulkanUniformLayout
+{
+public:
+    VulkanUniformLayout() = default;
+    ~VulkanUniformLayout() = default;
+    
+    void SetLayout(VX::UniformShaderLayout layout);
+};
 
     static VkFormat ShaderDataTypeToVulkanFormat(VX::ShaderDataType type)
     {
