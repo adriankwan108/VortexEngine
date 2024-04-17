@@ -30,6 +30,7 @@ namespace vkclass
         virtual ~VulkanBuffer();
         
         const VkBuffer& Buffer = m_buffer;
+        VkDescriptorBufferInfo* GetDescriptor() { return &m_bufferInfo; }
         // get memory()
         // get size
         // get data
@@ -68,6 +69,8 @@ namespace vkclass
         // props
         VkBuffer m_buffer = VK_NULL_HANDLE;
         VkDeviceMemory m_memory = VK_NULL_HANDLE;
+        
+        VkDescriptorBufferInfo m_bufferInfo{};
         void* m_data = nullptr;
         
     private:

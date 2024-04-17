@@ -8,17 +8,14 @@ namespace VX
         m_Surface(window, &m_Instance),
         m_Device(&m_Instance, &m_Surface, m_enableValidation),
         m_SyncManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
-        m_CommandManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame)
+        m_CommandManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
+        m_DescriptorManager(&m_Device)
     {
 
     }
 
     VulkanContext::~VulkanContext()
     {
-//        delete indexBuffer;
-//        delete vertexBuffer;
-//        delete triangleShader;
-        
         for(auto framebuffer: m_FrameBuffers)
         {
             delete framebuffer;
@@ -42,6 +39,8 @@ namespace VX
     {
         VX_CORE_INFO("Initiating Vulkan resources...");
         
+        vkclass::DescriptorManager::Init(&m_DescriptorManager);
+        
         vkclass::VulkanSwapChain::Init(&m_Device);
         vkclass::VulkanRenderPass::Init(m_Device.LogicalDevice);
 
@@ -59,6 +58,7 @@ namespace VX
         vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager, m_RenderPass->RenderPass);
         
         createFrameBuffers();
+        
     }
 
     void VulkanContext::DisplayStart()

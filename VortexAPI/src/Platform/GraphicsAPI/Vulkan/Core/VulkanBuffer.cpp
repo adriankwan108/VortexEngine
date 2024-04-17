@@ -101,6 +101,10 @@ namespace vkclass
         bufferCI.usage = usage;
         bufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         VK_CHECK_RESULT(vkCreateBuffer(m_device->LogicalDevice, &bufferCI, nullptr, &m_buffer));
+        
+        m_bufferInfo.buffer = m_buffer;
+        m_bufferInfo.offset = 0;
+        m_bufferInfo.range = size;
     }
 
     void VulkanBuffer::createMemory(VkMemoryPropertyFlags props)

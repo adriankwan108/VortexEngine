@@ -17,6 +17,7 @@
 #include "Core/VulkanDevice.hpp"
 #include "Core/VulkanCommandManager.hpp"
 #include "Core/VulkanSyncManager.hpp"
+#include "Core/VulkanDescriptorManager.hpp"
 
 #include "Core/VulkanBuffer.hpp"
 
@@ -63,14 +64,12 @@ namespace VX
         vkclass::VulkanDevice m_Device;
         vkclass::VulkanSyncManager m_SyncManager;
         vkclass::VulkanCommandManager m_CommandManager;
+        vkclass::VulkanDescriptorManager m_DescriptorManager;
         
         // dynamic life-time, due to recreation by window resize
         vkclass::VulkanSwapChain* m_SwapChain;
         vkclass::VulkanRenderPass* m_RenderPass;
         std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;
-        
-        // helpers
-//        vkclass::VulkanPipelineBuilder m_pipelineBuilder;
         
     private: // var
         uint32_t m_currentRenderingFrame = 0;

@@ -29,10 +29,13 @@ namespace vkclass
 class VulkanUniformLayout
 {
 public:
-    VulkanUniformLayout() = default;
+    VulkanUniformLayout();
     ~VulkanUniformLayout() = default;
     
     void SetLayout(VX::UniformShaderLayout layout);
+    VkDescriptorSetLayout GetDescripotSetLayout() const { return m_descriptorSetLayout; }
+private:
+    VkDescriptorSetLayout& m_descriptorSetLayout;
 };
 
     static VkFormat ShaderDataTypeToVulkanFormat(VX::ShaderDataType type)

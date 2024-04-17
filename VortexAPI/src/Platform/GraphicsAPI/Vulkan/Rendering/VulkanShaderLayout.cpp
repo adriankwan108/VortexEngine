@@ -1,4 +1,5 @@
 #include "VulkanShaderLayout.hpp"
+#include "Core/VulkanDescriptorManager.hpp"
 
 namespace vkclass
 {
@@ -37,6 +38,6 @@ namespace vkclass
 
     void VulkanUniformLayout::SetLayout(VX::UniformShaderLayout layout)
     {
-        
+        m_descriptorSetLayout = DescriptorManager::GetDescriptorSetLayout();
     }
 }
