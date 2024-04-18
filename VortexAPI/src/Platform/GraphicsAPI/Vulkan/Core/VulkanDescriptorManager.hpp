@@ -20,7 +20,7 @@ namespace vkclass
         VulkanDescriptorManager(VulkanDevice* device);
         ~VulkanDescriptorManager();
         
-        VkDescriptorSetLayout& GetDescriptorSetLayout();
+        const VkDescriptorSetLayout& GetDescriptorSetLayout();
         void allocateDescriptorSet(VulkanBuffer& buffer);
     private:
         void createDescriptorPools();

@@ -54,7 +54,7 @@ namespace vkclass
         vkUpdateDescriptorSets(m_device->LogicalDevice, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
     }
 
-    VkDescriptorSetLayout& VulkanDescriptorManager::GetDescriptorSetLayout()
+    const VkDescriptorSetLayout& VulkanDescriptorManager::GetDescriptorSetLayout()
     {
         return m_descriptorSetLayout;
     }

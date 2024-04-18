@@ -36,6 +36,11 @@ namespace vkclass
         VX_CORE_TRACE("binding {0}: stride {1}", m_bindingDescription.binding, m_bindingDescription.stride);
     }
 
+    VulkanUniformLayout::VulkanUniformLayout()
+    {
+        
+    }
+
     void VulkanUniformLayout::SetLayout(VX::UniformShaderLayout layout)
     {
         m_descriptorSetLayout = DescriptorManager::GetDescriptorSetLayout();

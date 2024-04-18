@@ -33,9 +33,9 @@ public:
     ~VulkanUniformLayout() = default;
     
     void SetLayout(VX::UniformShaderLayout layout);
-    VkDescriptorSetLayout GetDescripotSetLayout() const { return m_descriptorSetLayout; }
+    const VkDescriptorSetLayout& GetDescripotSetLayout() const { return m_descriptorSetLayout; }
 private:
-    VkDescriptorSetLayout& m_descriptorSetLayout;
+    VkDescriptorSetLayout m_descriptorSetLayout;
 };
 
     static VkFormat ShaderDataTypeToVulkanFormat(VX::ShaderDataType type)
