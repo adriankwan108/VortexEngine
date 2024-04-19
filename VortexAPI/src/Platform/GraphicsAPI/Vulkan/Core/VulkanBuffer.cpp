@@ -41,6 +41,7 @@ namespace vkclass
 
     void VulkanBuffer::Setup(VkDeviceSize size, VkMemoryPropertyFlags props, VkBufferUsageFlags usage)
     {
+        m_size = size;
         createBuffer(size, usage);
         createMemory(props);
         Bind();
