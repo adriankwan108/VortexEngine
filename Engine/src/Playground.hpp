@@ -24,5 +24,7 @@ private:
     std::shared_ptr<VX::IndexBuffer> m_indexBuffer;
     
     Geometry::Uniform_MVP mvp{};
+    
+    VX::OrthographicCamera m_camera;
 };
 

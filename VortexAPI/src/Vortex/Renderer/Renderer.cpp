@@ -1,8 +1,13 @@
 #include "Renderer.hpp"
 #include "RenderCommand.hpp"
 
+//#define GLM_ENABLE_EXPERIMENTAL
+//#include "glm/gtx/string_cast.hpp"
+
 namespace VX
 {
+    Renderer::SceneData* Renderer::s_sceneData = new Renderer::SceneData;
+
     void Renderer::Init()
     {
         VX_CORE_INFO("Renderer: initing...");
@@ -20,12 +25,11 @@ namespace VX
         VX_CORE_INFO("Renderer: shut down.");
     }
 
-    void Renderer::BeginScene()
+    void Renderer::BeginScene(OrthographicCamera& camera)
     {
-//        VX_CORE_INFO("Renderer: Beginning Scene...");
+        // VX_CORE_INFO("Renderer: Beginning Scene...");
+        s_sceneData->viewProjection = camera.GetViewProjectionMatrix();
         
-        // in future, it should make sure what shader is using,
-        // getting the right uniforms
     }
 
     void Renderer::EndScene()
@@ -37,6 +41,8 @@ namespace VX
     {
         // VX_CORE_TRACE("Renderer:: Submiting...");
         shader->Bind();
+        
+        vertexArray->Bind();
         RenderCommand::DrawIndexed(vertexArray);
         // VX_CORE_TRACE("Renderer:: Submited...");
     }

@@ -7,7 +7,7 @@
 #include <chrono>
 
 Playground::Playground()
-    : VX::Layer("Playground")
+    : VX::Layer("Playground"), m_camera(-1.0f, 1.0f, -1.0f, 1.0f)
 {
     VX_INFO("{0}: Creating...", GetName());
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
@@ -76,7 +76,7 @@ void Playground::OnDetach()
 
 void Playground::OnUpdate()
 {
-    VX::Renderer::BeginScene();
+    VX::Renderer::BeginScene(m_camera);
     
     // update camera
     

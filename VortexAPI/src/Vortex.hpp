@@ -11,6 +11,7 @@
 #include "Vortex/Renderer/Buffer.hpp"
 #include "Vortex/Renderer/VertexArray.hpp"
 #include "Vortex/Renderer/RenderCommand.hpp"
+#include "Vortex/Renderer/OrthographicCamera.hpp"
 
 #include "Vortex/Geometry/Geometry.hpp"
 

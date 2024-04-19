@@ -4,6 +4,9 @@
 #include "RendererAPI.hpp"
 #include "VertexArray.hpp"
 #include "Shader.hpp"
+#include "OrthographicCamera.hpp"
+
+#include <glm/glm.hpp>
 
 namespace VX
 {
@@ -16,11 +19,19 @@ namespace VX
         static void Init();
         static void ShutDown();
         
-        static void BeginScene();
+        static void BeginScene(OrthographicCamera& camera);
         static void EndScene();
         
         static void Submit(const std::shared_ptr<Shader>& shader ,const std::shared_ptr<VertexArray>& vertexArray);
         
         static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
+        
+    private:
+        struct SceneData
+        {
+            glm::mat4 viewProjection;
+        };
+        
+        static SceneData* s_sceneData;
     };
 }
