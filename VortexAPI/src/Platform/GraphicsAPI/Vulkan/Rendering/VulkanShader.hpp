@@ -27,6 +27,8 @@ namespace vkclass
         
         virtual void SetVertexLayout(VX::VertexShaderLayout layout) override;
         virtual void SetUniformLayout(VX::UniformShaderLayout layout) override;
+        virtual void SetDynamicLayout(VX::UniformShaderLayout layout) override;
+        virtual void SetPushConstant(VX::UniformShaderLayout layout) override;
         virtual void Prepare() override;
         
         virtual const std::string& GetName() const override { return m_Name; }

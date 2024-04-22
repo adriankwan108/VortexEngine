@@ -21,10 +21,10 @@ namespace vkclass
     {
         // currently just one pool for uniform buffers
         std::vector<VkDescriptorPoolSize> poolSizes = {
-            // vkclass::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1),
-            vkclass::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1)
+            vkclass::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 20),
+            vkclass::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 20)
         };
-        VkDescriptorPoolCreateInfo descriptorPoolInfo = vkclass::initializers::descriptorPoolCreateInfo(poolSizes, 1);
+        VkDescriptorPoolCreateInfo descriptorPoolInfo = vkclass::initializers::descriptorPoolCreateInfo(poolSizes, 40);
         VK_CHECK_RESULT(vkCreateDescriptorPool(m_device->LogicalDevice, &descriptorPoolInfo, nullptr, &m_uboPool));
     }
 
@@ -33,7 +33,8 @@ namespace vkclass
         // specify the actual buffer / image resources layout
         std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings =
         {
-            vkclass::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT, 0)
+            vkclass::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
+            vkclass::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT, 1)
         };
 
         VkDescriptorSetLayoutCreateInfo descriptorLayout = vkclass::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
@@ -47,9 +48,9 @@ namespace vkclass
 
         std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
             // Binding 0 : Projection/View matrix as uniform buffer
-            //vkclass::initializers::writeDescriptorSet(m_descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers.view.descriptor),
+            // vkclass::initializers::writeDescriptorSet(m_descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers.view.descriptor),
             // Binding 1 : Instance matrix as dynamic uniform buffer
-            vkclass::initializers::writeDescriptorSet(m_descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, buffer.GetDescriptor())
+            vkclass::initializers::writeDescriptorSet(m_descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, buffer.GetDescriptor())
         };
         vkUpdateDescriptorSets(m_device->LogicalDevice, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
     }

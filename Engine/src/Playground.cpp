@@ -18,9 +18,12 @@ Playground::Playground()
     };
     
     VX::UniformShaderLayout uniformLayout = {
-        {VX::ShaderDataType::Float3, "model"},
-        {VX::ShaderDataType::Float3, "view"},
-        {VX::ShaderDataType::Float3, "proj"}
+        {VX::ShaderDataType::Mat4, "view"},
+        {VX::ShaderDataType::Mat4, "proj"}
+    };
+
+    VX::UniformShaderLayout dynamicLayout = {
+        {VX::ShaderDataType::Mat4, "model"},
     };
     
     // simulate vertices data

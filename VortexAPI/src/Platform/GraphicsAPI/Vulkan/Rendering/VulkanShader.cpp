@@ -72,7 +72,7 @@ namespace vkclass
 
     void VulkanShader::Bind() const
     {
-        // vkcmdbindpipeline
+        // bind 
         m_commandBufferManager->BindPipeline(m_pipeline);
     }
 
@@ -91,6 +91,16 @@ namespace vkclass
         m_uniformLayout.SetLayout(layout);
     }
 
+    void VulkanShader::SetDynamicLayout(VX::UniformShaderLayout layout)
+    {
+
+    }
+
+    void VulkanShader::SetPushConstant(VX::UniformShaderLayout layout)
+    {
+
+    }
+
     void VulkanShader::Prepare()
     {
         VX_CORE_TRACE("Vulkan Shader: Preparing pipeline...");
@@ -100,8 +110,10 @@ namespace vkclass
         
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 1; // Optional
-        pipelineLayoutInfo.pSetLayouts = &m_uniformLayout.GetDescripotSetLayout(); // Optional
+        pipelineLayoutInfo.setLayoutCount = 0; // Optional
+        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+        //pipelineLayoutInfo.setLayoutCount = 1; // Optional
+        //pipelineLayoutInfo.pSetLayouts = &m_uniformLayout.GetDescripotSetLayout(); // Optional
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
         if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
