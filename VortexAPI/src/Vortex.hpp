@@ -6,6 +6,7 @@
 #include "Vortex/Log.hpp"
 #include "Vortex/Core.hpp"
 #include "Vortex/LayerStack.hpp"
+#include "Vortex/Core/Timestep.hpp"
 
 #include "Vortex/Renderer/Shader.hpp"
 #include "Vortex/Renderer/Buffer.hpp"

@@ -77,7 +77,7 @@ void Playground::OnDetach()
     VX_INFO("{0}: Detached", GetName());
 }
 
-void Playground::OnUpdate()
+void Playground::OnUpdate(VX::Timestep ts)
 {
     VX::Renderer::BeginScene(m_camera);
     

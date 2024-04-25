@@ -11,7 +11,7 @@ public:
 
     virtual void OnAttach() override;
     virtual void OnDetach() override;
-    virtual void OnUpdate() override;
+    virtual void OnUpdate(VX::Timestep ts) override;
     virtual void OnEvent(VX::Event& event) override;
     
     void UpdateUniformBuffer();

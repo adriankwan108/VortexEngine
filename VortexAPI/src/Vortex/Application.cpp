@@ -2,6 +2,7 @@
 #include "Application.hpp"
 
 #include "Events/ApplicationEvent.hpp"
+#include <GLFW/glfw3.h>
 
 namespace VX
 {
@@ -66,12 +67,16 @@ namespace VX
 
         while(m_Running)
         {
+            float time = (float)glfwGetTime(); // TODO: platform: get time
+            Timestep timestep = time - m_LastFrameTime;
+            m_LastFrameTime = time;
+            
             m_Window->OnUpdateStart();
             if(!m_Minimized)
             {
                 for (Layer* layer: m_LayerStack)
                 {
-                    layer->OnUpdate(); // playground: update
+                    layer->OnUpdate(timestep); // playground: update
                 }
             }
             m_Window->OnUpdate(); // 

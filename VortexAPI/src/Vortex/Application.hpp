@@ -4,6 +4,7 @@
 #include "Events/ApplicationEvent.hpp"
 #include "LayerStack.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Core/Timestep.hpp"
 
 namespace VX
 {
@@ -27,6 +28,7 @@ namespace VX
         // props
         std::unique_ptr<Window> m_Window;
         LayerStack m_LayerStack;
+        float m_LastFrameTime = 0.0f;
         
         bool OnWindowClose(WindowCloseEvent& event);
         bool OnWindowResize(WindowResizeEvent& event);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Events/Event.hpp"
+#include "Core/Timestep.hpp"
 
 namespace VX
 {
@@ -12,7 +13,7 @@ namespace VX
 
         virtual void OnAttach() {}
         virtual void OnDetach() {}
-        virtual void OnUpdate() {}
+        virtual void OnUpdate(Timestep ts) {}
         virtual void OnEvent(Event& event) {}
 
         inline const std::string& GetName() const { return m_DebugName; }
