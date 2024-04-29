@@ -29,19 +29,22 @@ namespace vkclass
     */
     struct DescriptorAllocator {
     public:
-        void Init(int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit);
-        void ClearPools();
-        void Destroy(VkDevice device);
-
+        void Init(VkDevice device, int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit);
+        void Destroy();
+        
+        void Clear();
         VkDescriptorSet Allocate(VkDescriptorSetLayout layout);
     private:
         std::vector<VkDescriptorPool> m_fullPools;
         std::vector<VkDescriptorPool> m_readyPools;
+        std::vector<PoolSizeRatio> m_ratios;
         float m_growthRate = 1.0f;
         uint32_t m_setsPerPool = 1000; // next increased max sets num
         uint32_t m_maxSetLimit = 4092;
+        
+        VkDevice m_device = VK_NULL_HANDLE;
 
-        VkDescriptorPool createPool(VkDevice device, uint32_t setCount, std::span<PoolSizeRatio> poolRatios);
+        VkDescriptorPool createPool(uint32_t setCount, std::span<PoolSizeRatio> poolRatios);
         VkDescriptorPool getPool();
     };
 
