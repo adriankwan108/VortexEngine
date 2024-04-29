@@ -1,5 +1,7 @@
 #pragma once
 #include "VortexPCH.hpp"
+#include <span>
+#include <deque>
 
 #include "vulkan/vulkan.h"
 #include <glm/glm.hpp>
@@ -11,37 +13,86 @@
 
 namespace vkclass
 {
+    struct PoolSizeRatio {
+        VkDescriptorType type;
+        float ratio;
+    };
+
+    /* Growable descriptor pool
+     * Design:
+     *      First grab a pool from ready pool
+     *      try to allocate
+     *      if success
+     *          add pool back to ready
+     *      if failed
+     *          put the pool to full pools, and try to get another pool / create a new pool
+    */
+    struct DescriptorAllocator {
+    public:
+        void Init(int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit);
+        void ClearPools();
+        void Destroy(VkDevice device);
+
+        VkDescriptorSet Allocate(VkDescriptorSetLayout layout);
+    private:
+        std::vector<VkDescriptorPool> m_fullPools;
+        std::vector<VkDescriptorPool> m_readyPools;
+        float m_growthRate = 1.0f;
+        uint32_t m_setsPerPool = 1000; // next increased max sets num
+        uint32_t m_maxSetLimit = 4092;
+
+        VkDescriptorPool createPool(VkDevice device, uint32_t setCount, std::span<PoolSizeRatio> poolRatios);
+        VkDescriptorPool getPool();
+    };
+
+    struct DescriptorWriter {
+        std::deque<VkDescriptorImageInfo> imageInfos;
+        std::deque<VkDescriptorBufferInfo> bufferInfos;
+        std::vector<VkWriteDescriptorSet> writes;
+
+        void write_image(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type);
+        void write_buffer(int binding, VkBuffer buffer, size_t size, size_t offset, VkDescriptorType type);
+
+        void clear();
+        void update_set(VkDevice device, VkDescriptorSet set);
+    };
+
     /*
-     * Manager that controls the descriptor pools, and cache descriptors
+     * Manager that controls setting and the growable descriptor pools by frames
      */
     class VulkanDescriptorManager
     {
     public:
-        VulkanDescriptorManager(VulkanDevice* device);
+        VulkanDescriptorManager(VulkanDevice* device, const int maxFramesInFlight, uint32_t& currentFrame);
         ~VulkanDescriptorManager();
         
-        const VkDescriptorSetLayout& GetDescriptorSetLayout();
-        void allocateDescriptorSet(VulkanBuffer& buffer);
-    private:
-        void createDescriptorPools();
-        void createDescriptorSetLayout();
+        void Reset();
         
     private:
         VulkanDevice* m_device;
-        VkDescriptorPool m_uboPool;
-        
-        // TODO: use cache
-        VkDescriptorSetLayout m_descriptorSetLayout;
-        VkDescriptorSet m_descriptorSet;
+        int m_maxFramesInFlight = 1;
+        uint32_t& m_currentFrame;
+
+        int m_maxSets = 1000; // max sets of a pool
+        float m_growthRate = 1.5;
+        uint32_t m_maxSetLimit = 4092;
+
+        std::vector<PoolSizeRatio> m_ratios = {
+            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 3 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 3 },
+            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4 },
+        };
+
+        std::vector<DescriptorAllocator> m_allocators; // by frame
     };
 
-    
+    // static descriptor manager interface
     class DescriptorManager
     {
-    // static wrapper of VulkanDescriptorManager
     public:
         static void Init(VulkanDescriptorManager* manager);
-        static const VkDescriptorSetLayout& GetDescriptorSetLayout();
+        // static const VkDescriptorSetLayout& GetDescriptorSetLayout();
     private:
         static VulkanDescriptorManager* s_manager;
     };

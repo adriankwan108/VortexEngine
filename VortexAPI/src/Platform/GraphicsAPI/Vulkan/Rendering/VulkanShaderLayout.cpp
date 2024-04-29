@@ -43,6 +43,6 @@ namespace vkclass
 
     void VulkanUniformLayout::SetLayout(VX::UniformShaderLayout layout)
     {
-        m_descriptorSetLayout = DescriptorManager::GetDescriptorSetLayout();
+        // m_descriptorSetLayout = DescriptorManager::GetDescriptorSetLayout();
     }
 }

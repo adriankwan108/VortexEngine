@@ -9,7 +9,7 @@ namespace VX
         m_Device(&m_Instance, &m_Surface, m_enableValidation),
         m_SyncManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
         m_CommandManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
-        m_DescriptorManager(&m_Device)
+        m_DescriptorManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame)
     {
 
     }
