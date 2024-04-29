@@ -111,6 +111,118 @@ namespace vkclass
     }
 
 
+    void DescriptorWriter::WriteImage(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type)
+    {
+        VkDescriptorImageInfo& info = imageInfos.emplace_back(
+            VkDescriptorImageInfo
+            {
+                .sampler = sampler,
+                .imageView = image,
+                .imageLayout = layout
+            }
+        );
+
+        VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+
+        write.dstBinding = binding;
+        write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
+        write.descriptorCount = 1;
+        write.descriptorType = type;
+        write.pImageInfo = &info;
+
+        writes.push_back(write);
+    }
+
+    void DescriptorWriter::WriteBuffer(int binding, VkDescriptorBufferInfo bufferInfo, VkDescriptorType type)
+    {
+        VkDescriptorBufferInfo& info = bufferInfos.emplace_back(bufferInfo);
+
+        VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+
+        write.dstBinding = binding;
+        write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
+        write.descriptorCount = 1;
+        write.descriptorType = type;
+        write.pBufferInfo = &info;
+
+        writes.push_back(write);
+    }
+
+    void DescriptorWriter::WriteBuffer(int binding, VkBuffer buffer, size_t size, size_t offset, VkDescriptorType type)
+    {
+        VkDescriptorBufferInfo& info = bufferInfos.emplace_back(
+            VkDescriptorBufferInfo
+            {
+                .buffer = buffer,
+                .offset = offset,
+                .range = size
+            }
+        );
+
+        VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+
+        write.dstBinding = binding;
+        write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
+        write.descriptorCount = 1;
+        write.descriptorType = type;
+        write.pBufferInfo = &info;
+
+        writes.push_back(write);
+    }
+
+    void DescriptorWriter::Clear()
+    {
+        imageInfos.clear();
+        writes.clear();
+        bufferInfos.clear();
+    }
+
+    void DescriptorWriter::UpdateSet(VkDevice device, VkDescriptorSet set)
+    {
+        for (VkWriteDescriptorSet& write : writes) 
+        {
+            write.dstSet = set;
+        }
+
+        vkUpdateDescriptorSets(device, (uint32_t)writes.size(), writes.data(), 0, nullptr);
+    }
+
+
+    void DescriptorLayoutBuilder::AddBinding(uint32_t binding, VkDescriptorType type)
+    {
+        VkDescriptorSetLayoutBinding newbind{};
+        newbind.binding = binding;
+        newbind.descriptorCount = 1;
+        newbind.descriptorType = type;
+
+        bindings.push_back(newbind);
+    }
+
+    void DescriptorLayoutBuilder::Clear()
+    {
+        bindings.clear();
+    }
+
+    VkDescriptorSetLayout DescriptorLayoutBuilder::Build(VkDevice device, VkShaderStageFlags shaderStages, void* pNext, VkDescriptorSetLayoutCreateFlags flags)
+    {
+        for (auto& b : bindings) 
+        {
+            b.stageFlags |= shaderStages;
+        }
+
+        VkDescriptorSetLayoutCreateInfo info = { .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
+        info.pNext = pNext;
+
+        info.pBindings = bindings.data();
+        info.bindingCount = (uint32_t)bindings.size();
+        info.flags = flags;
+
+        VkDescriptorSetLayout set;
+        VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &info, nullptr, &set));
+
+        return set;
+    }
+
     VulkanDescriptorManager* DescriptorManager::s_manager = nullptr;
 
     VulkanDescriptorManager::VulkanDescriptorManager(VulkanDevice* device, const int maxFramesInFlight, uint32_t& currentFrame):
@@ -136,33 +248,6 @@ namespace vkclass
     {
         m_allocators[m_currentFrame].Clear();
     }
-
-    //void VulkanDescriptorManager::createDescriptorSetLayout()
-    //{
-    //    // specify the actual buffer / image resources layout
-    //    std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings =
-    //    {
-    //        vkclass::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
-    //        vkclass::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT, 1)
-    //    };
-
-    //    VkDescriptorSetLayoutCreateInfo descriptorLayout = vkclass::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
-    //    VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_device->LogicalDevice, &descriptorLayout, nullptr, &m_descriptorSetLayout));
-    //}
-
-    //void VulkanDescriptorManager::allocateDescriptorSet(VulkanBuffer& buffer)
-    //{
-    //    VkDescriptorSetAllocateInfo allocInfo = vkclass::initializers::descriptorSetAllocateInfo(m_uboPool, &m_descriptorSetLayout, 1);
-    //    VK_CHECK_RESULT(vkAllocateDescriptorSets(m_device->LogicalDevice, &allocInfo, &m_descriptorSet));
-
-    //    std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
-    //        // Binding 0 : Projection/View matrix as uniform buffer
-    //        // vkclass::initializers::writeDescriptorSet(m_descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers.view.descriptor),
-    //        // Binding 1 : Instance matrix as dynamic uniform buffer
-    //        vkclass::initializers::writeDescriptorSet(m_descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, buffer.GetDescriptor())
-    //    };
-    //    vkUpdateDescriptorSets(m_device->LogicalDevice, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
-    //}
 
     /*const VkDescriptorSetLayout& VulkanDescriptorManager::GetDescriptorSetLayout()
     {

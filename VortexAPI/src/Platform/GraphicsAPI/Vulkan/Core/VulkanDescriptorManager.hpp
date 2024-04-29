@@ -18,16 +18,16 @@ namespace vkclass
         float ratio;
     };
 
-    /* Growable descriptor pool
-     * Design:
-     *      First grab a pool from ready pool
-     *      try to allocate
-     *      if success
-     *          add pool back to ready
-     *      if failed
-     *          put the pool to full pools, and try to get another pool / create a new pool
-    */
+    /* Growable descriptor pool with allocator */
     struct DescriptorAllocator {
+    /* Design:
+     * First grab a pool from ready pool
+     * try to allocate
+     * if success
+     *     add pool back to ready
+     * if failed
+     *     put the pool to full pools, and try to get another pool / create a new pool
+     */
     public:
         void Init(VkDevice device, int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit);
         void Destroy();
@@ -53,11 +53,21 @@ namespace vkclass
         std::deque<VkDescriptorBufferInfo> bufferInfos;
         std::vector<VkWriteDescriptorSet> writes;
 
-        void write_image(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type);
-        void write_buffer(int binding, VkBuffer buffer, size_t size, size_t offset, VkDescriptorType type);
+        void WriteImage(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type);
 
-        void clear();
-        void update_set(VkDevice device, VkDescriptorSet set);
+        void WriteBuffer(int binding, VkDescriptorBufferInfo bufferInfo, VkDescriptorType type);
+        void WriteBuffer(int binding, VkBuffer buffer, size_t size, size_t offset, VkDescriptorType type);
+
+        void Clear();
+        void UpdateSet(VkDevice device, VkDescriptorSet set);
+    };
+
+    struct DescriptorLayoutBuilder {
+        std::vector<VkDescriptorSetLayoutBinding> bindings;
+
+        void AddBinding(uint32_t binding, VkDescriptorType type);
+        void Clear();
+        VkDescriptorSetLayout Build(VkDevice device, VkShaderStageFlags shaderStages, void* pNext = nullptr, VkDescriptorSetLayoutCreateFlags flags = 0);
     };
 
     /*
