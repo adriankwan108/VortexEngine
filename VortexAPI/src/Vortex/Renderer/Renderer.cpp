@@ -25,11 +25,13 @@ namespace VX
         VX_CORE_INFO("Renderer: shut down.");
     }
 
-    void Renderer::BeginScene(OrthographicCamera& camera)
+    void Renderer::BeginScene(std::shared_ptr<OrthographicCamera> camera)
     {
         // VX_CORE_INFO("Renderer: Beginning Scene...");
-        s_sceneData->viewProjection = camera.GetViewProjectionMatrix();
+        s_sceneData->viewProjection = camera->GetViewProjectionMatrix();
         
+        /* update global data here */
+        // update camera, environment
     }
 
     void Renderer::EndScene()
@@ -40,7 +42,7 @@ namespace VX
     void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray> &vertexArray)
     {
         // VX_CORE_TRACE("Renderer:: Submiting...");
-
+        /* update per-material / per-object data here */
         shader->Bind();
         
         vertexArray->Bind();

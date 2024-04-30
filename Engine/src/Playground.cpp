@@ -7,9 +7,12 @@
 #include <chrono>
 
 Playground::Playground()
-    : VX::Layer("Playground"), m_camera(-1.0f, 1.0f, -1.0f, 1.0f)
+    : VX::Layer("Playground")
 {
     VX_INFO("{0}: Creating...", GetName());
+    
+    m_camera = std::shared_ptr<VX::OrthographicCamera>(VX::OrthographicCamera::Create(-1.0f, 1.0f, -1.0f, 1.0f));
+    
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
     // define shader layout
     VX::VertexShaderLayout layout = {

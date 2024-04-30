@@ -25,6 +25,6 @@ private:
     
     Geometry::Uniform_MVP mvp{};
     
-    VX::OrthographicCamera m_camera;
+    std::shared_ptr<VX::OrthographicCamera> m_camera;
 };
 

@@ -7,7 +7,8 @@ namespace VX
     {
     public:
         OrthographicCamera(float left, float right, float bottom, float top); // orthographic matrix, the bounce, optional: near, far
-
+        virtual ~OrthographicCamera() = default;
+        
         void SetProjection(float left, float right, float bottom, float top);
 
         const glm::vec3& GetPosition() const { return m_Position; }
@@ -21,7 +22,9 @@ namespace VX
         const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
         const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
         
-        // could implement an onupdate function if camera is corresponding to mouse movement
+        virtual void Update() = 0;
+        static OrthographicCamera* Create(float left, float right, float bottom, float top);
+        
     private:
         void RecalculateViewMatrix();
     private:
