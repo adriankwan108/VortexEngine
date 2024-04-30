@@ -4,6 +4,7 @@
 #include "vulkan/vulkan.h"
 
 #include "Renderer/Buffer.hpp"
+#include "Core/VulkanDescriptorManager.hpp"
 
 namespace vkclass
 {
@@ -26,17 +27,17 @@ namespace vkclass
         uint32_t m_stride = 0;
     };
 
-class VulkanUniformLayout
-{
-public:
-    VulkanUniformLayout();
-    ~VulkanUniformLayout() = default;
-    
-    void SetLayout(VX::UniformShaderLayout layout);
-    const VkDescriptorSetLayout& GetDescripotSetLayout() const { return m_descriptorSetLayout; }
-private:
-    VkDescriptorSetLayout m_descriptorSetLayout;
-};
+    class VulkanUniformLayout
+    {
+    public:
+        VulkanUniformLayout();
+        ~VulkanUniformLayout() = default;
+        
+        void SetLayout(VX::UniformShaderLayout layout);
+        const VkDescriptorSetLayout& GetDescripotSetLayout() const { return m_descriptorSetLayout; }
+    private:
+        VkDescriptorSetLayout m_descriptorSetLayout;
+    };
 
     static VkFormat ShaderDataTypeToVulkanFormat(VX::ShaderDataType type)
     {

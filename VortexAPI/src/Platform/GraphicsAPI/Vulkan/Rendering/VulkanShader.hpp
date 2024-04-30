@@ -26,9 +26,12 @@ namespace vkclass
 //        virtual void SetPipeline(VX::ShaderLayout layout) override;
         
         virtual void SetVertexLayout(VX::VertexShaderLayout layout) override;
-        virtual void SetUniformLayout(VX::UniformShaderLayout layout) override;
-        virtual void SetDynamicLayout(VX::UniformShaderLayout layout) override;
-        virtual void SetPushConstant(VX::UniformShaderLayout layout) override;
+        
+        virtual void SetGlobalLayout    (int binding, VX::UniformShaderLayout layout) override;
+        virtual void SetPassLayout      (int binding, VX::UniformShaderLayout layout) override;
+        virtual void SetMaterialLayout  (int binding, VX::UniformShaderLayout layout) override;
+        virtual void SetObjectLayout    (int binding, VX::UniformShaderLayout layout) override;
+        
         virtual void Prepare() override;
         
         virtual const std::string& GetName() const override { return m_Name; }
@@ -57,14 +60,18 @@ namespace vkclass
         std::string m_fragFilePath;
         
         vkclass::VulkanVertexShaderLayout m_vertexLayout;
+        
+        // here we should have 4 x framesInFlight descriptor layouts
         vkclass::VulkanUniformLayout m_uniformLayout;
+        
+        // 4 x framesInFlight descriptor set here
+        
         VkPipelineLayout m_pipelineLayout;
         VkPipeline m_pipeline;
         
         // private var
         VkShaderModule m_vertModule = VK_NULL_HANDLE;
         VkShaderModule m_fragModule = VK_NULL_HANDLE;
-        
         
         bool m_isValid = false;
     };

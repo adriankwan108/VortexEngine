@@ -20,12 +20,12 @@ Playground::Playground()
         {VX::ShaderDataType::Float3, "color"}
     };
     
-    VX::UniformShaderLayout uniformLayout = {
+    VX::UniformShaderLayout viewProjLayout = {
         {VX::ShaderDataType::Mat4, "view"},
         {VX::ShaderDataType::Mat4, "proj"}
     };
 
-    VX::UniformShaderLayout dynamicLayout = {
+    VX::UniformShaderLayout modelLayout = {
         {VX::ShaderDataType::Mat4, "model"},
     };
     
@@ -52,7 +52,9 @@ Playground::Playground()
         VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv")
     );
     m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
-    m_basicShader->SetUniformLayout(uniformLayout);
+    
+    m_basicShader->SetGlobalLayout(0, viewProjLayout);
+    
     m_basicShader->Prepare();
     
     m_vertexBuffer = std::shared_ptr<VX::VertexBuffer>(VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices)));

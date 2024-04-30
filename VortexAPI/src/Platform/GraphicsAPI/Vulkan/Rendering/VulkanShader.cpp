@@ -86,19 +86,23 @@ namespace vkclass
         m_vertexLayout.SetLayout(layout);
     }
 
-    void VulkanShader::SetUniformLayout(VX::UniformShaderLayout layout)
+    void VulkanShader::SetGlobalLayout(int binding, VX::UniformShaderLayout layout)
     {
-        m_uniformLayout.SetLayout(layout);
+        // set 0, binding
     }
 
-    void VulkanShader::SetDynamicLayout(VX::UniformShaderLayout layout)
+    void VulkanShader::SetPassLayout(int binding, VX::UniformShaderLayout layout)
     {
-
+         
+    }
+    void VulkanShader::SetMaterialLayout(int binding, VX::UniformShaderLayout layout)
+    {
+        
     }
 
-    void VulkanShader::SetPushConstant(VX::UniformShaderLayout layout)
+    void VulkanShader::SetObjectLayout(int binding, VX::UniformShaderLayout layout)
     {
-
+        
     }
 
     void VulkanShader::Prepare()

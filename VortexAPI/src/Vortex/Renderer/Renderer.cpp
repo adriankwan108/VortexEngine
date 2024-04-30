@@ -30,8 +30,6 @@ namespace VX
         // VX_CORE_INFO("Renderer: Beginning Scene...");
         s_sceneData->viewProjection = camera->GetViewProjectionMatrix();
         
-        /* update global data here */
-        // update camera, environment
     }
 
     void Renderer::EndScene()
