@@ -105,7 +105,8 @@ namespace vkclass
     {
     public:
         static void Init(VulkanDescriptorManager* manager);
-        // static const VkDescriptorSetLayout& GetDescriptorSetLayout();
+        
+
     private:
         static VulkanDescriptorManager* s_manager;
     };

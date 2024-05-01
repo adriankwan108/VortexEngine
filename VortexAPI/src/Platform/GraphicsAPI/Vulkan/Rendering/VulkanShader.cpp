@@ -88,7 +88,13 @@ namespace vkclass
 
     void VulkanShader::SetGlobalLayout(int binding, VX::UniformShaderLayout layout)
     {
-        // set 0, binding
+        // (One frame)
+        // TODO: we should have descriptsetlayout[4] in this, and setgloballayout(descriptorSet)
+        //       obtain reference of descriptorSet[2] for materials and object,
+        //       binding of global descriptor set stays in global to avoid rebinding
+        // 
+        // descriptorlayoutbuilder.AddBinding(binding, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+        // descriptorWriter.WriteBuffer(binding, buffer.info, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
     }
 
     void VulkanShader::SetPassLayout(int binding, VX::UniformShaderLayout layout)
@@ -107,6 +113,11 @@ namespace vkclass
 
     void VulkanShader::Prepare()
     {
+        // globalSetLayout = descriptorlayoutbuilder.build();
+        // globalSet = DescriptorManager.Allocate(globalSetLayout);
+        
+        // descriptorWriter.UpdateSet(globalSet);
+
         VX_CORE_TRACE("Vulkan Shader: Preparing pipeline...");
         VulkanPipelineBuilder builder;
         builder.SetShaders(m_vertModule, m_fragModule);
