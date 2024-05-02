@@ -223,6 +223,42 @@ namespace vkclass
         return set;
     }
 
+    VulkanDescriptor::VulkanDescriptor(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame): m_device(device), m_maxFramesInFlight(maxFramesInFlight), m_currentFrame(currentFrame)
+    {
+        m_descriptorSetLayouts.resize(maxFramesInFlight);
+        m_descriptorSets.resize(maxFramesInFlight);
+    }
+
+    void VulkanDescriptor::SetDescriptorSetLayout(VkDescriptorSetLayout layout)
+    {
+        std::fill(m_descriptorSetLayouts.begin(), m_descriptorSetLayouts.end(), layout);
+    }
+
+    void VulkanDescriptor::SetDescriptorSet(VkDescriptorSet set)
+    {
+        std::fill(m_descriptorSets.begin(), m_descriptorSets.end(), set);
+    }
+
+    VkDescriptorSetLayout VulkanDescriptor::GetDescriptorSetLayout()
+    {
+        return m_descriptorSetLayouts[m_currentFrame];
+    }
+
+    VkDescriptorSet VulkanDescriptor::GetDescriptorSet()
+    {
+        return m_descriptorSets[m_currentFrame];
+    }
+
+    VulkanDescriptor::~VulkanDescriptor()
+    {
+        for(auto& layout : m_descriptorSetLayouts)
+        {
+            vkDestroyDescriptorSetLayout(m_device, layout, nullptr);
+        }
+        m_descriptorSetLayouts.clear();
+        m_descriptorSets.clear();
+    }
+
     VulkanDescriptorManager* DescriptorManager::s_manager = nullptr;
 
     VulkanDescriptorManager::VulkanDescriptorManager(VulkanDevice* device, const int maxFramesInFlight, uint32_t& currentFrame):
@@ -249,10 +285,10 @@ namespace vkclass
         m_allocators[m_currentFrame].Clear();
     }
 
-    /*const VkDescriptorSetLayout& VulkanDescriptorManager::GetDescriptorSetLayout()
+    std::shared_ptr<VulkanDescriptor> VulkanDescriptorManager::CreateDescriptor()
     {
-        return m_descriptorSetLayout;
-    }*/
+        return std::shared_ptr<VulkanDescriptor>(new VulkanDescriptor(m_device->LogicalDevice, m_maxFramesInFlight, m_currentFrame));
+    }
 
     // static wrapper functions
     void DescriptorManager::Init(VulkanDescriptorManager *manager)
@@ -260,8 +296,8 @@ namespace vkclass
         s_manager = manager;
     }
 
-    /*const VkDescriptorSetLayout& DescriptorManager::GetDescriptorSetLayout()
+    std::shared_ptr<VulkanDescriptor> DescriptorManager::CreateDescriptor()
     {
-        return s_manager->GetDescriptorSetLayout();
-    }*/
+        return s_manager->CreateDescriptor();
+    }
 }

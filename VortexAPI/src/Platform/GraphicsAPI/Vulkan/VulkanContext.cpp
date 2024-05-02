@@ -55,6 +55,7 @@ namespace VX
         
         vkclass::VulkanRendererAPI::SetCommandManager(&m_CommandManager);
         
+        vkclass::VulkanCamera::Init(&m_Device);
         vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager, m_RenderPass->RenderPass);
         
         createFrameBuffers();

@@ -53,7 +53,7 @@ Playground::Playground()
     );
     m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
     
-    m_basicShader->SetGlobalLayout(0, viewProjLayout);
+    m_basicShader->SetGlobalLayout(0, m_camera);
     
     m_basicShader->Prepare();
     

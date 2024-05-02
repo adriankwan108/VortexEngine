@@ -71,6 +71,30 @@ namespace vkclass
     };
 
     /*
+     * Descriptor set and set layout by frames in flight
+     */
+    class VulkanDescriptor
+    {
+    public:
+        VulkanDescriptor(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame);
+        ~VulkanDescriptor();
+        
+        void SetDescriptorSetLayout(VkDescriptorSetLayout layout);
+        void SetDescriptorSet(VkDescriptorSet set);
+        
+        VkDescriptorSetLayout GetDescriptorSetLayout();
+        VkDescriptorSet GetDescriptorSet();
+        
+    private:
+        int m_maxFramesInFlight = 1;
+        uint32_t& m_currentFrame;
+        VkDevice m_device;
+        
+        std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
+        std::vector<VkDescriptorSet> m_descriptorSets;
+    };
+
+    /*
      * Manager that controls setting and the growable descriptor pools by frames
      */
     class VulkanDescriptorManager
@@ -80,6 +104,7 @@ namespace vkclass
         ~VulkanDescriptorManager();
         
         void Reset();
+        std::shared_ptr<VulkanDescriptor> CreateDescriptor();
         
     private:
         VulkanDevice* m_device;
@@ -105,7 +130,7 @@ namespace vkclass
     {
     public:
         static void Init(VulkanDescriptorManager* manager);
-        
+        static std::shared_ptr<VulkanDescriptor> CreateDescriptor();
 
     private:
         static VulkanDescriptorManager* s_manager;

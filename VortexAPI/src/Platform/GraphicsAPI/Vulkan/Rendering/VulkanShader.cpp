@@ -1,4 +1,5 @@
 #include "VulkanShader.hpp"
+#include "Core/VulkanCamera.hpp"
 
 namespace vkclass
 {
@@ -44,6 +45,7 @@ namespace vkclass
         m_isValid = true;
         // TODO: if not valid, use default shader (guaranteed)
         
+        
     }
 
     VulkanShader::~VulkanShader()
@@ -86,15 +88,11 @@ namespace vkclass
         m_vertexLayout.SetLayout(layout);
     }
 
-    void VulkanShader::SetGlobalLayout(int binding, VX::UniformShaderLayout layout)
+    
+    void VulkanShader::SetGlobalLayout(int binding, std::shared_ptr<VX::OrthographicCamera> camera)
     {
-        // (One frame)
-        // TODO: we should have descriptsetlayout[4] in this, and setgloballayout(descriptorSet)
-        //       obtain reference of descriptorSet[2] for materials and object,
-        //       binding of global descriptor set stays in global to avoid rebinding
-        // 
-        // descriptorlayoutbuilder.AddBinding(binding, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-        // descriptorWriter.WriteBuffer(binding, buffer.info, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+        // TODO: don't use push back => use insert
+        m_descriptorSetLayouts.push_back( std::static_pointer_cast<VulkanCamera>(camera)->GetDescriptor()->GetDescriptorSetLayout());
     }
 
     void VulkanShader::SetPassLayout(int binding, VX::UniformShaderLayout layout)
@@ -125,10 +123,10 @@ namespace vkclass
         
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0; // Optional
-        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
-        //pipelineLayoutInfo.setLayoutCount = 1; // Optional
-        //pipelineLayoutInfo.pSetLayouts = &m_uniformLayout.GetDescripotSetLayout(); // Optional
+        // pipelineLayoutInfo.setLayoutCount = 0; // Optional
+        // pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size()); // Optional
+        pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data(); // Optional
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
         if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)

@@ -6,6 +6,9 @@
 
 #include "Renderer/OrthographicCamera.hpp"
 #include "VulkanBuffer.hpp"
+#include "VulkanDescriptorManager.hpp"
+
+#include "VulkanDevice.hpp"
 
 namespace vkclass
 {
@@ -15,6 +18,8 @@ namespace vkclass
         VulkanCamera(float left, float right, float bottom, float top): VX::OrthographicCamera(left, right, bottom, top)
         {
             // create uniform buffer
+            
+            setDescriptor();
         }
         
         virtual ~VulkanCamera();
@@ -22,8 +27,13 @@ namespace vkclass
         // here we update uniform buffer
         virtual void Update() override;
         
-        
+        static void Init(VulkanDevice* device);
+    public:
+        std::shared_ptr<VulkanDescriptor> GetDescriptor() const { return m_descriptor; }
     private:
+        static VulkanDevice* m_device;
+        std::shared_ptr<VulkanDescriptor> m_descriptor;
         
+        void setDescriptor();
     };
 }

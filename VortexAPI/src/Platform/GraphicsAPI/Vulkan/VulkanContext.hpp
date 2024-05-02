@@ -18,6 +18,7 @@
 #include "Core/VulkanCommandManager.hpp"
 #include "Core/VulkanSyncManager.hpp"
 #include "Core/VulkanDescriptorManager.hpp"
+#include "Core/VulkanCamera.hpp"
 
 #include "Core/VulkanBuffer.hpp"
 

@@ -23,11 +23,10 @@ namespace vkclass
         
         virtual void Bind() const override;
         virtual void UnBind() const override;
-//        virtual void SetPipeline(VX::ShaderLayout layout) override;
         
         virtual void SetVertexLayout(VX::VertexShaderLayout layout) override;
         
-        virtual void SetGlobalLayout    (int binding, VX::UniformShaderLayout layout) override;
+        virtual void SetGlobalLayout    (int binding, std::shared_ptr<VX::OrthographicCamera> camera) override;
         virtual void SetPassLayout      (int binding, VX::UniformShaderLayout layout) override;
         virtual void SetMaterialLayout  (int binding, VX::UniformShaderLayout layout) override;
         virtual void SetObjectLayout    (int binding, VX::UniformShaderLayout layout) override;
@@ -61,10 +60,8 @@ namespace vkclass
         
         vkclass::VulkanVertexShaderLayout m_vertexLayout;
         
-        // here we should have 4 x framesInFlight descriptor layouts
-        vkclass::VulkanUniformLayout m_uniformLayout;
-        
-        // 4 x framesInFlight descriptor set here
+        // TODO: just contain references rather than values
+        std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
         
         VkPipelineLayout m_pipelineLayout;
         VkPipeline m_pipeline;
