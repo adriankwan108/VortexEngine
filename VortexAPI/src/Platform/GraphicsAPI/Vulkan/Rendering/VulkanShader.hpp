@@ -26,7 +26,7 @@ namespace vkclass
         
         virtual void SetVertexLayout(VX::VertexShaderLayout layout) override;
         
-        virtual void SetGlobalLayout    (int binding, std::shared_ptr<VX::OrthographicCamera> camera) override;
+        virtual void SetGlobalLayout    (int binding, VX::UniformShaderLayout layout) override;
         virtual void SetPassLayout      (int binding, VX::UniformShaderLayout layout) override;
         virtual void SetMaterialLayout  (int binding, VX::UniformShaderLayout layout) override;
         virtual void SetObjectLayout    (int binding, VX::UniformShaderLayout layout) override;

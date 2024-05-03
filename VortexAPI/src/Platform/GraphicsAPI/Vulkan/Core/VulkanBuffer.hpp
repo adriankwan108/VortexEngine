@@ -30,7 +30,7 @@ namespace vkclass
         virtual ~VulkanBuffer();
         
         const VkBuffer& Buffer = m_buffer;
-        VkDescriptorBufferInfo* GetDescriptor() { return &m_bufferInfo; }
+        VkDescriptorBufferInfo* GetDescriptorInfo() { return &m_bufferInfo; }
         // get memory()
         // get size
         // get data

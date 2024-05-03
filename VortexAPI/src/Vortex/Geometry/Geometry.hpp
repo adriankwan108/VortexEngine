@@ -13,9 +13,8 @@ namespace Geometry
         glm::vec3 color;
     };
 
-    struct Uniform_MVP
+    struct Uniform_VP
     {
-        glm::mat4 model;
         glm::mat4 view;
         glm::mat4 proj;
     };

@@ -9,13 +9,15 @@
 #include "VulkanDescriptorManager.hpp"
 
 #include "VulkanDevice.hpp"
+#include "VulkanBuffer.hpp"
+#include "Vortex/Geometry/Geometry.hpp"
 
 namespace vkclass
 {
     class VulkanCamera : public VX::OrthographicCamera
     {
     public:
-        VulkanCamera(float left, float right, float bottom, float top): VX::OrthographicCamera(left, right, bottom, top)
+        VulkanCamera(float left, float right, float bottom, float top): VX::OrthographicCamera(left, right, bottom, top), m_uniformBuffer(sizeof(Geometry::Uniform_VP))
         {
             // create uniform buffer
             
@@ -33,6 +35,7 @@ namespace vkclass
     private:
         static VulkanDevice* m_device;
         std::shared_ptr<VulkanDescriptor> m_descriptor;
+        VulkanUniformBuffer m_uniformBuffer;
         
         void setDescriptor();
     };

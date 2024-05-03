@@ -56,7 +56,6 @@ namespace vkclass
         void WriteImage(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type);
 
         void WriteBuffer(int binding, VkDescriptorBufferInfo bufferInfo, VkDescriptorType type);
-        void WriteBuffer(int binding, VkBuffer buffer, size_t size, size_t offset, VkDescriptorType type);
 
         void Clear();
         void UpdateSet(VkDevice device, VkDescriptorSet set);
@@ -79,19 +78,33 @@ namespace vkclass
         VulkanDescriptor(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame);
         ~VulkanDescriptor();
         
-        void SetDescriptorSetLayout(VkDescriptorSetLayout layout);
-        void SetDescriptorSet(VkDescriptorSet set);
+        // void SetStage(VkShaderStageFlags shaderStages); // assume uniform buffer now
+        // void SetType();
         
-        VkDescriptorSetLayout GetDescriptorSetLayout();
-        VkDescriptorSet GetDescriptorSet();
+        // adding both layout and writer at the same time
+        void AddBinding(int binding, VkDescriptorBufferInfo bufferInfo);
+        void AddBinding(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout );
+        
+        // build props
+        void Build();
+        
+        bool updated = false;
         
     private:
         int m_maxFramesInFlight = 1;
         uint32_t& m_currentFrame;
         VkDevice m_device;
         
-        std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
-        std::vector<VkDescriptorSet> m_descriptorSets;
+        DescriptorLayoutBuilder m_layoutBuilder;
+        DescriptorWriter m_writer;
+        
+        VkDescriptorType m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        
+        
+        
+        // props
+        VkDescriptorSetLayout m_layout;
+        std::vector<VkDescriptorSet> m_setsInFlight;
     };
 
     /*
@@ -105,6 +118,7 @@ namespace vkclass
         
         void Reset();
         std::shared_ptr<VulkanDescriptor> CreateDescriptor();
+        std::vector<VkDescriptorSet> Allocate(VkDescriptorSetLayout layout);
         
     private:
         VulkanDevice* m_device;
@@ -131,7 +145,7 @@ namespace vkclass
     public:
         static void Init(VulkanDescriptorManager* manager);
         static std::shared_ptr<VulkanDescriptor> CreateDescriptor();
-
+        static std::vector<VkDescriptorSet> Allocate(VkDescriptorSetLayout layout);
     private:
         static VulkanDescriptorManager* s_manager;
     };

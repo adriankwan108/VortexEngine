@@ -89,10 +89,10 @@ namespace vkclass
     }
 
     
-    void VulkanShader::SetGlobalLayout(int binding, std::shared_ptr<VX::OrthographicCamera> camera)
+    void VulkanShader::SetGlobalLayout(int binding, VX::UniformShaderLayout layout)
     {
-        // TODO: don't use push back => use insert
-        m_descriptorSetLayouts.push_back( std::static_pointer_cast<VulkanCamera>(camera)->GetDescriptor()->GetDescriptorSetLayout());
+        // TODO: add name to UniformShaderLayout, then search global desciprot library
+        
     }
 
     void VulkanShader::SetPassLayout(int binding, VX::UniformShaderLayout layout)
@@ -111,10 +111,7 @@ namespace vkclass
 
     void VulkanShader::Prepare()
     {
-        // globalSetLayout = descriptorlayoutbuilder.build();
-        // globalSet = DescriptorManager.Allocate(globalSetLayout);
         
-        // descriptorWriter.UpdateSet(globalSet);
 
         VX_CORE_TRACE("Vulkan Shader: Preparing pipeline...");
         VulkanPipelineBuilder builder;

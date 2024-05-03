@@ -2,7 +2,6 @@
 
 #include "VortexPCH.hpp"
 #include "ShaderLayout.hpp"
-#include "OrthographicCamera.hpp"
 
 namespace VX
 {
@@ -19,7 +18,7 @@ namespace VX
         virtual void SetVertexLayout(VX::VertexShaderLayout layout) = 0;
         
         // grouped by update frequency
-        virtual void SetGlobalLayout    (int binding, std::shared_ptr<VX::OrthographicCamera> camera) = 0; //   set 0: global (per frame)
+        virtual void SetGlobalLayout    (int binding, VX::UniformShaderLayout layout) = 0; //   set 0: global (per frame)
         virtual void SetPassLayout      (int binding, VX::UniformShaderLayout layout) = 0; //   set 1: per pass (shadows)
         virtual void SetMaterialLayout  (int binding, VX::UniformShaderLayout layout) = 0; //   set 2: per material
         virtual void SetObjectLayout    (int binding, VX::UniformShaderLayout layout) = 0; //   set 3: per object (transform)

@@ -148,28 +148,6 @@ namespace vkclass
         writes.push_back(write);
     }
 
-    void DescriptorWriter::WriteBuffer(int binding, VkBuffer buffer, size_t size, size_t offset, VkDescriptorType type)
-    {
-        VkDescriptorBufferInfo& info = bufferInfos.emplace_back(
-            VkDescriptorBufferInfo
-            {
-                .buffer = buffer,
-                .offset = offset,
-                .range = size
-            }
-        );
-
-        VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
-
-        write.dstBinding = binding;
-        write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
-        write.descriptorCount = 1;
-        write.descriptorType = type;
-        write.pBufferInfo = &info;
-
-        writes.push_back(write);
-    }
-
     void DescriptorWriter::Clear()
     {
         imageInfos.clear();
@@ -225,38 +203,37 @@ namespace vkclass
 
     VulkanDescriptor::VulkanDescriptor(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame): m_device(device), m_maxFramesInFlight(maxFramesInFlight), m_currentFrame(currentFrame)
     {
-        m_descriptorSetLayouts.resize(maxFramesInFlight);
-        m_descriptorSets.resize(maxFramesInFlight);
-    }
-
-    void VulkanDescriptor::SetDescriptorSetLayout(VkDescriptorSetLayout layout)
-    {
-        std::fill(m_descriptorSetLayouts.begin(), m_descriptorSetLayouts.end(), layout);
-    }
-
-    void VulkanDescriptor::SetDescriptorSet(VkDescriptorSet set)
-    {
-        std::fill(m_descriptorSets.begin(), m_descriptorSets.end(), set);
-    }
-
-    VkDescriptorSetLayout VulkanDescriptor::GetDescriptorSetLayout()
-    {
-        return m_descriptorSetLayouts[m_currentFrame];
-    }
-
-    VkDescriptorSet VulkanDescriptor::GetDescriptorSet()
-    {
-        return m_descriptorSets[m_currentFrame];
+        m_setsInFlight.resize(m_maxFramesInFlight);
     }
 
     VulkanDescriptor::~VulkanDescriptor()
     {
-        for(auto& layout : m_descriptorSetLayouts)
+        vkDestroyDescriptorSetLayout(m_device, m_layout, nullptr);
+        m_setsInFlight.clear();
+    }
+
+    void VulkanDescriptor::AddBinding(int binding, VkDescriptorBufferInfo bufferInfo)
+    {
+        m_layoutBuilder.AddBinding(binding, m_type);
+        m_writer.WriteBuffer(binding, bufferInfo, m_type);
+    }
+
+    void VulkanDescriptor::AddBinding(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout)
+    {
+        m_layoutBuilder.AddBinding(binding, m_type);
+        m_writer.WriteImage(binding, image, sampler, layout, m_type);
+    }
+
+    void VulkanDescriptor::Build()
+    {
+        m_layout = m_layoutBuilder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT);
+        m_setsInFlight = DescriptorManager::Allocate(m_layout);
+        for(auto& set : m_setsInFlight)
         {
-            vkDestroyDescriptorSetLayout(m_device, layout, nullptr);
+            m_writer.UpdateSet(m_device, set);
         }
-        m_descriptorSetLayouts.clear();
-        m_descriptorSets.clear();
+        
+        updated = true;
     }
 
     VulkanDescriptorManager* DescriptorManager::s_manager = nullptr;
@@ -290,6 +267,18 @@ namespace vkclass
         return std::shared_ptr<VulkanDescriptor>(new VulkanDescriptor(m_device->LogicalDevice, m_maxFramesInFlight, m_currentFrame));
     }
 
+    std::vector<VkDescriptorSet> VulkanDescriptorManager::Allocate(VkDescriptorSetLayout layout)
+    {
+        std::vector<VkDescriptorSet> sets;
+        sets.resize(m_maxFramesInFlight);
+        
+        for(auto& allocator : m_allocators)
+        {
+            sets.push_back(allocator.Allocate(layout));
+        }
+        return sets;
+    }
+
     // static wrapper functions
     void DescriptorManager::Init(VulkanDescriptorManager *manager)
     {
@@ -299,5 +288,10 @@ namespace vkclass
     std::shared_ptr<VulkanDescriptor> DescriptorManager::CreateDescriptor()
     {
         return s_manager->CreateDescriptor();
+    }
+
+    std::vector<VkDescriptorSet> DescriptorManager::Allocate(VkDescriptorSetLayout layout)
+    {
+        return s_manager->Allocate(layout);
     }
 }
