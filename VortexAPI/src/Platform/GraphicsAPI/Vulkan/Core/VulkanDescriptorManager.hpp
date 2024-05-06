@@ -82,11 +82,15 @@ namespace vkclass
         // void SetType();
         
         // adding both layout and writer at the same time
-        void AddBinding(int binding, VkDescriptorBufferInfo bufferInfo);
+        void AddBinding(int binding, VulkanUniformBuffer* buffer);
         void AddBinding(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout );
         
         // build props
         void Build();
+        
+        // get props
+        const VkDescriptorSetLayout& layout = m_layout;
+        std::vector<VkDescriptorSet> GetSets() const { return m_setsInFlight; }
         
         bool updated = false;
         
@@ -95,12 +99,15 @@ namespace vkclass
         uint32_t& m_currentFrame;
         VkDevice m_device;
         
+        // frames in flight resources reference
+        VulkanUniformBuffer* m_buffer;
+        
+        // helper functions
         DescriptorLayoutBuilder m_layoutBuilder;
-        DescriptorWriter m_writer;
+        
+        std::vector<DescriptorWriter> m_writers;
         
         VkDescriptorType m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        
-        
         
         // props
         VkDescriptorSetLayout m_layout;
@@ -149,4 +156,15 @@ namespace vkclass
     private:
         static VulkanDescriptorManager* s_manager;
     };
+
+class GlobalDescriptor
+{
+public:
+    static std::shared_ptr<VulkanDescriptor> GetDescriptor() { return s_descriptor; }
+    static void SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor);
+    
+private:
+    static std::shared_ptr<VulkanDescriptor> s_descriptor;
+};
+
 }

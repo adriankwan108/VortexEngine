@@ -16,17 +16,16 @@ namespace vkclass
 
     void VulkanCamera::Update()
     {
+        // update uniform buffer
         
     }
 
     void VulkanCamera::setDescriptor()
     {
         m_descriptor = DescriptorManager::CreateDescriptor();
+        m_descriptor->AddBinding(0, &m_uniformBuffer);
+        m_descriptor->Build();
         
-        // TODO: FrameInFlight uniform buffer has two info,
-        // so add write descriptor should have two info,
-        // but the addbinding just has one argument for that
-
-        // m_descriptor->AddBinding(0, m_uniformBuffer.GetDescriptorInfo());
+        GlobalDescriptor::SetDescriptor(m_descriptor);
     }
 }

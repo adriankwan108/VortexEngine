@@ -92,6 +92,7 @@ namespace vkclass
     void VulkanShader::SetGlobalLayout(int binding, VX::UniformShaderLayout layout)
     {
         // TODO: add name to UniformShaderLayout, then search global desciprot library
+        m_descriptorSetLayouts.push_back( GlobalDescriptor::GetDescriptor()->layout);
         
     }
 

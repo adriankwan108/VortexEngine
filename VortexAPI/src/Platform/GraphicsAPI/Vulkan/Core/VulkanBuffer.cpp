@@ -196,4 +196,14 @@ namespace vkclass
     {
         m_UniformBuffers[VulkanBuffer::GetCurrentFrame()].SetData(data, size);
     }
+
+    std::vector<VkDescriptorBufferInfo> VulkanUniformBuffer::GetBuffersInfo()
+    {
+        std::vector<VkDescriptorBufferInfo> infos;
+        for(auto& buffer: m_UniformBuffers)
+        {
+            infos.push_back(buffer.GetDescriptorInfo());
+        }
+        return infos;
+    }
 }

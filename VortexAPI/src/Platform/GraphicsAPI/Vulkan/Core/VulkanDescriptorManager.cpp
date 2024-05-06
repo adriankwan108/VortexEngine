@@ -204,6 +204,7 @@ namespace vkclass
     VulkanDescriptor::VulkanDescriptor(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame): m_device(device), m_maxFramesInFlight(maxFramesInFlight), m_currentFrame(currentFrame)
     {
         m_setsInFlight.resize(m_maxFramesInFlight);
+        m_writers.resize(m_maxFramesInFlight);
     }
 
     VulkanDescriptor::~VulkanDescriptor()
@@ -212,25 +213,31 @@ namespace vkclass
         m_setsInFlight.clear();
     }
 
-    void VulkanDescriptor::AddBinding(int binding, VkDescriptorBufferInfo bufferInfo)
+    void VulkanDescriptor::AddBinding(int binding, VulkanUniformBuffer* buffer)
     {
+        m_buffer = buffer;
+        
         m_layoutBuilder.AddBinding(binding, m_type);
-        m_writer.WriteBuffer(binding, bufferInfo, m_type);
+        
+        for(int i = 0; i < m_maxFramesInFlight; i++)
+        {
+            m_writers[i].WriteBuffer(binding, buffer->GetBuffersInfo()[i], m_type);
+        }
     }
 
     void VulkanDescriptor::AddBinding(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout)
     {
         m_layoutBuilder.AddBinding(binding, m_type);
-        m_writer.WriteImage(binding, image, sampler, layout, m_type);
+        // m_writer.WriteImage(binding, image, sampler, layout, m_type);
     }
 
     void VulkanDescriptor::Build()
     {
         m_layout = m_layoutBuilder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT);
         m_setsInFlight = DescriptorManager::Allocate(m_layout);
-        for(auto& set : m_setsInFlight)
+        for(int i = 0; i < m_maxFramesInFlight; i++)
         {
-            m_writer.UpdateSet(m_device, set);
+            m_writers[i].UpdateSet(m_device, m_setsInFlight[i]);
         }
         
         updated = true;
@@ -293,5 +300,16 @@ namespace vkclass
     std::vector<VkDescriptorSet> DescriptorManager::Allocate(VkDescriptorSetLayout layout)
     {
         return s_manager->Allocate(layout);
+    }
+
+    std::shared_ptr<VulkanDescriptor> GlobalDescriptor::s_descriptor = nullptr;
+
+    void GlobalDescriptor::SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor)
+    {
+        if(!descriptor->updated)
+        {
+            VX_CORE_WARN("GlobalDescriptor: descriptor not yet updated.");
+        }
+        s_descriptor = descriptor;
     }
 }

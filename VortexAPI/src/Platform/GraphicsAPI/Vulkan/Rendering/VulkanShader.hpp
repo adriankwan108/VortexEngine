@@ -60,8 +60,13 @@ namespace vkclass
         
         vkclass::VulkanVertexShaderLayout m_vertexLayout;
         
-        // TODO: just contain references rather than values
         std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
+        
+        // TODO: I think shader should not know anything about frames in flight
+        struct FrameDescriptorSet{
+            std::vector<VkDescriptorSet> set;
+        };
+        std::vector<FrameDescriptorSet> setsInFrames;
         
         VkPipelineLayout m_pipelineLayout;
         VkPipeline m_pipeline;

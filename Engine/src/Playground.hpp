@@ -23,7 +23,7 @@ private:
     std::shared_ptr<VX::VertexBuffer> m_vertexBuffer;
     std::shared_ptr<VX::IndexBuffer> m_indexBuffer;
     
-    Geometry::Uniform_MVP mvp{};
+    Geometry::Uniform_VP mvp{};
     
     std::shared_ptr<VX::OrthographicCamera> m_camera;
 };

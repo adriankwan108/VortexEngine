@@ -53,7 +53,7 @@ Playground::Playground()
     );
     m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
     
-    m_basicShader->SetGlobalLayout(0, m_camera);
+    m_basicShader->SetGlobalLayout(0, viewProjLayout);
     
     m_basicShader->Prepare();
     
@@ -111,10 +111,10 @@ void Playground::UpdateUniformBuffer()
 
     auto currentTime = std::chrono::high_resolution_clock::now();
     float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-    mvp.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    mvp.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    mvp.proj = glm::perspective(glm::radians(45.0f), 1920.0f/ 1080.0f, 0.1f, 10.0f); // should use swapchain extent
-    mvp.proj[1][1] *= -1;
+//    mvp.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+//    mvp.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+//    mvp.proj = glm::perspective(glm::radians(45.0f), 1920.0f/ 1080.0f, 0.1f, 10.0f); // should use swapchain extent
+//    mvp.proj[1][1] *= -1;
     
     // update buffer
 }
