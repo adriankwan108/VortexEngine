@@ -33,7 +33,7 @@ namespace vkclass
         void Destroy();
         
         void Clear();
-        VkDescriptorSet Allocate(VkDescriptorSetLayout layout);
+        void Allocate(VkDescriptorSetLayout layout, VkDescriptorSet* targetSet);
     private:
         std::vector<VkDescriptorPool> m_fullPools;
         std::vector<VkDescriptorPool> m_readyPools;
@@ -100,7 +100,7 @@ namespace vkclass
         VkDevice m_device;
         
         // frames in flight resources reference
-        VulkanUniformBuffer* m_buffer;
+        VulkanUniformBuffer* m_buffer = nullptr;
         
         // helper functions
         DescriptorLayoutBuilder m_layoutBuilder;
@@ -110,7 +110,7 @@ namespace vkclass
         VkDescriptorType m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         
         // props
-        VkDescriptorSetLayout m_layout;
+        VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
         std::vector<VkDescriptorSet> m_setsInFlight;
     };
 
@@ -157,14 +157,17 @@ namespace vkclass
         static VulkanDescriptorManager* s_manager;
     };
 
-class GlobalDescriptor
-{
-public:
-    static std::shared_ptr<VulkanDescriptor> GetDescriptor() { return s_descriptor; }
-    static void SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor);
+    class GlobalDescriptor
+    {
+    public:
+        static std::shared_ptr<VulkanDescriptor> GetDescriptor() { return s_descriptor; }
+        static void SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor);
+
+        // TODO: make a deletetion queue for descriptor would be better than RAII
+        static void Remove();
     
-private:
-    static std::shared_ptr<VulkanDescriptor> s_descriptor;
-};
+    private:
+        static std::shared_ptr<VulkanDescriptor> s_descriptor;
+    };
 
 }

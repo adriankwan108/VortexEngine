@@ -45,7 +45,7 @@ namespace vkclass
             m_fullPools.clear();
     }
 
-    VkDescriptorSet DescriptorAllocator::Allocate(VkDescriptorSetLayout layout)
+    void DescriptorAllocator::Allocate(VkDescriptorSetLayout layout, VkDescriptorSet* targetSet)
     {
         //get or create a pool to allocate from
             VkDescriptorPool poolToUse = getPool();
@@ -57,8 +57,7 @@ namespace vkclass
             allocInfo.descriptorSetCount = 1;
             allocInfo.pSetLayouts = &layout;
 
-            VkDescriptorSet targetSet;
-            VkResult result = vkAllocateDescriptorSets(m_device, &allocInfo, &targetSet);
+            VkResult result = vkAllocateDescriptorSets(m_device, &allocInfo, targetSet);
 
             //allocation failed. Try again
             if (result == VK_ERROR_OUT_OF_POOL_MEMORY || result == VK_ERROR_FRAGMENTED_POOL) {
@@ -68,11 +67,10 @@ namespace vkclass
                 poolToUse = getPool();
                 allocInfo.descriptorPool = poolToUse;
 
-               VK_CHECK_RESULT(vkAllocateDescriptorSets(m_device, &allocInfo, &targetSet));
+               VK_CHECK_RESULT(vkAllocateDescriptorSets(m_device, &allocInfo, targetSet));
             }
           
             m_readyPools.push_back(poolToUse);
-            return targetSet;
     }
 
     VkDescriptorPool DescriptorAllocator::createPool(uint32_t setCount, std::span<PoolSizeRatio> poolRatios)
@@ -233,8 +231,10 @@ namespace vkclass
 
     void VulkanDescriptor::Build()
     {
+        VX_CORE_INFO("Building Descriptor...");
         m_layout = m_layoutBuilder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT);
         m_setsInFlight = DescriptorManager::Allocate(m_layout);
+
         for(int i = 0; i < m_maxFramesInFlight; i++)
         {
             m_writers[i].UpdateSet(m_device, m_setsInFlight[i]);
@@ -279,10 +279,11 @@ namespace vkclass
         std::vector<VkDescriptorSet> sets;
         sets.resize(m_maxFramesInFlight);
         
-        for(auto& allocator : m_allocators)
+        for (int i = 0; i < m_maxFramesInFlight; i++)
         {
-            sets.push_back(allocator.Allocate(layout));
+            m_allocators[i].Allocate(layout, &sets[i]);
         }
+
         return sets;
     }
 
@@ -311,5 +312,10 @@ namespace vkclass
             VX_CORE_WARN("GlobalDescriptor: descriptor not yet updated.");
         }
         s_descriptor = descriptor;
+    }
+
+    void GlobalDescriptor::Remove()
+    {
+        s_descriptor.reset();
     }
 }

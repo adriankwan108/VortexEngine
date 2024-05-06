@@ -31,6 +31,8 @@ namespace VX
             delete m_SwapChain;
         }
 
+        vkclass::GlobalDescriptor::Remove();
+
         VX_CORE_INFO("Vulkan: Resources cleared.");
         VX_CORE_INFO("Vulkan: Destroying context...");
     }

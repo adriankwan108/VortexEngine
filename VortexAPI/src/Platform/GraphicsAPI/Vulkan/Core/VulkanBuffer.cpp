@@ -183,7 +183,7 @@ namespace vkclass
     {
         m_UniformBuffers.resize(VulkanBuffer::GetMaxFrameInFlight());
         
-        for(auto buffer : m_UniformBuffers)
+        for(auto& buffer : m_UniformBuffers)
         {
             buffer.Setup(size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
             
