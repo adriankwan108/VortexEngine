@@ -144,6 +144,12 @@ namespace vkclass
         vkCmdBindIndexBuffer(m_commandBuffers[m_currentFrame], indexBuffer, offset, VK_INDEX_TYPE_UINT16);
     }
 
+    void VulkanCommandManager::BindDescriptor(VkPipelineLayout pipelineLayout, VkDescriptorSet& descriptorSetPtr)
+    {
+        vkCmdBindDescriptorSets(m_commandBuffers[m_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSetPtr, 0, nullptr);
+
+    }
+
     void VulkanCommandManager::Draw(uint32_t indexSize)
     {
 //        vkCmdDraw(m_commandBuffers[m_currentFrame], 1, 1, 0, 0);

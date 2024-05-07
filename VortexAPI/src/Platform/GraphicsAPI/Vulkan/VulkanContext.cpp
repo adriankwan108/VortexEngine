@@ -66,6 +66,7 @@ namespace VX
 
     void VulkanContext::DisplayStart()
     {
+        VX_CORE_TRACE("Display start");
         // all operations in display are asynchronous, inflight frames enabled
         // sync manager operates objects with current rendering frame (i.e. fence, semaphores)
         // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
@@ -96,6 +97,8 @@ namespace VX
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->FrameBuffer,
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent
         );
+        
+        vkclass::GlobalDescriptor::Bind(m_Device.LogicalDevice, m_CommandManager);
     }
 
     void VulkanContext::DisplayEnd()

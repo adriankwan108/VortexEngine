@@ -92,7 +92,9 @@ namespace vkclass
     void VulkanShader::SetGlobalLayout(int binding, VX::UniformShaderLayout layout)
     {
         // TODO: add name to UniformShaderLayout, then search global desciprot library
+        VX_CORE_INFO("VulkanShader: setting global layout...");
         m_descriptorSetLayouts.push_back( GlobalDescriptor::GetDescriptor()->layout);
+        VX_CORE_INFO("VulkanShader: global layout set.");
         
     }
 
@@ -123,8 +125,8 @@ namespace vkclass
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         // pipelineLayoutInfo.setLayoutCount = 0; // Optional
         // pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
-        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size()); // Optional
-        pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data(); // Optional
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
+        pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
         if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)

@@ -10,6 +10,7 @@
 #include "VulkanTools.hpp"
 #include "VulkanDevice.hpp"
 #include "VulkanBuffer.hpp"
+#include "VulkanCommandManager.hpp"
 
 namespace vkclass
 {
@@ -91,6 +92,7 @@ namespace vkclass
         // get props
         const VkDescriptorSetLayout& layout = m_layout;
         std::vector<VkDescriptorSet> GetSets() const { return m_setsInFlight; }
+        VkDescriptorSet& GetCurrentSet() { return m_setsInFlight.at(m_currentFrame); }
         
         bool updated = false;
         
@@ -163,6 +165,8 @@ namespace vkclass
         static std::shared_ptr<VulkanDescriptor> GetDescriptor() { return s_descriptor; }
         static void SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor);
 
+        static void Bind(VkDevice device, VulkanCommandManager cmdManager);
+        
         // TODO: make a deletetion queue for descriptor would be better than RAII
         static void Remove();
     

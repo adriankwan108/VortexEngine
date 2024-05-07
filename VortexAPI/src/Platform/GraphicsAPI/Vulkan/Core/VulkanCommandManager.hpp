@@ -36,6 +36,7 @@ namespace vkclass
         void BindPipeline(VkPipeline pipeline); // TODO: bind with vertex buffer, index buffer, etc; and bind with related cmd buffer
         void BindVertexBuffer(std::vector<VkBuffer> vertexBuffers, std::vector<VkDeviceSize> offsets);
         void BindIndexBuffer(VkBuffer indexBuffer, VkDeviceSize offset = 0);
+        void BindDescriptor(VkPipelineLayout pipelineLayout, VkDescriptorSet& descriptorSetPtr);
         void Draw(uint32_t indexSize);
         
         VkCommandBuffer CreateCommandBuffer(); // general command buffer, may need to use thread index as para in future

@@ -45,11 +45,9 @@ namespace vkclass
         {
             case VX::ShaderDataType::None:     return VK_FORMAT_UNDEFINED;
             case VX::ShaderDataType::Float:    return VK_FORMAT_R32_SFLOAT;
-            case VX::ShaderDataType::Float2:   
-                VX_CORE_TRACE("Format: VK_FORMAT_R32G32_SFLOAT");
+            case VX::ShaderDataType::Float2:
                 return VK_FORMAT_R32G32_SFLOAT;
-            case VX::ShaderDataType::Float3:   
-                VX_CORE_TRACE("Format: VK_FORMAT_R32G32B32_SFLOAT");
+            case VX::ShaderDataType::Float3:
                 return VK_FORMAT_R32G32B32_SFLOAT;
             case VX::ShaderDataType::Float4:   return VK_FORMAT_R32G32B32A32_SFLOAT;
             case VX::ShaderDataType::Mat3:     return VK_FORMAT_R32G32B32_SFLOAT;

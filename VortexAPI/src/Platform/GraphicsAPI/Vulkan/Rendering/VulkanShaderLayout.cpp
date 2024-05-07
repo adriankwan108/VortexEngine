@@ -26,14 +26,14 @@ namespace vkclass
        
             offset += element.Size;
 
-            VX_CORE_TRACE("attribute {0}: location {1}, offset {2}, size:{3}", element.Name, attribute.location, attribute.offset, element.Size);
+            // VX_CORE_TRACE("attribute {0}: location {1}, offset {2}, size:{3}", element.Name, attribute.location, attribute.offset, element.Size);
             locationIndex++;
         }
        
         m_bindingDescription.binding = 0;
         m_bindingDescription.stride = layout.GetStride(); // number of bytes from one entry to the next
         m_bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // per-vertex data, TODO: change this for particle system
-        VX_CORE_TRACE("binding {0}: stride {1}", m_bindingDescription.binding, m_bindingDescription.stride);
+        // VX_CORE_TRACE("binding {0}: stride {1}", m_bindingDescription.binding, m_bindingDescription.stride);
     }
 
 //    VulkanUniformLayout::VulkanUniformLayout()
