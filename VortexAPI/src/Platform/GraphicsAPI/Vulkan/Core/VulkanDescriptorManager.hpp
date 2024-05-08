@@ -127,7 +127,7 @@ namespace vkclass
         
         void Reset();
         std::shared_ptr<VulkanDescriptor> CreateDescriptor();
-        std::vector<VkDescriptorSet> Allocate(VkDescriptorSetLayout layout);
+        void Allocate(VkDescriptorSetLayout layout, std::vector<VkDescriptorSet>& sets);
         
     private:
         VulkanDevice* m_device;
@@ -154,7 +154,7 @@ namespace vkclass
     public:
         static void Init(VulkanDescriptorManager* manager);
         static std::shared_ptr<VulkanDescriptor> CreateDescriptor();
-        static std::vector<VkDescriptorSet> Allocate(VkDescriptorSetLayout layout);
+        static void Allocate(VkDescriptorSetLayout layout, std::vector<VkDescriptorSet>& sets);
     private:
         static VulkanDescriptorManager* s_manager;
     };

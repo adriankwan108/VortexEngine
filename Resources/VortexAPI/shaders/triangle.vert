@@ -3,13 +3,14 @@
 layout(location = 0) in vec2 inPosition;
 layout(location = 1) in vec3 inColor;
 
-layout(set = 0, binding = 0) uniform u_ViewProjection {
-    mat4 viewProj;
+layout(set = 0, binding = 0) uniform Uniform_VP {
+    mat4 view;
+    mat4 proj;
 } camera_VP;
 
 layout(location = 0) out vec3 fragColor;
 
 void main() {
-    gl_Position = camera_VP.viewProj * vec4(inPosition, 0.0, 1.0);
+    gl_Position = camera_VP.proj * camera_VP.view * vec4(inPosition, 0.0, 1.0);
     fragColor = inColor;
 }

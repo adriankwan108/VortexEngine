@@ -84,7 +84,6 @@ void Playground::OnDetach()
 
 void Playground::OnUpdate(VX::Timestep ts)
 {
-    VX_INFO("Playground on update");
     VX::Renderer::BeginScene(m_camera);
     
     // update camera

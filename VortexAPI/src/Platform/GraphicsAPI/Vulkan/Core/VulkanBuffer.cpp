@@ -103,9 +103,11 @@ namespace vkclass
         bufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         VK_CHECK_RESULT(vkCreateBuffer(m_device->LogicalDevice, &bufferCI, nullptr, &m_buffer));
         
+        VkDeviceSize minUniformBufferOffsetAlignment = m_device->DeviceProps.limits.minUniformBufferOffsetAlignment;
+        
         m_bufferInfo.buffer = m_buffer;
-        m_bufferInfo.offset = 0;
-        m_bufferInfo.range = size;
+        m_bufferInfo.offset = minUniformBufferOffsetAlignment * ((0 + minUniformBufferOffsetAlignment - 1) / minUniformBufferOffsetAlignment);
+        m_bufferInfo.range = VK_WHOLE_SIZE;
     }
 
     void VulkanBuffer::createMemory(VkMemoryPropertyFlags props)

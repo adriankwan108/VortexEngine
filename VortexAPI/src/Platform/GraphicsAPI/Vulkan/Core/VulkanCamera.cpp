@@ -22,13 +22,13 @@ namespace vkclass
 
     void VulkanCamera::setDescriptor()
     {
-        VX_CORE_INFO("VulkanCamera: Setting Descriptor...");
-        m_descriptor = DescriptorManager::CreateDescriptor();
-        m_descriptor->AddBinding(0, &m_uniformBuffer);
-        m_descriptor->Build();
-        
-        
-        GlobalDescriptor::SetDescriptor(m_descriptor);
-        VX_CORE_INFO("VulkanCamera: Descriptor set.");
+//        VX_CORE_INFO("VulkanCamera: Setting Descriptor...");
+//        m_descriptor = DescriptorManager::CreateDescriptor();
+//        m_descriptor->AddBinding(0, &m_uniformBuffer);
+//        m_descriptor->Build();
+//
+//
+//        GlobalDescriptor::SetDescriptor(m_descriptor);
+//        VX_CORE_INFO("VulkanCamera: Descriptor set.");
     }
 }

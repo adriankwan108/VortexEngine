@@ -231,17 +231,17 @@ namespace vkclass
 
     void VulkanDescriptor::Build()
     {
-        VX_CORE_INFO("VulkanDescriptor: Building...");
-        m_layout = m_layoutBuilder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT);
-        m_setsInFlight = DescriptorManager::Allocate(m_layout);
-
-        for(int i = 0; i < m_maxFramesInFlight; i++)
-        {
-            m_writers[i].UpdateSet(m_device, m_setsInFlight[i]);
-        }
-        
-        updated = true;
-        VX_CORE_INFO("VulkanDescriptor: Built.");
+//        VX_CORE_INFO("VulkanDescriptor: Building...");
+//        m_layout = m_layoutBuilder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT);
+//        m_setsInFlight = DescriptorManager::Allocate(m_layout);
+//
+//        for(int i = 0; i < m_maxFramesInFlight; i++)
+//        {
+//            m_writers[i].UpdateSet(m_device, m_setsInFlight[i]);
+//        }
+//
+//        updated = true;
+//        VX_CORE_INFO("VulkanDescriptor: Built.");
     }
 
     VulkanDescriptorManager* DescriptorManager::s_manager = nullptr;
@@ -275,17 +275,12 @@ namespace vkclass
         return std::shared_ptr<VulkanDescriptor>(new VulkanDescriptor(m_device->LogicalDevice, m_maxFramesInFlight, m_currentFrame));
     }
 
-    std::vector<VkDescriptorSet> VulkanDescriptorManager::Allocate(VkDescriptorSetLayout layout)
+    void VulkanDescriptorManager::Allocate(VkDescriptorSetLayout layout, std::vector<VkDescriptorSet>& sets)
     {
-        std::vector<VkDescriptorSet> sets;
-        sets.resize(m_maxFramesInFlight);
-        
-        for (int i = 0; i < m_maxFramesInFlight; i++)
+        for (int i = 0; i < sets.size(); i++)
         {
-            m_allocators[i].Allocate(layout, &sets[i]);
+            m_allocators[i].Allocate(layout, &(sets[i]));
         }
-
-        return sets;
     }
 
     // static wrapper functions
@@ -299,21 +294,21 @@ namespace vkclass
         return s_manager->CreateDescriptor();
     }
 
-    std::vector<VkDescriptorSet> DescriptorManager::Allocate(VkDescriptorSetLayout layout)
+    void DescriptorManager::Allocate(VkDescriptorSetLayout layout, std::vector<VkDescriptorSet>& sets)
     {
-        return s_manager->Allocate(layout);
+        s_manager->Allocate(layout, sets);
     }
 
     std::shared_ptr<VulkanDescriptor> GlobalDescriptor::s_descriptor = nullptr;
 
     void GlobalDescriptor::SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor)
     {
-        if(!descriptor->updated)
-        {
-            VX_CORE_WARN("GlobalDescriptor: descriptor not yet updated.");
-        }
-        s_descriptor = descriptor;
-        VX_CORE_INFO("GlobalDescriptor: Set");
+//        if(!descriptor->updated)
+//        {
+//            VX_CORE_WARN("GlobalDescriptor: descriptor not yet updated.");
+//        }
+//        s_descriptor = descriptor;
+//        VX_CORE_INFO("GlobalDescriptor: Set");
     }
 
     void GlobalDescriptor::Remove()
@@ -324,15 +319,15 @@ namespace vkclass
     void GlobalDescriptor::Bind(VkDevice device, VulkanCommandManager cmdManager)
     {
         // create temp pipeline layout
-        VkPipelineLayoutCreateInfo layoutCreateInfo = {};
-        layoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        layoutCreateInfo.setLayoutCount = 1; // Number of descriptor set layouts to bind
-        layoutCreateInfo.pSetLayouts = &s_descriptor->layout; // The descriptor set layout for the view resources
-
-        VkPipelineLayout temporaryPipelineLayout;
-        vkCreatePipelineLayout(device, &layoutCreateInfo, nullptr, &temporaryPipelineLayout);
-        
-        cmdManager.BindDescriptor(temporaryPipelineLayout, s_descriptor->GetCurrentSet());
-        VX_CORE_INFO("GlobalDescriptor: Bind");
+//        VkPipelineLayoutCreateInfo layoutCreateInfo = {};
+//        layoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+//        layoutCreateInfo.setLayoutCount = 1; // Number of descriptor set layouts to bind
+//        layoutCreateInfo.pSetLayouts = &s_descriptor->layout; // The descriptor set layout for the view resources
+//
+//        VkPipelineLayout temporaryPipelineLayout;
+//        vkCreatePipelineLayout(device, &layoutCreateInfo, nullptr, &temporaryPipelineLayout);
+//        
+//        cmdManager.BindDescriptor(temporaryPipelineLayout, s_descriptor->GetCurrentSet());
+//        VX_CORE_INFO("GlobalDescriptor: Bind");
     }
 }

@@ -21,7 +21,7 @@ namespace vkclass
         VulkanShader(const std::string& name, const std::string& vertFilePath, const std::string fragFilePath);
         ~VulkanShader();
         
-        virtual void Bind() const override;
+        virtual void Bind() override;
         virtual void UnBind() const override;
         
         virtual void SetVertexLayout(VX::VertexShaderLayout layout) override;
@@ -62,12 +62,6 @@ namespace vkclass
         
         std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
         
-        // TODO: I think shader should not know anything about frames in flight
-        struct FrameDescriptorSet{
-            std::vector<VkDescriptorSet> set;
-        };
-        std::vector<FrameDescriptorSet> setsInFrames;
-        
         VkPipelineLayout m_pipelineLayout;
         VkPipeline m_pipeline;
         
@@ -76,5 +70,12 @@ namespace vkclass
         VkShaderModule m_fragModule = VK_NULL_HANDLE;
         
         bool m_isValid = false;
+        
+        // testing
+        VkDescriptorPool test_pool;
+        std::vector<VkDescriptorSet> test_descriptorSets;
+        VkDescriptorSetLayout test_descriptorSetLayout;
+        VulkanUniformBuffer m_uniformBuffer;
+        Geometry::Uniform_VP test_vp{};
     };
 }

@@ -44,8 +44,6 @@ namespace vkclass
         void SetData(void* data, VkDeviceSize size);
         void Flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
         
-//        void update();
-        
         static void Init(vkclass::VulkanDevice* device, vkclass::VulkanCommandManager* cmdManager);
         static void CopyTo(VulkanBuffer* srcBuffer, VulkanBuffer* dstBuffer, VkDeviceSize size);
         
@@ -131,9 +129,10 @@ namespace vkclass
         virtual void Update(void* data, uint64_t size) override;
         
         std::vector<VkDescriptorBufferInfo> GetBuffersInfo();
+        std::vector<VulkanBuffer> m_UniformBuffers;
         
     private:
-        std::vector<VulkanBuffer> m_UniformBuffers;
+        
     };
 
 }

@@ -57,6 +57,8 @@ namespace vkclass
         const VkQueue& GraphicsQueue = m_graphicsQueue;
         const VkQueue& PresentQueue = m_presentQueue;
         
+        const VkPhysicalDeviceProperties& DeviceProps = m_gpuProps;
+        
     public:
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
         SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);

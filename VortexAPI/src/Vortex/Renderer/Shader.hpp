@@ -11,7 +11,7 @@ namespace VX
     public:
         virtual ~Shader() = default;
 
-        virtual void Bind() const = 0;
+        virtual void Bind() = 0;
         virtual void UnBind() const = 0;
 //        virtual void SetPipeline(ShaderLayout layout) = 0;
 
