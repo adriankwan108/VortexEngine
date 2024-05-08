@@ -30,11 +30,12 @@ namespace vkclass
      *     put the pool to full pools, and try to get another pool / create a new pool
      */
     public:
-        void Init(VkDevice device, int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit);
+        void Init(VkDevice device, int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit, bool isGrowable = false);
         void Destroy();
         
         void Clear();
-        void Allocate(VkDescriptorSetLayout layout, VkDescriptorSet* targetSet);
+        void Allocate(VkDescriptorSetLayout* layout, VkDescriptorSet* targetSet);
+        void TestAllocate(VkDescriptorSetLayout* layout, VkDescriptorSet* targetSet);
     private:
         std::vector<VkDescriptorPool> m_fullPools;
         std::vector<VkDescriptorPool> m_readyPools;
@@ -45,8 +46,14 @@ namespace vkclass
         
         VkDevice m_device = VK_NULL_HANDLE;
 
+        // TODO: use a wrapper of descriptor pool would be better for RAII consistency throughout the project
         VkDescriptorPool createPool(uint32_t setCount, std::span<PoolSizeRatio> poolRatios);
         VkDescriptorPool getPool();
+
+        bool m_isGrowable;
+
+        // testing
+        // VkDescriptorPool test_pool;
     };
 
     struct DescriptorWriter {
@@ -127,8 +134,8 @@ namespace vkclass
         
         void Reset();
         std::shared_ptr<VulkanDescriptor> CreateDescriptor();
-        void Allocate(VkDescriptorSetLayout layout, std::vector<VkDescriptorSet>& sets);
-        
+        void Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
+        void TestAllocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
     private:
         VulkanDevice* m_device;
         int m_maxFramesInFlight = 1;
@@ -154,7 +161,9 @@ namespace vkclass
     public:
         static void Init(VulkanDescriptorManager* manager);
         static std::shared_ptr<VulkanDescriptor> CreateDescriptor();
-        static void Allocate(VkDescriptorSetLayout layout, std::vector<VkDescriptorSet>& sets);
+        static void Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
+
+        static void TestAllocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
     private:
         static VulkanDescriptorManager* s_manager;
     };

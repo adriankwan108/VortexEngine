@@ -57,7 +57,7 @@ namespace vkclass
 
     VulkanShader::~VulkanShader()
     {
-        vkDestroyDescriptorPool(m_device, test_pool, nullptr);
+
         vkDestroyDescriptorSetLayout(m_device, test_descriptorSetLayout, nullptr);
         if (m_isValid)
         {
@@ -83,7 +83,11 @@ namespace vkclass
 
     void VulkanShader::Bind()
     {
-        test_vp.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        test_vp.view = glm::lookAt(
+            glm::vec3(2.0f, 2.0f, 2.0f), // cam pos
+            glm::vec3(0.0f, 0.0f, 0.0f), // observing target
+            glm::vec3(0.0f, 0.0f, 1.0f)  // up vector
+        );
         test_vp.proj = glm::perspective(glm::radians(45.0f), 1920 / (float) 1080, 0.1f, 10.0f);
         m_uniformBuffer.Update(&test_vp, sizeof(test_vp));
         
@@ -163,7 +167,7 @@ namespace vkclass
         {
             m_isValid = false;
             VX_CORE_WARN("VulkanShader: Failed to create pipeline layout!");
-            return;;
+            return;
         }
         
         // build operation
@@ -176,41 +180,25 @@ namespace vkclass
         VX_CORE_TRACE("Vulkan Shader: Pipeline set");
         
         // testing
-        // pools
-        VkDescriptorPoolSize poolSize{};
-        poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSize.descriptorCount = static_cast<uint32_t>(1000);
-        
-        VkDescriptorPoolCreateInfo poolInfo{};
-        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolInfo.poolSizeCount = 1;
-        poolInfo.pPoolSizes = &poolSize;
-        poolInfo.maxSets = static_cast<uint32_t>(1000);
-        
-        if (vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &test_pool) != VK_SUCCESS)
-        {
-            VX_CORE_ERROR("VulkanShader: Failed to create descriptorl pool.");
-            throw std::runtime_error("failed to create descriptor pool!");
-        }
         
         // allocate
-        std::vector<VkDescriptorSetLayout> layouts(2, test_descriptorSetLayout);
+        /*std::vector<VkDescriptorSetLayout> layouts(2, test_descriptorSetLayout);
         VkDescriptorSetAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = test_pool;
         allocInfo.descriptorSetCount = static_cast<uint32_t>(2);
-        allocInfo.pSetLayouts = layouts.data();
+        allocInfo.pSetLayouts = layouts.data();*/
 
         test_descriptorSets.resize(2);
-        if (vkAllocateDescriptorSets(m_device, &allocInfo, test_descriptorSets.data()) != VK_SUCCESS)
+        /*if (vkAllocateDescriptorSets(m_device, &allocInfo, test_descriptorSets.data()) != VK_SUCCESS)
         {
             VX_CORE_ERROR("VulkanShader: Failed to allocate descriptor sets.");
             throw std::runtime_error("failed to allocate descriptor sets!");
-        }
-        
-//        test_descriptorSets.resize(2);
-//
-//        DescriptorManager::Allocate(test_descriptorSetLayout, test_descriptorSets);
+        }*/
+
+        // std::vector<VkDescriptorSetLayout> layouts(2, test_descriptorSetLayout);
+        // DescriptorManager::TestAllocate(test_descriptorSetLayout, test_descriptorSets);
+        DescriptorManager::Allocate(test_descriptorSetLayout, test_descriptorSets);
         
         // write
         for (size_t i = 0; i < 2; i++)

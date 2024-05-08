@@ -72,7 +72,7 @@ namespace vkclass
         bool m_isValid = false;
         
         // testing
-        VkDescriptorPool test_pool;
+
         std::vector<VkDescriptorSet> test_descriptorSets;
         VkDescriptorSetLayout test_descriptorSetLayout;
         VulkanUniformBuffer m_uniformBuffer;

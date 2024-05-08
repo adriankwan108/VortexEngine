@@ -72,6 +72,8 @@ namespace VX
         
         m_SyncManager.WaitForFences();
         m_DescriptorManager.Reset();
+
+
         m_acquireNextImageResult = m_SwapChain->AcquireNextImage(m_SyncManager.GetImageAvailableSemaphore());
         if( m_acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR) // btw the return state is not guranteed by drivers / platforms
         {
