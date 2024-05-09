@@ -71,7 +71,7 @@ namespace VX
         // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
         
         m_SyncManager.WaitForFences();
-        m_DescriptorManager.Reset();
+//         m_DescriptorManager.Reset();
 
 
         m_acquireNextImageResult = m_SwapChain->AcquireNextImage(m_SyncManager.GetImageAvailableSemaphore());
@@ -99,7 +99,8 @@ namespace VX
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent
         );
         
-//        vkclass::GlobalDescriptor::Bind(m_Device.LogicalDevice, m_CommandManager);
+//         vkclass::GlobalDescriptor::Update();
+         vkclass::GlobalDescriptor::Bind(m_Device.LogicalDevice, &m_CommandManager);
     }
 
     void VulkanContext::DisplayEnd()

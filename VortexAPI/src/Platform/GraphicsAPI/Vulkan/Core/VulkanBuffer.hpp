@@ -30,7 +30,7 @@ namespace vkclass
         virtual ~VulkanBuffer();
         
         const VkBuffer& Buffer = m_buffer;
-        VkDescriptorBufferInfo GetDescriptorInfo() const { return m_bufferInfo; }
+        VkDescriptorBufferInfo& GetDescriptorBufferInfo() { return m_bufferInfo; }
         // get memory()
         // get size
         // get data
@@ -128,11 +128,9 @@ namespace vkclass
         
         virtual void Update(void* data, uint64_t size) override;
         
-        std::vector<VkDescriptorBufferInfo> GetBuffersInfo();
-        std::vector<VulkanBuffer> m_UniformBuffers;
-        
+        std::vector<VkDescriptorBufferInfo*> GetBuffersInfo();
     private:
-        
+        std::vector<VulkanBuffer> m_UniformBuffers;
     };
 
 }

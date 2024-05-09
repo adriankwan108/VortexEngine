@@ -61,6 +61,7 @@ namespace vkclass
         vkclass::VulkanVertexShaderLayout m_vertexLayout;
         
         std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
+        std::vector<VkDescriptorSet> m_descriptorSetToBeBind;
         
         VkPipelineLayout m_pipelineLayout;
         VkPipeline m_pipeline;
@@ -72,9 +73,8 @@ namespace vkclass
         bool m_isValid = false;
         
         // testing
-
-        std::vector<VkDescriptorSet> test_descriptorSets;
-        VkDescriptorSetLayout test_descriptorSetLayout;
+//        std::shared_ptr<VulkanDescriptor> m_descriptor;
+        
         VulkanUniformBuffer m_uniformBuffer;
         Geometry::Uniform_VP test_vp{};
     };

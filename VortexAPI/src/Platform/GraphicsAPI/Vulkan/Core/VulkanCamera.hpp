@@ -19,8 +19,6 @@ namespace vkclass
     public:
         VulkanCamera(float left, float right, float bottom, float top): VX::OrthographicCamera(left, right, bottom, top), m_uniformBuffer(sizeof(Geometry::Uniform_VP))
         {
-            // create uniform buffer
-            
             setDescriptor();
         }
         
@@ -32,11 +30,13 @@ namespace vkclass
         static void Init(VulkanDevice* device);
     public:
         std::shared_ptr<VulkanDescriptor> GetDescriptor() const { return m_descriptor; }
+        
     private:
         static VulkanDevice* m_device;
         std::shared_ptr<VulkanDescriptor> m_descriptor;
         VulkanUniformBuffer m_uniformBuffer;
         
+        Geometry::Uniform_VP camera_vp{};
         void setDescriptor();
     };
 }

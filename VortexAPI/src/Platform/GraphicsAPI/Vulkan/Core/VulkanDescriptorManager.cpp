@@ -146,46 +146,42 @@ namespace vkclass
 
     void DescriptorWriter::WriteImage(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type)
     {
-        VkDescriptorImageInfo& info = imageInfos.emplace_back(
-            VkDescriptorImageInfo
-            {
-                .sampler = sampler,
-                .imageView = image,
-                .imageLayout = layout
-            }
-        );
+//        VkDescriptorImageInfo& info = imageInfos.emplace_back(
+//            VkDescriptorImageInfo
+//            {
+//                .sampler = sampler,
+//                .imageView = image,
+//                .imageLayout = layout
+//            }
+//        );
 
-        VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
-
-        write.dstBinding = binding;
-        write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
-        write.descriptorCount = 1;
-        write.descriptorType = type;
-        write.pImageInfo = &info;
-
-        writes.push_back(write);
+//        VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+//
+//        write.dstBinding = binding;
+//        write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
+//        write.descriptorCount = 1;
+//        write.descriptorType = type;
+//        write.pImageInfo = &info;
+//
+//        writes.push_back(write);
     }
 
-    void DescriptorWriter::WriteBuffer(int binding, VkDescriptorBufferInfo bufferInfo, VkDescriptorType type)
+    void DescriptorWriter::WriteBuffer(int binding, VkDescriptorBufferInfo* bufferInfo, VkDescriptorType type)
     {
-        VkDescriptorBufferInfo& info = bufferInfos.emplace_back(bufferInfo);
-
         VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
 
         write.dstBinding = binding;
         write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
         write.descriptorCount = 1;
         write.descriptorType = type;
-        write.pBufferInfo = &info;
+        write.pBufferInfo = bufferInfo;
 
         writes.push_back(write);
     }
 
     void DescriptorWriter::Clear()
     {
-        imageInfos.clear();
         writes.clear();
-        bufferInfos.clear();
     }
 
     void DescriptorWriter::UpdateSet(VkDevice device, VkDescriptorSet set)
@@ -249,8 +245,6 @@ namespace vkclass
 
     void VulkanDescriptor::AddBinding(int binding, VulkanUniformBuffer* buffer)
     {
-        m_buffer = buffer;
-        
         m_layoutBuilder.AddBinding(binding, m_type);
         
         for(int i = 0; i < m_maxFramesInFlight; i++)
@@ -262,22 +256,25 @@ namespace vkclass
     void VulkanDescriptor::AddBinding(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout)
     {
         m_layoutBuilder.AddBinding(binding, m_type);
-        // m_writer.WriteImage(binding, image, sampler, layout, m_type);
+//        m_writer.WriteImage(binding, image, sampler, layout, m_type);
     }
 
     void VulkanDescriptor::Build()
     {
-//        VX_CORE_INFO("VulkanDescriptor: Building...");
-//        m_layout = m_layoutBuilder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT);
-//        m_setsInFlight = DescriptorManager::Allocate(m_layout);
-//
-//        for(int i = 0; i < m_maxFramesInFlight; i++)
-//        {
-//            m_writers[i].UpdateSet(m_device, m_setsInFlight[i]);
-//        }
-//
-//        updated = true;
-//        VX_CORE_INFO("VulkanDescriptor: Built.");
+        m_layout = m_layoutBuilder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT);
+    }
+
+    void VulkanDescriptor::Allocate()
+    {
+        DescriptorManager::Allocate(m_layout, m_setsInFlight);
+    }
+
+    void VulkanDescriptor::Update()
+    {
+        for(int i = 0; i < m_maxFramesInFlight; i++)
+        {
+            m_writers[i].UpdateSet(m_device, m_setsInFlight[i]);
+        }
     }
 
 
@@ -342,12 +339,10 @@ namespace vkclass
 
     void GlobalDescriptor::SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor)
     {
-//        if(!descriptor->updated)
-//        {
-//            VX_CORE_WARN("GlobalDescriptor: descriptor not yet updated.");
-//        }
-//        s_descriptor = descriptor;
-//        VX_CORE_INFO("GlobalDescriptor: Set");
+        s_descriptor = descriptor;
+        s_descriptor->Allocate();
+        s_descriptor->Update();
+//        VX_CORE_INFO("GlobalDescriptor: Set.");
     }
 
     void GlobalDescriptor::Remove()
@@ -355,18 +350,25 @@ namespace vkclass
         s_descriptor.reset();
     }
 
-    void GlobalDescriptor::Bind(VkDevice device, VulkanCommandManager cmdManager)
+    void GlobalDescriptor::Update()
+    {
+        s_descriptor->Allocate();
+        s_descriptor->Update();
+    }
+
+    void GlobalDescriptor::Bind(VkDevice device, VulkanCommandManager* cmdManager)
     {
         // create temp pipeline layout
-//        VkPipelineLayoutCreateInfo layoutCreateInfo = {};
-//        layoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-//        layoutCreateInfo.setLayoutCount = 1; // Number of descriptor set layouts to bind
-//        layoutCreateInfo.pSetLayouts = &s_descriptor->layout; // The descriptor set layout for the view resources
-//
-//        VkPipelineLayout temporaryPipelineLayout;
-//        vkCreatePipelineLayout(device, &layoutCreateInfo, nullptr, &temporaryPipelineLayout);
-//        
-//        cmdManager.BindDescriptor(temporaryPipelineLayout, s_descriptor->GetCurrentSet());
+        VkPipelineLayoutCreateInfo layoutCreateInfo = {};
+        layoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        layoutCreateInfo.setLayoutCount = 1; // Number of descriptor set layouts to bind
+        layoutCreateInfo.pSetLayouts = &s_descriptor->layout; // The descriptor set layout for the view resources
+
+        VkPipelineLayout temporaryPipelineLayout;
+        vkCreatePipelineLayout(device, &layoutCreateInfo, nullptr, &temporaryPipelineLayout);
+
+        cmdManager->BindDescriptor(temporaryPipelineLayout, &s_descriptor->GetCurrentSet());
+        vkDestroyPipelineLayout(device, temporaryPipelineLayout, nullptr);
 //        VX_CORE_INFO("GlobalDescriptor: Bind");
     }
 }

@@ -107,7 +107,7 @@ namespace vkclass
         
         m_bufferInfo.buffer = m_buffer;
         m_bufferInfo.offset = minUniformBufferOffsetAlignment * ((0 + minUniformBufferOffsetAlignment - 1) / minUniformBufferOffsetAlignment);
-        m_bufferInfo.range = VK_WHOLE_SIZE;
+        m_bufferInfo.range = size;
     }
 
     void VulkanBuffer::createMemory(VkMemoryPropertyFlags props)
@@ -199,12 +199,12 @@ namespace vkclass
         m_UniformBuffers[VulkanBuffer::GetCurrentFrame()].SetData(data, size);
     }
 
-    std::vector<VkDescriptorBufferInfo> VulkanUniformBuffer::GetBuffersInfo()
+    std::vector<VkDescriptorBufferInfo*> VulkanUniformBuffer::GetBuffersInfo()
     {
-        std::vector<VkDescriptorBufferInfo> infos;
+        std::vector<VkDescriptorBufferInfo*> infos;
         for(auto& buffer: m_UniformBuffers)
         {
-            infos.push_back(buffer.GetDescriptorInfo());
+            infos.push_back(&buffer.GetDescriptorBufferInfo());
         }
         return infos;
     }

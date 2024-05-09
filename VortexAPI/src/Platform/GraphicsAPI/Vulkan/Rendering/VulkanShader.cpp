@@ -57,8 +57,6 @@ namespace vkclass
 
     VulkanShader::~VulkanShader()
     {
-
-        vkDestroyDescriptorSetLayout(m_device, test_descriptorSetLayout, nullptr);
         if (m_isValid)
         {
             if(m_pipeline != VK_NULL_HANDLE)
@@ -91,8 +89,9 @@ namespace vkclass
         test_vp.proj = glm::perspective(glm::radians(45.0f), 1920 / (float) 1080, 0.1f, 10.0f);
         m_uniformBuffer.Update(&test_vp, sizeof(test_vp));
         
+//        VX_CORE_INFO("VulkanShader: Bind pipeline.");
         // bind
-        m_commandBufferManager->BindDescriptor(m_pipelineLayout, &test_descriptorSets[VulkanBuffer::GetCurrentFrame()]);
+//        m_commandBufferManager->BindDescriptor(m_pipelineLayout, &m_descriptor->GetCurrentSet());
         m_commandBufferManager->BindPipeline(m_pipeline);
     }
 
@@ -111,26 +110,14 @@ namespace vkclass
     {
         // TODO: add name to UniformShaderLayout, then search global desciprot library
 //        VX_CORE_INFO("VulkanShader: setting global layout...");
-//        m_descriptorSetLayouts.push_back( GlobalDescriptor::GetDescriptor()->layout);
+        m_descriptorSetLayouts.push_back( GlobalDescriptor::GetDescriptor()->layout);
 //        VX_CORE_INFO("VulkanShader: global layout set.");
-        VkDescriptorSetLayoutBinding uboLayoutBinding{};
-        uboLayoutBinding.binding = 0;
-        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboLayoutBinding.descriptorCount = 1;
-        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        uboLayoutBinding.pImmutableSamplers = nullptr;
         
-        VkDescriptorSetLayoutCreateInfo layoutInfo{};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = 1;
-        layoutInfo.pBindings = &uboLayoutBinding;
-
-        if (vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &test_descriptorSetLayout) != VK_SUCCESS)
-        {
-            VX_CORE_ERROR("VulkanShader: Failed to create descriptor set layout.");
-            throw std::runtime_error("failed to create descriptor set layout!");
-        }
+//        m_descriptor = DescriptorManager::CreateDescriptor();
+//        m_descriptor->AddBinding(0, &m_uniformBuffer);
+//        m_descriptor->Build();
         
+//        m_descriptorSetLayouts.push_back(m_descriptor->layout);
     }
 
     void VulkanShader::SetPassLayout(int binding, VX::UniformShaderLayout layout)
@@ -153,14 +140,12 @@ namespace vkclass
         VulkanPipelineBuilder builder;
         builder.SetShaders(m_vertModule, m_fragModule);
         builder.SetVertexInput(m_vertexLayout.GetBinding(), m_vertexLayout.GetAttributes());
-        // builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+         builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
         
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-//        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
-//        pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
-        pipelineLayoutInfo.setLayoutCount = 1;
-        pipelineLayoutInfo.pSetLayouts = &test_descriptorSetLayout;
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
+        pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
         if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
@@ -178,53 +163,6 @@ namespace vkclass
         vkDestroyShaderModule(m_device, m_fragModule, nullptr);
         
         VX_CORE_TRACE("Vulkan Shader: Pipeline set");
-        
-        // testing
-        
-        // allocate
-        /*std::vector<VkDescriptorSetLayout> layouts(2, test_descriptorSetLayout);
-        VkDescriptorSetAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocInfo.descriptorPool = test_pool;
-        allocInfo.descriptorSetCount = static_cast<uint32_t>(2);
-        allocInfo.pSetLayouts = layouts.data();*/
-
-        test_descriptorSets.resize(2);
-        /*if (vkAllocateDescriptorSets(m_device, &allocInfo, test_descriptorSets.data()) != VK_SUCCESS)
-        {
-            VX_CORE_ERROR("VulkanShader: Failed to allocate descriptor sets.");
-            throw std::runtime_error("failed to allocate descriptor sets!");
-        }*/
-
-        // std::vector<VkDescriptorSetLayout> layouts(2, test_descriptorSetLayout);
-        // DescriptorManager::TestAllocate(test_descriptorSetLayout, test_descriptorSets);
-        DescriptorManager::Allocate(test_descriptorSetLayout, test_descriptorSets);
-        
-        // write
-        for (size_t i = 0; i < 2; i++)
-        {
-            VkDescriptorBufferInfo bufferInfo{};
-            bufferInfo.buffer = m_uniformBuffer.m_UniformBuffers[i].Buffer;
-            bufferInfo.offset = 0;
-            bufferInfo.range = sizeof(Geometry::Uniform_VP);
-            
-            VkWriteDescriptorSet descriptorWrite{};
-            descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrite.dstSet = test_descriptorSets[i];
-            descriptorWrite.dstBinding = 0;
-            descriptorWrite.dstArrayElement = 0;
-            
-            descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptorWrite.descriptorCount = 1;
-            
-            descriptorWrite.pBufferInfo = &bufferInfo;
-            descriptorWrite.pImageInfo = nullptr; // Optional
-            descriptorWrite.pTexelBufferView = nullptr; // Optional
-            
-            vkUpdateDescriptorSets(m_device, 1, &descriptorWrite, 0, nullptr);
-            
-            
-        }
     }
 
 }

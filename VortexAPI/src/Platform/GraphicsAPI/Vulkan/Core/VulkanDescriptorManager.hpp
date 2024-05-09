@@ -1,7 +1,6 @@
 #pragma once
 #include "VortexPCH.hpp"
 #include <span>
-#include <deque>
 
 #include "vulkan/vulkan.h"
 #include <glm/glm.hpp>
@@ -56,13 +55,11 @@ namespace vkclass
     };
 
     struct DescriptorWriter {
-        std::deque<VkDescriptorImageInfo> imageInfos;
-        std::deque<VkDescriptorBufferInfo> bufferInfos;
         std::vector<VkWriteDescriptorSet> writes;
 
         void WriteImage(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type);
 
-        void WriteBuffer(int binding, VkDescriptorBufferInfo bufferInfo, VkDescriptorType type);
+        void WriteBuffer(int binding, VkDescriptorBufferInfo* bufferInfo, VkDescriptorType type);
 
         void Clear();
         void UpdateSet(VkDevice device, VkDescriptorSet set);
@@ -94,27 +91,22 @@ namespace vkclass
         
         // build props
         void Build();
+        void Allocate();
+        void Update();
         
         // get props
         const VkDescriptorSetLayout& layout = m_layout;
         std::vector<VkDescriptorSet> GetSets() const { return m_setsInFlight; }
         VkDescriptorSet& GetCurrentSet() { return m_setsInFlight.at(m_currentFrame); }
         
-        bool updated = false;
-        
     private:
         int m_maxFramesInFlight = 1;
         uint32_t& m_currentFrame;
         VkDevice m_device;
         
-        // frames in flight resources reference
-        VulkanUniformBuffer* m_buffer = nullptr;
-        
         // helper functions
         DescriptorLayoutBuilder m_layoutBuilder;
-        
         std::vector<DescriptorWriter> m_writers;
-        
         VkDescriptorType m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         
         // props
@@ -172,7 +164,8 @@ namespace vkclass
         static std::shared_ptr<VulkanDescriptor> GetDescriptor() { return s_descriptor; }
         static void SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor);
 
-        static void Bind(VkDevice device, VulkanCommandManager cmdManager);
+        static void Update();
+        static void Bind(VkDevice device, VulkanCommandManager* cmdManager);
         
         // TODO: make a deletetion queue for descriptor would be better than RAII
         static void Remove();
