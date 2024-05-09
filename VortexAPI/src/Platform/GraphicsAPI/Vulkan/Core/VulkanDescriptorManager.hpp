@@ -33,27 +33,26 @@ namespace vkclass
         void Init(VkDevice device, int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit, bool isGrowable = false);
         void Destroy();
         
-        void Clear();
+        void Reset();
         void Allocate(VkDescriptorSetLayout* layout, VkDescriptorSet* targetSet);
-        void TestAllocate(VkDescriptorSetLayout* layout, VkDescriptorSet* targetSet);
+
     private:
         std::vector<VkDescriptorPool> m_fullPools;
         std::vector<VkDescriptorPool> m_readyPools;
+        VkDescriptorPool* m_currentPtr = nullptr;
+        
         std::vector<PoolSizeRatio> m_ratios;
         float m_growthRate = 1.0f;
         uint32_t m_setsPerPool = 1000; // next increased max sets num
         uint32_t m_maxSetLimit = 4092;
+        bool m_isGrowable;
         
         VkDevice m_device = VK_NULL_HANDLE;
 
         // TODO: use a wrapper of descriptor pool would be better for RAII consistency throughout the project
         VkDescriptorPool createPool(uint32_t setCount, std::span<PoolSizeRatio> poolRatios);
-        VkDescriptorPool getPool();
+        VkDescriptorPool grabPool();
 
-        bool m_isGrowable;
-
-        // testing
-        // VkDescriptorPool test_pool;
     };
 
     struct DescriptorWriter {
@@ -135,7 +134,7 @@ namespace vkclass
         void Reset();
         std::shared_ptr<VulkanDescriptor> CreateDescriptor();
         void Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
-        void TestAllocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
+
     private:
         VulkanDevice* m_device;
         int m_maxFramesInFlight = 1;
@@ -163,7 +162,6 @@ namespace vkclass
         static std::shared_ptr<VulkanDescriptor> CreateDescriptor();
         static void Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
 
-        static void TestAllocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
     private:
         static VulkanDescriptorManager* s_manager;
     };

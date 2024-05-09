@@ -10,34 +10,13 @@ namespace vkclass
         m_maxSetLimit = maxSetLimit;
         m_isGrowable = isGrowable;
 
-        /*VkDescriptorPool newPool = createPool(maxSets, m_ratios);
+        VkDescriptorPool newPool = createPool(maxSets, m_ratios);
         m_setsPerPool = maxSets * m_growthRate;
         if (m_setsPerPool > m_maxSetLimit)
         {
             m_setsPerPool = m_maxSetLimit;
         }
-        m_readyPools.push_back(newPool);*/
-
-        // m_readyPools.push_back(createPool(maxSets, m_ratios));
-
-        // testing
-        /*VkDescriptorPoolSize poolSize{};
-        poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSize.descriptorCount = static_cast<uint32_t>(maxSetLimit);
-
-        VkDescriptorPoolCreateInfo poolInfo{};
-        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolInfo.poolSizeCount = 1;
-        poolInfo.pPoolSizes = &poolSize;
-        poolInfo.maxSets = static_cast<uint32_t>(1000);
-
-        if (vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &test_pool) != VK_SUCCESS)
-        {
-            VX_CORE_ERROR("VulkanShader: Failed to create descriptorl pool.");
-            throw std::runtime_error("failed to create descriptor pool!");
-        }*/
-        // test_pool = createPool(maxSets, m_ratios);
-        m_readyPools.push_back(createPool(maxSets, m_ratios));
+        m_readyPools.push_back(newPool);
     }
 
     void DescriptorAllocator::Destroy()
@@ -59,9 +38,11 @@ namespace vkclass
             }
         }
         m_fullPools.clear();
+        
+        m_currentPtr = nullptr;
     }
 
-    void DescriptorAllocator::Clear()
+    void DescriptorAllocator::Reset()
     {
         for (auto& p : m_readyPools) 
         {
@@ -75,15 +56,24 @@ namespace vkclass
         }
 
         m_fullPools.clear();
+        m_currentPtr = nullptr;
     }
 
     void DescriptorAllocator::Allocate(VkDescriptorSetLayout* layout, VkDescriptorSet* targetSet)
     {
         //get or create a pool to allocate from
-        VkDescriptorPool poolToUse = getPool();
+        VkDescriptorPool poolToUse;
+        if (m_currentPtr == nullptr)
+        {
+            poolToUse = grabPool();
+            m_currentPtr = &poolToUse;
+        }else
+        {
+            poolToUse = *m_currentPtr;
+        }
 
         VkDescriptorSetAllocateInfo allocInfo = {};
-        // allocInfo.pNext = nullptr;
+        allocInfo.pNext = nullptr;
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = poolToUse;
         allocInfo.descriptorSetCount = 1;
@@ -96,30 +86,16 @@ namespace vkclass
         {
             VX_CORE_INFO("DescriptorAllocator: out of pool memory || fragmented");
             throw std::runtime_error("failed to allocate descriptor sets!");
-            /*m_fullPools.push_back(poolToUse);
+            m_fullPools.push_back(poolToUse);
         
-            poolToUse = getPool();
+            poolToUse = grabPool();
+            m_currentPtr = &poolToUse;
             allocInfo.descriptorPool = poolToUse;
 
-           VK_CHECK_RESULT(vkAllocateDescriptorSets(m_device, &allocInfo, targetSet));*/
+           VK_CHECK_RESULT(vkAllocateDescriptorSets(m_device, &allocInfo, targetSet));
         }
         
-        //m_readyPools.push_back(poolToUse);
-    }
-
-    void DescriptorAllocator::TestAllocate(VkDescriptorSetLayout* layout, VkDescriptorSet* targetSet)
-    {
-        /*VkDescriptorSetAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocInfo.descriptorPool = test_pool;
-        allocInfo.descriptorSetCount = 1;
-        allocInfo.pSetLayouts = layout;
-
-        if (vkAllocateDescriptorSets(m_device, &allocInfo, targetSet) != VK_SUCCESS)
-        {
-            VX_CORE_ERROR("DescriptorAllocator: Failed to allocate descriptor sets.");
-            throw std::runtime_error("failed to allocate descriptor sets!");
-        }*/
+        m_readyPools.push_back(poolToUse);
     }
 
     VkDescriptorPool DescriptorAllocator::createPool(uint32_t setCount, std::span<PoolSizeRatio> poolRatios)
@@ -138,16 +114,17 @@ namespace vkclass
         return newPool;
     }
 
-    VkDescriptorPool DescriptorAllocator::getPool()
+    VkDescriptorPool DescriptorAllocator::grabPool()
     {
+        VkDescriptorPool newPool;
         if (m_isGrowable)
         {
-            VkDescriptorPool newPool;
             if (m_readyPools.size() != 0) {
                 newPool = m_readyPools.back();
                 m_readyPools.pop_back();
             }
-            else {
+            else
+            {
                 // create a new pool
                 newPool = createPool(m_setsPerPool, m_ratios);
                 m_setsPerPool = m_setsPerPool * m_growthRate;
@@ -160,11 +137,10 @@ namespace vkclass
         }
         else
         {
-            VX_CORE_INFO("DescriptorAllocator: No growable.");
-            // return test_pool;
-            return m_readyPools.back();
-            // return m_readyPools[0];
+            newPool = m_readyPools.back();
+            m_readyPools.pop_back();
         }
+        return newPool;
     }
 
 
@@ -328,7 +304,7 @@ namespace vkclass
 
     void VulkanDescriptorManager::Reset()
     {
-        m_allocators[m_currentFrame].Clear();
+        m_allocators[m_currentFrame].Reset();
     }
 
     std::shared_ptr<VulkanDescriptor> VulkanDescriptorManager::CreateDescriptor()
@@ -341,16 +317,6 @@ namespace vkclass
         for (int i = 0; i < sets.size(); i++)
         {
             m_allocators[i].Allocate(&layout, &(sets[i]));
-        }
-    }
-
-    void VulkanDescriptorManager::TestAllocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets)
-    {
-        int frames = sets.size();
-
-        for (int i = 0; i < sets.size(); i++)
-        {
-            m_allocators[i].TestAllocate(&layout, &sets[i]);
         }
     }
 
@@ -369,11 +335,6 @@ namespace vkclass
     void DescriptorManager::Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets)
     {
         s_manager->Allocate(layout, sets);
-    }
-
-    void DescriptorManager::TestAllocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets)
-    {
-        s_manager->TestAllocate(layout, sets);
     }
 
 
