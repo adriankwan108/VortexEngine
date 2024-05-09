@@ -71,8 +71,6 @@ namespace VX
         // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
         
         m_SyncManager.WaitForFences();
-//         m_DescriptorManager.Reset();
-
 
         m_acquireNextImageResult = m_SwapChain->AcquireNextImage(m_SyncManager.GetImageAvailableSemaphore());
         if( m_acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR) // btw the return state is not guranteed by drivers / platforms
@@ -88,6 +86,7 @@ namespace VX
         m_SyncManager.ResetFences();
         m_CommandManager.Reset();
         
+        m_DescriptorManager.Reset();
         // VX_CORE_INFO("Current frame: {0}", m_currentRenderingFrame);
         // VX_CORE_INFO("FrameBuffer Index: {0}", m_SwapChain->AvailableImageIndex);
         
@@ -99,7 +98,6 @@ namespace VX
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent
         );
         
-//         vkclass::GlobalDescriptor::Update();
          vkclass::GlobalDescriptor::Bind(m_Device.LogicalDevice, &m_CommandManager);
     }
 

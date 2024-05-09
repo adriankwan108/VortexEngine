@@ -14,8 +14,8 @@ namespace vkclass
     VkRenderPass vkclass::VulkanShader::s_RenderPass = VK_NULL_HANDLE;
 
     VulkanShader::VulkanShader(const std::string& name, const std::string& vertFilePath, const std::string fragFilePath)
-        : m_Name(name), m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath),
-            m_uniformBuffer(sizeof(Geometry::Uniform_VP))
+        : m_Name(name), m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
+        , m_uniformBuffer(sizeof(Geometry::Uniform_VP))
     {
         // read file
         std::vector<char> vertShaderCode = VX::Utils::readFile(m_vertFilePath);
@@ -89,10 +89,11 @@ namespace vkclass
         test_vp.proj = glm::perspective(glm::radians(45.0f), 1920 / (float) 1080, 0.1f, 10.0f);
         m_uniformBuffer.Update(&test_vp, sizeof(test_vp));
         
-//        VX_CORE_INFO("VulkanShader: Bind pipeline.");
         // bind
-//        m_commandBufferManager->BindDescriptor(m_pipelineLayout, &m_descriptor->GetCurrentSet());
+        // m_commandBufferManager->BindDescriptor(m_pipelineLayout, &m_descriptor->GetCurrentSet());
         m_commandBufferManager->BindPipeline(m_pipeline);
+
+        // VX_CORE_INFO("VulkanShader: Pipeline is bound.");
     }
 
     void VulkanShader::UnBind() const
@@ -109,15 +110,9 @@ namespace vkclass
     void VulkanShader::SetGlobalLayout(int binding, VX::UniformShaderLayout layout)
     {
         // TODO: add name to UniformShaderLayout, then search global desciprot library
-//        VX_CORE_INFO("VulkanShader: setting global layout...");
+
         m_descriptorSetLayouts.push_back( GlobalDescriptor::GetDescriptor()->layout);
-//        VX_CORE_INFO("VulkanShader: global layout set.");
-        
-//        m_descriptor = DescriptorManager::CreateDescriptor();
-//        m_descriptor->AddBinding(0, &m_uniformBuffer);
-//        m_descriptor->Build();
-        
-//        m_descriptorSetLayouts.push_back(m_descriptor->layout);
+        // VX_CORE_INFO("VulkanShader: global layout retrieved.");
     }
 
     void VulkanShader::SetPassLayout(int binding, VX::UniformShaderLayout layout)
@@ -136,14 +131,15 @@ namespace vkclass
 
     void VulkanShader::Prepare()
     {
-        VX_CORE_TRACE("Vulkan Shader: Preparing pipeline...");
+        VX_CORE_TRACE("VulkanShader: Preparing pipeline...");
         VulkanPipelineBuilder builder;
         builder.SetShaders(m_vertModule, m_fragModule);
         builder.SetVertexInput(m_vertexLayout.GetBinding(), m_vertexLayout.GetAttributes());
-         builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+        // builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
         
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        VX_CORE_TRACE("VulkanShader: descriptor layout count: {0}", m_descriptorSetLayouts.size());
         pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
         pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional

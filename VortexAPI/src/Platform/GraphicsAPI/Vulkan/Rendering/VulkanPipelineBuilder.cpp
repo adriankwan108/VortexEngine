@@ -41,6 +41,7 @@ namespace vkclass
         
         VkPipeline newPipeline;
         VK_CHECK_RESULT(vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline));
+        VX_CORE_TRACE("VulkanPipelineBuilder: Pipeline built.");
         return newPipeline;
     }
 

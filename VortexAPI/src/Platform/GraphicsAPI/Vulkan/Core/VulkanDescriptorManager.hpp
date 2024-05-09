@@ -29,7 +29,10 @@ namespace vkclass
      *     put the pool to full pools, and try to get another pool / create a new pool
      */
     public:
-        void Init(VkDevice device, int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit, bool isGrowable = false);
+        void Init(VkDevice device, 
+            int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit, 
+            bool isGrowable = true
+        );
         void Destroy();
         
         void Reset();

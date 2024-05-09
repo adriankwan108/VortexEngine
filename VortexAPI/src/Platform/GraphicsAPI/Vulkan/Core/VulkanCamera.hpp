@@ -17,7 +17,9 @@ namespace vkclass
     class VulkanCamera : public VX::OrthographicCamera
     {
     public:
-        VulkanCamera(float left, float right, float bottom, float top): VX::OrthographicCamera(left, right, bottom, top), m_uniformBuffer(sizeof(Geometry::Uniform_VP))
+        VulkanCamera(float left, float right, float bottom, float top): 
+            VX::OrthographicCamera(left, right, bottom, top)
+            , m_uniformBuffer(sizeof(Geometry::Uniform_VP))
         {
             setDescriptor();
         }

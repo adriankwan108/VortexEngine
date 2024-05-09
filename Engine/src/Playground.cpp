@@ -11,7 +11,9 @@ Playground::Playground()
 {
     VX_INFO("{0}: Creating...", GetName());
     
-    m_camera = std::shared_ptr<VX::OrthographicCamera>(VX::OrthographicCamera::Create(-1.0f, 1.0f, -1.0f, 1.0f));
+    m_camera = std::shared_ptr<VX::OrthographicCamera>(
+        VX::OrthographicCamera::Create(-1.0f, 1.0f, -1.0f, 1.0f)
+    );
     
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
     // define shader layout
@@ -86,7 +88,7 @@ void Playground::OnUpdate(VX::Timestep ts)
 {
     VX::Renderer::BeginScene(m_camera);
     
-    // update camera
+    m_camera->Update();
     
     // set clear color
     VX::RenderCommand::SetClearColor(glm::vec4(0.5f, 0.33f, 0.2f, 1.0f));

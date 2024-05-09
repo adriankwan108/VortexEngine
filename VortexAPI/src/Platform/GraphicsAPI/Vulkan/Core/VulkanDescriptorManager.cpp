@@ -44,12 +44,12 @@ namespace vkclass
 
     void DescriptorAllocator::Reset()
     {
-        for (auto& p : m_readyPools) 
+        /*for (auto& p : m_readyPools) 
         {
             vkResetDescriptorPool(m_device, p, 0);
-        }
+        }*/
 
-        for (auto& p : m_fullPools) 
+        for (auto p : m_fullPools) 
         {
             vkResetDescriptorPool(m_device, p, 0);
             m_readyPools.push_back(p);
@@ -251,22 +251,26 @@ namespace vkclass
         {
             m_writers[i].WriteBuffer(binding, buffer->GetBuffersInfo()[i], m_type);
         }
+        VX_CORE_TRACE("VulkanDescriptor: Binding Added");
     }
 
     void VulkanDescriptor::AddBinding(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout)
     {
         m_layoutBuilder.AddBinding(binding, m_type);
 //        m_writer.WriteImage(binding, image, sampler, layout, m_type);
+
     }
 
     void VulkanDescriptor::Build()
     {
         m_layout = m_layoutBuilder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT);
+        VX_CORE_TRACE("VulkanDescriptor: Layout built");
     }
 
     void VulkanDescriptor::Allocate()
     {
         DescriptorManager::Allocate(m_layout, m_setsInFlight);
+        VX_CORE_TRACE("VulkanDescriptor: Allocated");
     }
 
     void VulkanDescriptor::Update()
@@ -275,6 +279,7 @@ namespace vkclass
         {
             m_writers[i].UpdateSet(m_device, m_setsInFlight[i]);
         }
+        VX_CORE_TRACE("VulkanDescriptor: Updated");
     }
 
 
@@ -342,7 +347,7 @@ namespace vkclass
         s_descriptor = descriptor;
         s_descriptor->Allocate();
         s_descriptor->Update();
-//        VX_CORE_INFO("GlobalDescriptor: Set.");
+        VX_CORE_INFO("GlobalDescriptor: Set.");
     }
 
     void GlobalDescriptor::Remove()
@@ -352,8 +357,10 @@ namespace vkclass
 
     void GlobalDescriptor::Update()
     {
-        s_descriptor->Allocate();
-        s_descriptor->Update();
+        // TODO:
+        // if need to update descriptor set layout
+        // delete current vulkandescriptor, create a new one
+        // then, allocate and update
     }
 
     void GlobalDescriptor::Bind(VkDevice device, VulkanCommandManager* cmdManager)
@@ -369,6 +376,7 @@ namespace vkclass
 
         cmdManager->BindDescriptor(temporaryPipelineLayout, &s_descriptor->GetCurrentSet());
         vkDestroyPipelineLayout(device, temporaryPipelineLayout, nullptr);
-//        VX_CORE_INFO("GlobalDescriptor: Bind");
+
+        // VX_CORE_INFO("GlobalDescriptor: Bind");
     }
 }
