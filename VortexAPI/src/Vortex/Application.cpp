@@ -10,6 +10,9 @@ namespace VX
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
     Application::Application()
     {
+        VX_CORE_ASSERT(!s_Instance, "Application already exists!");
+        s_Instance = this;
+        
         VX_CORE_INFO("Application: Initiating...");
         
         VX_CORE_INFO("Application: Creating window...");

@@ -20,6 +20,10 @@ namespace VX
 
         void PushLayer(Layer* layer);
         void PushOverlay(Layer* layer);
+        
+        Window& GetWindow() { return *m_Window;}
+        
+        static Application& Get() { return *s_Instance; }
     private:
         // status
         bool m_Running = true;
@@ -32,6 +36,9 @@ namespace VX
         
         bool OnWindowClose(WindowCloseEvent& event);
         bool OnWindowResize(WindowResizeEvent& event);
+        
+    private:
+        static Application* s_Instance;
     };
 
     // To be defined by client (global)
