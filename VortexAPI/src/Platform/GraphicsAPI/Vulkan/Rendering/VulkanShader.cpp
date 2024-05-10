@@ -15,7 +15,6 @@ namespace vkclass
 
     VulkanShader::VulkanShader(const std::string& name, const std::string& vertFilePath, const std::string fragFilePath)
         : m_Name(name), m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
-        , m_uniformBuffer(sizeof(Geometry::Uniform_VP))
     {
         // read file
         std::vector<char> vertShaderCode = VX::Utils::readFile(m_vertFilePath);
@@ -81,16 +80,7 @@ namespace vkclass
 
     void VulkanShader::Bind()
     {
-        test_vp.view = glm::lookAt(
-            glm::vec3(2.0f, 2.0f, 2.0f), // cam pos
-            glm::vec3(0.0f, 0.0f, 0.0f), // observing target
-            glm::vec3(0.0f, 0.0f, 1.0f)  // up vector
-        );
-        test_vp.proj = glm::perspective(glm::radians(45.0f), 1920 / (float) 1080, 0.1f, 10.0f);
-        m_uniformBuffer.Update(&test_vp, sizeof(test_vp));
-        
-        // bind
-        // m_commandBufferManager->BindDescriptor(m_pipelineLayout, &m_descriptor->GetCurrentSet());
+        // bind descriptor set (per material / model)
         m_commandBufferManager->BindPipeline(m_pipeline);
 
         // VX_CORE_INFO("VulkanShader: Pipeline is bound.");
@@ -135,7 +125,7 @@ namespace vkclass
         VulkanPipelineBuilder builder;
         builder.SetShaders(m_vertModule, m_fragModule);
         builder.SetVertexInput(m_vertexLayout.GetBinding(), m_vertexLayout.GetAttributes());
-        // builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+        builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
         
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

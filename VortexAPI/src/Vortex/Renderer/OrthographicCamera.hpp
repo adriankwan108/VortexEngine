@@ -1,4 +1,6 @@
 #pragma once
+
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 
 namespace VX
@@ -17,6 +19,10 @@ namespace VX
         // currently just for z-axis
         float GetRotation() const { return m_Rotation; }
         void SetRotation(float rotation) { m_Rotation = rotation; RecalculateViewMatrix(); }
+        
+        // settings
+        // set Y-Flip as GLM was originally designed for OpenGL, where the Y coordinate of the clip coordinates is inverted. In vulkan, we flip it back
+        void SetYFlip(bool isYFlip = true);
 
         const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
         const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
@@ -34,5 +40,7 @@ namespace VX
 
         glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
         float m_Rotation = 0.0f;
+        
+        bool m_isYFlip = true;
     };
 }

@@ -71,11 +71,5 @@ namespace vkclass
         VkShaderModule m_fragModule = VK_NULL_HANDLE;
         
         bool m_isValid = false;
-        
-        // testing
-        std::shared_ptr<VulkanDescriptor> m_descriptor;
-        
-        VulkanUniformBuffer m_uniformBuffer;
-        Geometry::Uniform_VP test_vp{};
     };
 }

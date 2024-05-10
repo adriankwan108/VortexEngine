@@ -1,9 +1,5 @@
 #include "Playground.hpp"
 
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <chrono>
 
 Playground::Playground()
@@ -12,7 +8,7 @@ Playground::Playground()
     VX_INFO("{0}: Creating...", GetName());
     
     m_camera = std::shared_ptr<VX::OrthographicCamera>(
-        VX::OrthographicCamera::Create(-1.0f, 1.0f, -1.0f, 1.0f)
+        VX::OrthographicCamera::Create(-1.6f, 1.6f, -0.9f, 0.9f)
     );
     
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
@@ -31,18 +27,17 @@ Playground::Playground()
         {VX::ShaderDataType::Mat4, "model"},
     };
     
-    // simulate vertices data
+    // simulate vertices data (counter-clockwise, left-hand)
     std::vector<Geometry::Vertex> vertices =
     {
-        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-        {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+        {{0.0f, 0.5f}, {1.0f, 0.0f, 0.0f}},     // top
+        {{-0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},   // bottom, left
+        {{0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}     // bottom, right
     };
     
     // simulate index data
     std::vector<uint16_t> triangleIndices = {
-        0, 1, 2, 2, 3, 0
+        0, 1, 2
     };
     
     m_vertexArray = std::shared_ptr<VX::VertexArray>(
@@ -88,10 +83,12 @@ void Playground::OnUpdate(VX::Timestep ts)
 {
     VX::Renderer::BeginScene(m_camera);
     
-    m_camera->Update();
+    // m_camera->Update();
+    m_camera->SetPosition({0.5f, 0.5f, 0.0f});
+    m_camera->SetRotation(45.0f);
     
     // set clear color
-    VX::RenderCommand::SetClearColor(glm::vec4(0.5f, 0.33f, 0.2f, 1.0f));
+    VX::RenderCommand::SetClearColor(glm::vec4(0.11f, 0.12f, 0.13f, 1.0f));
     
     UpdateUniformBuffer();
     

@@ -22,6 +22,7 @@ namespace vkclass
             , m_uniformBuffer(sizeof(Geometry::Uniform_VP))
         {
             setDescriptor();
+            Update();
         }
         
         virtual ~VulkanCamera();
