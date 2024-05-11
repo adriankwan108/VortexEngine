@@ -1,6 +1,9 @@
 #include "VortexPCH.hpp"
 #include "MacWindow.hpp"
 
+#include "Vortex/Core/Input.hpp"
+#include "MacInput.hpp"
+
 namespace VX
 {
     static bool s_GLFWInitialized = false;
@@ -13,6 +16,7 @@ namespace VX
     MacWindow::MacWindow(const WindowProps& props)
     {
         Init(props);
+        Input::Set(new MacInput());
     }
 
     MacWindow::~MacWindow()

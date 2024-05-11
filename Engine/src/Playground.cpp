@@ -1,7 +1,5 @@
 #include "Playground.hpp"
 
-#include <chrono>
-
 Playground::Playground()
     : VX::Layer("Playground")
 {
@@ -84,13 +82,17 @@ void Playground::OnUpdate(VX::Timestep ts)
     VX::Renderer::BeginScene(m_camera);
     
     // m_camera->Update();
-    m_camera->SetPosition({0.5f, 0.5f, 0.0f});
+    // m_camera->SetPosition({0.5f, 0.5f, 0.0f});
     m_camera->SetRotation(45.0f);
+
+    // testing
+    if (VX::Input::IsKeyPressed(VX::Key::A)) // tab
+    {
+        m_camera->SetPosition({ 0.5f, 0.5f, 0.0f });
+    }
     
     // set clear color
     VX::RenderCommand::SetClearColor(glm::vec4(0.11f, 0.12f, 0.13f, 1.0f));
-    
-    UpdateUniformBuffer();
     
     VX::Renderer::Submit(m_basicShader ,m_vertexArray);
     
@@ -100,20 +102,9 @@ void Playground::OnUpdate(VX::Timestep ts)
 
 void Playground::OnEvent(VX::Event& event)
 {
-    
-}
-
-void Playground::UpdateUniformBuffer()
-{
-    // update data
-    static auto startTime = std::chrono::high_resolution_clock::now();
-
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-//    mvp.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-//    mvp.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-//    mvp.proj = glm::perspective(glm::radians(45.0f), 1920.0f/ 1080.0f, 0.1f, 10.0f); // should use swapchain extent
-//    mvp.proj[1][1] *= -1;
-    
-    // update buffer
+    if (event.GetEventType() == VX::EventType::KeyPressed)
+    {
+        VX::KeyPressedEvent& e = static_cast<VX::KeyPressedEvent&>(event);
+        // VX_TRACE("{0}", (char)e.GetKeyCode());
+    }
 }

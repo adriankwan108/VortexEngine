@@ -6,7 +6,16 @@
 #include "Vortex/Log.hpp"
 #include "Vortex/Core.hpp"
 #include "Vortex/LayerStack.hpp"
+
+#include "Vortex/Events/Event.hpp"
+#include "Vortex/Events/ApplicationEvent.hpp"
+#include "Vortex/Events/KeyEvent.hpp"
+#include "Vortex/Events/MouseEvent.hpp"
+
 #include "Vortex/Core/Timestep.hpp"
+
+#include "Vortex/Core/Input.hpp"
+#include "Vortex/Core/InputCode.hpp"
 
 #include "Vortex/Renderer/Shader.hpp"
 #include "Vortex/Renderer/Buffer.hpp"

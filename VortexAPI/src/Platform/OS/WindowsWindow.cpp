@@ -2,6 +2,9 @@
 #include "WindowsWindow.hpp"
 #include "Renderer/GraphicsContext.hpp"
 
+#include "Vortex/Core/Input.hpp"
+#include "WindowsInput.hpp"
+
 namespace VX
 {
     static bool s_GLFWInitialized = false;
@@ -14,6 +17,7 @@ namespace VX
     WindowsWindow::WindowsWindow(const WindowProps& props)
     {
         Init(props);
+        Input::Set(new WindowsInput());
     }
 
     WindowsWindow::~WindowsWindow()

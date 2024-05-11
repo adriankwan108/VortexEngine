@@ -14,8 +14,6 @@ public:
     virtual void OnUpdate(VX::Timestep ts) override;
     virtual void OnEvent(VX::Event& event) override;
     
-    void UpdateUniformBuffer();
-    
 private:
     // prepare resources here
     std::shared_ptr<VX::Shader> m_basicShader;
