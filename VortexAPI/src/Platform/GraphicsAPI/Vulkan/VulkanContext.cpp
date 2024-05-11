@@ -50,7 +50,7 @@ namespace VX
         vkclass::VulkanBuffer::Init(&m_Device, &m_CommandManager);
         
         m_SwapChain = new vkclass::VulkanSwapChain(&m_Surface);
-        m_SwapChain->CreateSwapChain();
+        m_SwapChain->CreateSwapChain(m_isVSync);
         
         m_RenderPass = new vkclass::VulkanRenderPass();
         createRenderPass();
@@ -137,6 +137,15 @@ namespace VX
         VX_CORE_INFO("Vulkan Context: Resize variable set.");
     }
 
+    void VulkanContext::SetVSync(bool enable)
+    {
+        if (m_isVSync != enable)
+        {
+            m_isVSync = enable;
+            resizeHelper();
+        }
+    }
+
     void VulkanContext::createRenderPass()
     {
         vkclass::VulkanSubpass GeometrySubpass("Geometry");
@@ -184,7 +193,7 @@ namespace VX
         
         // recreate all necessary resources
         m_SwapChain = new vkclass::VulkanSwapChain(&m_Surface);
-        m_SwapChain->CreateSwapChain();
+        m_SwapChain->CreateSwapChain(m_isVSync);
         
         // in theory, when moving a window from standard to HDR monitor, render pass should be recreated
         m_RenderPass = new vkclass::VulkanRenderPass();
@@ -214,4 +223,5 @@ namespace VX
 
         VX_CORE_INFO("FrameBuffers initiated.");
     }
+
 }

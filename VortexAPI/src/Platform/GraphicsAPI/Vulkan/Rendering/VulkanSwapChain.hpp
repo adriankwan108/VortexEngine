@@ -24,7 +24,7 @@ namespace vkclass
         
         VkResult AcquireNextImage(VkSemaphore semaphore);
         VkResult PresentImage(std::vector<VkSemaphore> signalSemaphores);
-        void CreateSwapChain();
+        void CreateSwapChain(bool isVSync = false);
         
     public:
         static vkclass::VulkanDevice* m_device;
@@ -54,7 +54,7 @@ namespace vkclass
         // @brief choose color space
         VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
         
-        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes, bool isVSync);
         
         // @brief resolution of swapchain images
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);

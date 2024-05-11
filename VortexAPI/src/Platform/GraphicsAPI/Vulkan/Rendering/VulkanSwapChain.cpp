@@ -47,7 +47,7 @@ namespace vkclass
         return vkQueuePresentKHR(m_device->PresentQueue, &presentInfo);
     }
 
-    void VulkanSwapChain::CreateSwapChain()
+    void VulkanSwapChain::CreateSwapChain(bool isVSync)
     {
         
         // query details of swap chain support
@@ -64,7 +64,7 @@ namespace vkclass
         }
         
         m_surfaceFormat = chooseSwapSurfaceFormat(details.formats);
-        m_presentMode = chooseSwapPresentMode(details.presentModes);
+        m_presentMode = chooseSwapPresentMode(details.presentModes, isVSync);
         m_extent = chooseSwapExtent(details.capabilities);
         
         m_imageCount = details.capabilities.minImageCount + 1;
@@ -160,11 +160,13 @@ namespace vkclass
         return availableFormats[0];
     }
 
-    VkPresentModeKHR VulkanSwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+    VkPresentModeKHR VulkanSwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes, bool isVSync)
     {
         for (const auto& availablePresentMode : availablePresentModes)
         {
-            if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+            if(availablePresentMode == isVSync
+                ? VK_PRESENT_MODE_MAILBOX_KHR 
+                : VK_PRESENT_MODE_IMMEDIATE_KHR)
             {
                 return availablePresentMode;
             }

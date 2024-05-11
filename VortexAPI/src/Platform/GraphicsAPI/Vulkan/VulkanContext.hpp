@@ -46,11 +46,14 @@ namespace VX
         virtual void End() override;
         virtual void Resize(unsigned int width, unsigned int height) override;
         
+        virtual void SetVSync(bool enable) override;
+
         const int MAX_FRAMES_IN_FLIGHT = 2;
 
-    private: // configs
+    private: // engine configs
         bool m_enableValidation = true;
-        
+        bool m_isVSync = true;
+
     private:
         // extensions required by os
         // std::vector<const char*> m_requiredDeviceExtensions = {};

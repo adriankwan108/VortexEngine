@@ -15,6 +15,8 @@ namespace VX
         virtual void End() = 0;
         virtual void Resize(unsigned int width, unsigned int height) = 0;
 
+        virtual void SetVSync(bool enable) = 0;
+
         static GraphicsContext* Create(GLFWwindow* window = nullptr);
     };
 }

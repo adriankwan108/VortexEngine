@@ -50,10 +50,10 @@ namespace VX
         // create graphics context
         m_GraphicsContext = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_Window));
         
-        // init graphics context
+        // init graphics context, TODO: init with engine configs
         m_GraphicsContext->Init();
 
-        SetVSync(true);
+        // SetVSync(true);
         
         // set glfw callbacks
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
@@ -187,16 +187,9 @@ namespace VX
         m_GraphicsContext->End();
     }
 
-    void MacWindow::SetVSync(bool enabled)
+    void MacWindow::SetVSync(bool enable)
     {
-        // only for opengl
-        /*if(enabled)
-        {
-            glfwSwapInterval(1);
-        }else
-        {
-            glfwSwapInterval(0);
-        }*/
+        m_GraphicsContext->SetVSync(enable);
     }
 
     bool MacWindow::IsVSync() const
