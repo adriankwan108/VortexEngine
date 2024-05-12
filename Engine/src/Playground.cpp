@@ -83,13 +83,20 @@ void Playground::OnUpdate(VX::Timestep ts)
     
     // m_camera->Update();
     // m_camera->SetPosition({0.5f, 0.5f, 0.0f});
-    m_camera->SetRotation(45.0f);
+    // m_camera->SetRotation(45.0f);
 
     // testing
-    if (VX::Input::IsKeyPressed(VX::Key::A)) // tab
+    if (VX::Input::IsKeyPressed(VX::Key::A))
     {
-        m_camera->SetPosition({ 0.5f, 0.5f, 0.0f });
+        m_cameraPosition.x += m_CameraMoveSpeed * ts;
     }
+
+    if (VX::Input::IsKeyPressed(VX::Key::D))
+    {
+        m_cameraPosition.x -= m_CameraMoveSpeed * ts;
+    }
+
+    m_camera->SetPosition(m_cameraPosition);
     
     // set clear color
     VX::RenderCommand::SetClearColor(glm::vec4(0.11f, 0.12f, 0.13f, 1.0f));

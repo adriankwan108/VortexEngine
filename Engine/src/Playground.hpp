@@ -24,5 +24,8 @@ private:
     Geometry::Uniform_VP mvp{};
     
     std::shared_ptr<VX::OrthographicCamera> m_camera;
+
+    glm::vec3 m_cameraPosition = {0.0f, 0.0f, 0.0f};
+    float m_CameraMoveSpeed = 1.0f;
 };
 
