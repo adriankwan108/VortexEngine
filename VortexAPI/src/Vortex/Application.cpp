@@ -20,13 +20,15 @@ namespace VX
         VX_CORE_INFO("Application: Creating window...");
         m_Window = std::unique_ptr<Window>(Window::Create());
         
-        VX_CORE_INFO("Application: Binding events...");
+        VX_CORE_INFO("Application: Setting event callbacks...");
         m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
         
         VX_CORE_INFO("Application: preparing renderer...");
         Renderer::Init();
         
-        // layer of gui
+        VX_CORE_INFO("Application: preparing ui layer...");
+        m_uiLayer = UILayer::Create();
+        PushOverlay(m_uiLayer);
         
         VX_CORE_INFO("Application initiated.");
     }
@@ -83,8 +85,16 @@ namespace VX
                 {
                     layer->OnUpdate(timestep); // playground: update
                 }
+
+                m_uiLayer->OnUpdateStart();
+                for (Layer* layer : m_LayerStack)
+                {
+                    // layer->OnUIRender();
+                }
+                m_uiLayer->OnUpdateEnd();
             }
-            m_Window->OnUpdate(); // 
+            m_Window->OnUpdate(); // reserved
+
             m_Window->OnUpdateEnd();
         }
     }

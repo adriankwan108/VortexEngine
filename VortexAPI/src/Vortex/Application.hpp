@@ -5,6 +5,7 @@
 #include "LayerStack.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Core/Timestep.hpp"
+#include "UI/UILayer.hpp"
 
 namespace VX
 {
@@ -14,14 +15,16 @@ namespace VX
         Application();
         ~Application();
         
-        void Run();
+        void Run(); // private ?
         
         void OnEvent(Event &e);
 
         void PushLayer(Layer* layer);
         void PushOverlay(Layer* layer);
+
         
         Window& GetWindow() { return *m_Window;}
+        UILayer* GetUILayer() { return m_uiLayer; }
         
         static Application& Get() { return *s_Instance; }
     private:
@@ -32,6 +35,9 @@ namespace VX
         // props
         std::unique_ptr<Window> m_Window;
         LayerStack m_LayerStack;
+
+        UILayer* m_uiLayer;
+
         float m_LastFrameTime = 0.0f;
         
         bool OnWindowClose(WindowCloseEvent& event);

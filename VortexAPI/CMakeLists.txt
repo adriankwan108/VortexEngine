@@ -8,6 +8,8 @@ endif()
 
 file(GLOB_RECURSE VORTEX_HEADERS "src/*.hpp")
 file(GLOB_RECURSE VORTEX_SOURCES "src/*.cpp")
+file(GLOB IMGUI_HEADERS "vendor/imgui/*.hpp")
+file(GLOB IMGUI_SOURCES "vendor/imgui/*.cpp")
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${VORTEX_HEADERS})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${VORTEX_SOURCES})
@@ -32,12 +34,14 @@ add_library(VortexAPI SHARED)
 target_sources(VortexAPI PRIVATE
     ${VORTEX_HEADERS}
     ${VORTEX_SOURCES}
-    # glm
+    ${IMGUI_HEADERS}
+    ${IMGUI_SOURCES}
 )
 
 set_target_properties(VortexAPI PROPERTIES VERSION 0.1.1)
 
 add_subdirectory("vendor/glfw")
+
 if(MSVC)
     target_link_libraries(VortexAPI PUBLIC
         glfw
@@ -62,7 +66,7 @@ target_include_directories(VortexAPI PUBLIC
     "src/Platform/GraphicsAPI/Vulkan"
     # spdlog, glfw, vulkan ...
     "vendor/spdlog/include"
-    "vendor/imgui/backends"
+    "vendor/imgui"
 )
 
 if(MSVC)

@@ -6,6 +6,7 @@
 #include "Vortex/Log.hpp"
 #include "Vortex/Core.hpp"
 #include "Vortex/LayerStack.hpp"
+#include "Vortex/UI/UILayer.hpp"
 
 #include "Vortex/Events/Event.hpp"
 #include "Vortex/Events/ApplicationEvent.hpp"
