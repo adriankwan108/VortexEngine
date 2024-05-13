@@ -27,6 +27,6 @@ namespace VX
         
         virtual const std::string& GetName() const = 0;
         
-        static Shader* Create(const std::string& name, const std::string& vertexFilePath, const std::string& fragFilePath);
+        static Ref<Shader> Create(const std::string& name, const std::string& vertexFilePath, const std::string& fragFilePath);
     };
 }

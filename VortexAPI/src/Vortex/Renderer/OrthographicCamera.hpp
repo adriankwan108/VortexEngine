@@ -29,7 +29,7 @@ namespace VX
         const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
         
         virtual void Update() = 0;
-        static OrthographicCamera* Create(float left, float right, float bottom, float top);
+        static Ref<OrthographicCamera> Create(float left, float right, float bottom, float top);
         
     private:
         void RecalculateViewMatrix();

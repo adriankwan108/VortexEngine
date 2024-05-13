@@ -127,7 +127,7 @@ namespace vkclass
         ~VulkanDescriptorManager();
         
         void Reset();
-        std::shared_ptr<VulkanDescriptor> CreateDescriptor();
+        VX::Ref<VulkanDescriptor> CreateDescriptor();
         void Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
 
     private:
@@ -154,7 +154,7 @@ namespace vkclass
     {
     public:
         static void Init(VulkanDescriptorManager* manager);
-        static std::shared_ptr<VulkanDescriptor> CreateDescriptor();
+        static VX::Ref<VulkanDescriptor> CreateDescriptor();
         static void Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
 
     private:
@@ -164,8 +164,8 @@ namespace vkclass
     class GlobalDescriptor
     {
     public:
-        static std::shared_ptr<VulkanDescriptor> GetDescriptor() { return s_descriptor; }
-        static void SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor);
+        static VX::Ref<VulkanDescriptor> GetDescriptor() { return s_descriptor; }
+        static void SetDescriptor(VX::Ref<VulkanDescriptor> descriptor);
 
         static void Update();
         static void Bind(VkDevice device, VulkanCommandManager* cmdManager);
@@ -174,7 +174,7 @@ namespace vkclass
         static void Remove();
     
     private:
-        static std::shared_ptr<VulkanDescriptor> s_descriptor;
+        static VX::Ref<VulkanDescriptor> s_descriptor;
     };
 
 }

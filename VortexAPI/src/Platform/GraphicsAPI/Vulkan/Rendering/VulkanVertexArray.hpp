@@ -21,11 +21,11 @@ namespace vkclass
         virtual void Bind() const override;
         virtual void Unbind() const override;
         
-        virtual void AddVertexBuffer(std::shared_ptr<VX::VertexBuffer>& vertexBuffer) override;
-        virtual void SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer) override;
+        virtual void AddVertexBuffer(VX::Ref<VX::VertexBuffer>& vertexBuffer) override;
+        virtual void SetIndexBuffer (VX::Ref<VX::IndexBuffer>& indexBuffer) override;
         
-        virtual const std::vector<std::shared_ptr<VX::VertexBuffer>>& GetVertexBuffer() const override { return m_VertexBuffers; }
-        virtual const std::shared_ptr<VX::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
+        virtual const std::vector<VX::Ref<VX::VertexBuffer>>& GetVertexBuffer() const override { return m_VertexBuffers; }
+        virtual const VX::Ref<VX::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
         
     public:
         std::vector<VkBuffer> GetVertexBuffers() { return m_VkVertexBuffers; }
@@ -34,8 +34,8 @@ namespace vkclass
         uint32_t GetIndicesSize();
         
     private:
-        std::vector<std::shared_ptr<VX::VertexBuffer>> m_VertexBuffers;
-        std::shared_ptr<VX::IndexBuffer> m_IndexBuffer;
+        std::vector<VX::Ref<VX::VertexBuffer>> m_VertexBuffers;
+        VX::Ref<VX::IndexBuffer> m_IndexBuffer;
         
     private:
         std::vector<VkBuffer> m_VkVertexBuffers;

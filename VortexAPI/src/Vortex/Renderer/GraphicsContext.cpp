@@ -4,13 +4,13 @@
 
 namespace VX
 {  
-    GraphicsContext* GraphicsContext::Create(GLFWwindow* window)
+    Scope<GraphicsContext> GraphicsContext::Create(GLFWwindow* window)
     {
         if (window == nullptr)
         {
             VX_CORE_ERROR("Window not created, therefore graphics context does not create.");
             return nullptr;
         }
-        return new VulkanContext(window);
+        return CreateScope<VulkanContext>(window);
     }
 }

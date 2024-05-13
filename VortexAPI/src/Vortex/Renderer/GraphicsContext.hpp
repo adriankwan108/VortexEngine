@@ -17,6 +17,6 @@ namespace VX
 
         virtual void SetVSync(bool enable) = 0;
 
-        static GraphicsContext* Create(GLFWwindow* window = nullptr);
+        static Scope<GraphicsContext> Create(GLFWwindow* window = nullptr);
     };
 }

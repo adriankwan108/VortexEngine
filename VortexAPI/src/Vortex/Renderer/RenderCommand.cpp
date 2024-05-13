@@ -3,5 +3,5 @@
 
 namespace VX
 {
-    VX::RendererAPI* RenderCommand::s_RendererAPI = RendererAPI::Create();
+    Scope<VX::RendererAPI> RenderCommand::s_RendererAPI = RendererAPI::Create();
 }

@@ -5,7 +5,7 @@
 
 namespace VX
 {
-    VertexArray* VertexArray::Create()
+    Ref<VertexArray> VertexArray::Create()
     {
         switch (Renderer::GetAPI()) {
             case RendererAPI::API::None:
@@ -13,7 +13,7 @@ namespace VX
                 return nullptr;
                 break;
             case RendererAPI::API::Vulkan:
-                return new vkclass::VulkanVertexArray();
+                return CreateRef<vkclass::VulkanVertexArray>();
                 break;
             case RendererAPI::API::DX12:
                 VX_CORE_ASSERT(false, "Vertex Array: RendererAPI::DX12 is currently not supported!");

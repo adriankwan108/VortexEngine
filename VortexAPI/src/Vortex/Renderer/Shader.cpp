@@ -5,7 +5,7 @@
 
 namespace VX
 {
-    Shader* Shader::Create(const std::string& name, const std::string& vertexFilePath, const std::string& fragFilePath)
+    Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexFilePath, const std::string& fragFilePath)
     {
         switch (Renderer::GetAPI())
         {
@@ -14,7 +14,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            return new vkclass::VulkanShader(name, vertexFilePath, fragFilePath);
+            return CreateRef<vkclass::VulkanShader>(name, vertexFilePath, fragFilePath);
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is currently not supported!");

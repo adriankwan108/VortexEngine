@@ -6,7 +6,7 @@
 
 namespace VX
 {
-    Renderer::SceneData* Renderer::s_sceneData = new Renderer::SceneData;
+    Scope<Renderer::SceneData> Renderer::s_sceneData = CreateScope<Renderer::SceneData>();
 
     void Renderer::Init()
     {
@@ -37,7 +37,7 @@ namespace VX
 //        VX_CORE_INFO("Renderer: Ending Scene...");
     }
 
-    void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray> &vertexArray)
+    void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray)
     {
         // VX_CORE_TRACE("Renderer:: Submiting...");
         /* update per-material / per-object data here */

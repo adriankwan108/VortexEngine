@@ -6,7 +6,7 @@ namespace VX
 {
     RendererAPI::API RendererAPI::s_API = RendererAPI::API::Vulkan;
 
-    RendererAPI* RendererAPI::Create()
+    Scope<RendererAPI> RendererAPI::Create()
     {
         switch ( s_API )
         {
@@ -15,7 +15,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            return new vkclass::VulkanRendererAPI();
+            return CreateScope<vkclass::VulkanRendererAPI>();
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is not supported");

@@ -32,11 +32,11 @@ namespace vkclass
         
         static void Init(VulkanDevice* device);
     public:
-        std::shared_ptr<VulkanDescriptor> GetDescriptor() const { return m_descriptor; }
+        VX::Ref<VulkanDescriptor> GetDescriptor() const { return m_descriptor; }
         
     private:
         static VulkanDevice* m_device;
-        std::shared_ptr<VulkanDescriptor> m_descriptor;
+        VX::Ref<VulkanDescriptor> m_descriptor;
         VulkanUniformBuffer m_uniformBuffer;
         
         Geometry::Uniform_VP camera_vp{};

@@ -48,7 +48,7 @@ namespace VX
         glfwSetWindowUserPointer(m_Window, &m_Data);
         
         // create graphics context
-        m_GraphicsContext = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_Window));
+        m_GraphicsContext = GraphicsContext::Create(m_Window);
         
         // init graphics context, TODO: init with engine configs, i.e. vsync
         m_GraphicsContext->Init();

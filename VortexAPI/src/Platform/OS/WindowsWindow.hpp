@@ -50,7 +50,7 @@ namespace VX
         
         WindowData m_Data;
 
-        std::unique_ptr<GraphicsContext> m_GraphicsContext;
+        Scope<GraphicsContext> m_GraphicsContext;
     };
 }
 

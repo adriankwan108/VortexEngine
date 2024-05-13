@@ -23,7 +23,7 @@ namespace vkclass
         
     }
 
-    void VulkanVertexArray::AddVertexBuffer(std::shared_ptr<VX::VertexBuffer>& vertexBuffer)
+    void VulkanVertexArray::AddVertexBuffer(VX::Ref<VX::VertexBuffer>& vertexBuffer)
     {
         vertexBuffer->Bind();
         m_VertexBuffers.push_back(vertexBuffer);
@@ -35,7 +35,7 @@ namespace vkclass
         m_LastStride += vkVB->GetLayout().GetStride();
     }
 
-    void VulkanVertexArray::SetIndexBuffer(std::shared_ptr<VX::IndexBuffer>& indexBuffer)
+    void VulkanVertexArray::SetIndexBuffer(VX::Ref<VX::IndexBuffer>& indexBuffer)
     {
         m_IndexBuffer = indexBuffer;
         m_VkIndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(m_IndexBuffer)->GetBuffer();

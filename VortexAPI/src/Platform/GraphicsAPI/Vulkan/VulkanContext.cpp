@@ -26,11 +26,7 @@ namespace VX
             delete  m_RenderPass;
         }
         
-        if(m_SwapChain != nullptr)
-        {
-            delete m_SwapChain;
-        }
-
+        
         vkclass::GlobalDescriptor::Remove();
 
         VX_CORE_INFO("Vulkan: Resources cleared.");
@@ -49,7 +45,7 @@ namespace VX
         vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
         vkclass::VulkanBuffer::Init(&m_Device, &m_CommandManager);
         
-        m_SwapChain = new vkclass::VulkanSwapChain(&m_Surface);
+        m_SwapChain = VX::CreateScope<vkclass::VulkanSwapChain>(&m_Surface);
         m_SwapChain->CreateSwapChain(m_isVSync);
         
         m_RenderPass = new vkclass::VulkanRenderPass();
@@ -173,7 +169,9 @@ namespace VX
         }
 
         /* recreate swap chain */
-        vkDeviceWaitIdle(m_Device.LogicalDevice); // prevent touching resources that are still in used
+
+        // prevent touching resources that are still in used
+        vkDeviceWaitIdle(m_Device.LogicalDevice);
         
         // clean up
         for(auto framebuffer: m_FrameBuffers)
@@ -186,13 +184,10 @@ namespace VX
             delete  m_RenderPass;
         }
         
-        if(m_SwapChain != nullptr)
-        {
-            delete m_SwapChain;
-        }
+        m_SwapChain.reset();
         
         // recreate all necessary resources
-        m_SwapChain = new vkclass::VulkanSwapChain(&m_Surface);
+        m_SwapChain = VX::CreateScope<vkclass::VulkanSwapChain>(&m_Surface);
         m_SwapChain->CreateSwapChain(m_isVSync);
         
         // in theory, when moving a window from standard to HDR monitor, render pass should be recreated

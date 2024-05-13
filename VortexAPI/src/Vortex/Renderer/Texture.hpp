@@ -17,6 +17,6 @@ namespace VX
     class Texture2D : public Texture
     {
     public:
-        static Texture2D* Create(const std::string& path);
+        static Ref<Texture2D> Create(const std::string& path);
     };
 }

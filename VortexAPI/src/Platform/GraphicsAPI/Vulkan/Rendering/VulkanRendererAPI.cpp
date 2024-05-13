@@ -18,7 +18,7 @@ namespace vkclass
         s_CommandManager->SetClearColor(color);
     }
 
-    void VulkanRendererAPI::DrawIndexed(const std::shared_ptr<VX::VertexArray> &vertexArray)
+    void VulkanRendererAPI::DrawIndexed(const VX::Ref<VX::VertexArray> &vertexArray)
     {
         auto va = std::static_pointer_cast<VulkanVertexArray>(vertexArray);
         

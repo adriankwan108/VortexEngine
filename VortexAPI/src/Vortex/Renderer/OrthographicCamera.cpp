@@ -40,7 +40,7 @@ namespace VX
         Update();
     }
 
-    OrthographicCamera* OrthographicCamera::Create(float left, float right, float bottom, float top)
+    Ref<OrthographicCamera> OrthographicCamera::Create(float left, float right, float bottom, float top)
     {
         switch (Renderer::GetAPI())
         {
@@ -49,7 +49,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            return new vkclass::VulkanCamera(left, right, bottom, top);
+            return CreateRef<vkclass::VulkanCamera>(left, right, bottom, top);
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is not supported");

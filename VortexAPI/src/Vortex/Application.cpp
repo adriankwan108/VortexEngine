@@ -18,7 +18,7 @@ namespace VX
         VX_CORE_INFO("Application: Initiating...");
         
         VX_CORE_INFO("Application: Creating window...");
-        m_Window = std::unique_ptr<Window>(Window::Create());
+        m_Window = Window::Create();
         
         VX_CORE_INFO("Application: Setting event callbacks...");
         m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));

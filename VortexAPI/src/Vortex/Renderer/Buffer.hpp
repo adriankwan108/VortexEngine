@@ -22,7 +22,7 @@ namespace VX
         virtual void SetLayout(const VertexShaderLayout& layout) = 0;
         virtual const VertexShaderLayout& GetLayout() const = 0;
         
-        static VertexBuffer* Create(void* data, uint64_t size);
+        static Ref<VertexBuffer> Create(void* data, uint64_t size);
     };
 
     class IndexBuffer
@@ -35,7 +35,7 @@ namespace VX
 
         virtual uint32_t GetCount() const = 0;
         
-        static IndexBuffer* Create(void* data, uint64_t size, unsigned long count);
+        static Ref<IndexBuffer> Create(void* data, uint64_t size, unsigned long count);
     };
 
     
@@ -46,6 +46,6 @@ namespace VX
         
         virtual void Update(void* data, uint64_t size) = 0;
         
-        static UniformBuffer* Create(uint64_t size);
+        static Ref<UniformBuffer> Create(uint64_t size);
     };
 }

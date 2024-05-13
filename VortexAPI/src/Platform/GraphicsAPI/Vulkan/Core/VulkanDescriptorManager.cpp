@@ -309,9 +309,9 @@ namespace vkclass
         m_allocators[m_currentFrame].Reset();
     }
 
-    std::shared_ptr<VulkanDescriptor> VulkanDescriptorManager::CreateDescriptor()
+    VX::Ref<VulkanDescriptor> VulkanDescriptorManager::CreateDescriptor()
     {
-        return std::shared_ptr<VulkanDescriptor>(new VulkanDescriptor(m_device->LogicalDevice, m_maxFramesInFlight, m_currentFrame));
+        return VX::CreateRef<VulkanDescriptor>(m_device->LogicalDevice, m_maxFramesInFlight, m_currentFrame);
     }
 
     void VulkanDescriptorManager::Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets)
@@ -324,12 +324,12 @@ namespace vkclass
 
 
     // static wrapper functions
-    void DescriptorManager::Init(VulkanDescriptorManager *manager)
+    void DescriptorManager::Init(VulkanDescriptorManager* manager)
     {
         s_manager = manager;
     }
 
-    std::shared_ptr<VulkanDescriptor> DescriptorManager::CreateDescriptor()
+    VX::Ref<VulkanDescriptor> DescriptorManager::CreateDescriptor()
     {
         return s_manager->CreateDescriptor();
     }
@@ -342,7 +342,7 @@ namespace vkclass
 
     std::shared_ptr<VulkanDescriptor> GlobalDescriptor::s_descriptor = nullptr;
 
-    void GlobalDescriptor::SetDescriptor(std::shared_ptr<VulkanDescriptor> descriptor)
+    void GlobalDescriptor::SetDescriptor(VX::Ref<VulkanDescriptor> descriptor)
     {
         s_descriptor = descriptor;
         s_descriptor->Allocate();

@@ -71,7 +71,7 @@ namespace VX
         vkclass::VulkanDescriptorManager m_DescriptorManager;
         
         // dynamic life-time, due to recreation by window resize
-        vkclass::VulkanSwapChain* m_SwapChain;
+        VX::Scope<vkclass::VulkanSwapChain> m_SwapChain;
         vkclass::VulkanRenderPass* m_RenderPass;
         std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;
         

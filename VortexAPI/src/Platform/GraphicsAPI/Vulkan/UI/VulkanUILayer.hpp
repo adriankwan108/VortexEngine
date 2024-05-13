@@ -22,7 +22,7 @@ namespace vkclass
         virtual void OnUpdateEnd() override;
         
     private:
-        void initResources();
+        // void initResources();
         
         // VulkanShader fontShader;
     };

@@ -52,11 +52,11 @@ namespace vkclass
 
     void VulkanUILayer::OnUpdateStart()
     {
-        ImGui::NewFrame();
+        // ImGui::NewFrame();
     }
 
     void VulkanUILayer::OnUpdateEnd()
     {
-        ImGui::Render();
+        // ImGui::Render();
     }
 }

@@ -9,7 +9,7 @@ namespace VX
      * TODO: Use reference system, 
      */
 
-    VertexBuffer* VertexBuffer::Create(void* data, uint64_t size)
+    Ref<VertexBuffer> VertexBuffer::Create(void* data, uint64_t size)
     {
         switch (Renderer::GetAPI()) {
             case RendererAPI::API::None:
@@ -17,7 +17,7 @@ namespace VX
                 return nullptr;
                 break;
             case RendererAPI::API::Vulkan:
-                return new vkclass::VulkanVertexBuffer(data, size);
+                return CreateRef<vkclass::VulkanVertexBuffer>(data, size);
                 break;
             case RendererAPI::API::DX12:
                 VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::DX12 is currently not supported!");
@@ -35,7 +35,7 @@ namespace VX
         return nullptr;
     }
 
-    IndexBuffer* IndexBuffer::Create(void* data, uint64_t size, unsigned long count)
+    Ref<IndexBuffer> IndexBuffer::Create(void* data, uint64_t size, unsigned long count)
     {
         switch (Renderer::GetAPI()) {
             case RendererAPI::API::None:
@@ -43,7 +43,7 @@ namespace VX
                 return nullptr;
                 break;
             case RendererAPI::API::Vulkan:
-                return new vkclass::VulkanIndexBuffer(data, size, count);
+                return CreateRef<vkclass::VulkanIndexBuffer>(data, size, count);
                 break;
             case RendererAPI::API::DX12:
                 VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::DX12 is currently not supported!");
@@ -61,7 +61,7 @@ namespace VX
         return nullptr;
     }
 
-    UniformBuffer* UniformBuffer::Create(uint64_t size)
+    Ref<UniformBuffer> UniformBuffer::Create(uint64_t size)
     {
         switch (Renderer::GetAPI()) {
             case RendererAPI::API::None:
@@ -69,7 +69,7 @@ namespace VX
                 return nullptr;
                 break;
             case RendererAPI::API::Vulkan:
-                return new vkclass::VulkanUniformBuffer(size);
+                return CreateRef<vkclass::VulkanUniformBuffer>(size);
                 break;
             case RendererAPI::API::DX12:
                 VX_CORE_ASSERT(false, "Uniform Buffer: RendererAPI::DX12 is currently not supported!");

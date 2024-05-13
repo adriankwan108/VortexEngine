@@ -22,7 +22,7 @@ namespace VX
         static void BeginScene(std::shared_ptr<OrthographicCamera> camera);
         static void EndScene();
         
-        static void Submit(const std::shared_ptr<Shader>& shader ,const std::shared_ptr<VertexArray>& vertexArray);
+        static void Submit(const Ref<Shader>& shader ,const Ref<VertexArray>& vertexArray);
         
         static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
         
@@ -32,6 +32,6 @@ namespace VX
             glm::mat4 viewProjection;
         };
         
-        static SceneData* s_sceneData;
+        static Scope<SceneData> s_sceneData;
     };
 }

@@ -5,9 +5,7 @@ Playground::Playground()
 {
     VX_INFO("{0}: Creating...", GetName());
     
-    m_camera = std::shared_ptr<VX::OrthographicCamera>(
-        VX::OrthographicCamera::Create(-1.6f, 1.6f, -0.9f, 0.9f)
-    );
+    m_camera = VX::OrthographicCamera::Create(-1.6f, 1.6f, -0.9f, 0.9f);
     
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
     // define shader layout
@@ -38,24 +36,18 @@ Playground::Playground()
         0, 1, 2
     };
     
-    m_vertexArray = std::shared_ptr<VX::VertexArray>(
-        VX::VertexArray::Create()
-    );
+    m_vertexArray = VX::VertexArray::Create();
     
     // properly use a material system to create pipeline would be better
-    m_basicShader = std::shared_ptr<VX::Shader>(
-        VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv")
-    );
+    m_basicShader = VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv");
     m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
-    
     m_basicShader->SetGlobalLayout(0, viewProjLayout);
-    
     m_basicShader->Prepare();
     
-    m_vertexBuffer = std::shared_ptr<VX::VertexBuffer>(VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices)));
+    m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
     m_vertexBuffer->SetLayout(layout); // for getting stride
     
-    m_indexBuffer = std::shared_ptr<VX::IndexBuffer>(VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices), triangleIndices.size()));
+    m_indexBuffer = VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices), triangleIndices.size());
     
     m_vertexArray->AddVertexBuffer(m_vertexBuffer);
     m_vertexArray->SetIndexBuffer(m_indexBuffer);

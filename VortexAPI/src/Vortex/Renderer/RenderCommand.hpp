@@ -24,11 +24,11 @@ namespace VX
             s_RendererAPI->SetClearColor(color);
         }
         
-        static void DrawIndexed(const std::shared_ptr<VX::VertexArray>& vertexArray)
+        static void DrawIndexed(const Ref<VX::VertexArray>& vertexArray)
         {
             s_RendererAPI->DrawIndexed(vertexArray);
         }
     private:
-        static VX::RendererAPI* s_RendererAPI;
+        static Scope<VX::RendererAPI> s_RendererAPI;
     };
 }
