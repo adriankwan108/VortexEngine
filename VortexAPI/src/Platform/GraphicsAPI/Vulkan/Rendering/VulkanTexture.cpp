@@ -1,5 +1,3 @@
-#pragma once
-
 #include "VortexPCH.hpp"
 #include "VulkanTexture.hpp"
 

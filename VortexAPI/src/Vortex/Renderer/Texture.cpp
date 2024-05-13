@@ -14,7 +14,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            return new VulkanTexture2D(path);
+            return new vkclass::VulkanTexture2D(path);
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is currently not supported!");
