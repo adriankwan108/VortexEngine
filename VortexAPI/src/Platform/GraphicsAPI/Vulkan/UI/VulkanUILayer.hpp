@@ -3,6 +3,8 @@
 #include "Vortex/UI/UILayer.hpp"
 #include <imgui.h>
 
+#include "Platform/GraphicsAPI/Vulkan/Rendering/VulkanShader.hpp"
+
 namespace vkclass
 {
     class VulkanUILayer : public VX::UILayer
@@ -18,6 +20,10 @@ namespace vkclass
 
         virtual void OnUpdateStart() override;
         virtual void OnUpdateEnd() override;
-
+        
+    private:
+        void initResources();
+        
+        // VulkanShader fontShader;
     };
 }
