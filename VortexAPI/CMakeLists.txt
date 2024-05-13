@@ -10,6 +10,8 @@ file(GLOB_RECURSE VORTEX_HEADERS "src/*.hpp")
 file(GLOB_RECURSE VORTEX_SOURCES "src/*.cpp")
 file(GLOB IMGUI_HEADERS "vendor/imgui/*.hpp")
 file(GLOB IMGUI_SOURCES "vendor/imgui/*.cpp")
+file(GLOB STB_IMAGE_HEADERS "vendor/stb_image/*.hpp")
+file(GLOB STB_IMAGE_SOURCES "vendor/stb_image/*.cpp")
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${VORTEX_HEADERS})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${VORTEX_SOURCES})
@@ -36,6 +38,8 @@ target_sources(VortexAPI PRIVATE
     ${VORTEX_SOURCES}
     ${IMGUI_HEADERS}
     ${IMGUI_SOURCES}
+    ${STB_IMAGE_HEADERS}
+    ${STB_IMAGE_SOURCES}
 )
 
 set_target_properties(VortexAPI PROPERTIES VERSION 0.1.1)
@@ -67,6 +71,7 @@ target_include_directories(VortexAPI PUBLIC
     # spdlog, glfw, vulkan ...
     "vendor/spdlog/include"
     "vendor/imgui"
+    "vendor/stb_image"
 )
 
 if(MSVC)
