@@ -27,6 +27,7 @@
 #include "Rendering/VulkanSubpass.hpp"
 #include "Rendering/VulkanRenderPass.hpp"
 #include "Rendering/VulkanShader.hpp"
+#include "Rendering/VulkanTexture.hpp"
 #include "Rendering/VulkanPipelineBuilder.hpp"
 #include "Rendering/VulkanRendererAPI.hpp"
 

@@ -56,6 +56,18 @@ namespace vkclass
         memTypeIndex = findMemoryType(memRequirements.memoryTypeBits, memProperties, targetProps);
     }
 
+    void VulkanDevice::GetMemoryInfo(VkImage image, VkMemoryPropertyFlags targetProps, VkDeviceSize& allocSize, uint32_t& memTypeIndex)
+    {
+        VkMemoryRequirements memRequirements;
+        vkGetImageMemoryRequirements(m_logicalDevice, image, &memRequirements);
+        
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
+        
+        allocSize = memRequirements.size;
+        memTypeIndex = findMemoryType(memRequirements.memoryTypeBits, memProperties, targetProps);
+    }
+
     void VulkanDevice::getPhysicalDevice(VkInstance instance)
     {
         // get number of available GPUs with Vulkan support

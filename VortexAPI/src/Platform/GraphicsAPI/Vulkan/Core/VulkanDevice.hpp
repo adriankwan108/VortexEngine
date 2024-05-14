@@ -63,6 +63,7 @@ namespace vkclass
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
         SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
         void GetMemoryInfo(VkBuffer buffer, VkMemoryPropertyFlags targetProps, VkDeviceSize& allocSize, uint32_t& memTypeIndex);
+        void GetMemoryInfo(VkImage image, VkMemoryPropertyFlags targetProps, VkDeviceSize& allocSize, uint32_t& memTypeIndex);
 
     private:
         bool m_enableValidation = true;
@@ -115,5 +116,6 @@ namespace vkclass
         bool isGpuExtensionSupported(std::string extension);
         
         uint32_t findMemoryType(uint32_t typeFilter, VkPhysicalDeviceMemoryProperties memProperties, VkMemoryPropertyFlags targetProperties);
+        
     };
 }

@@ -1,6 +1,7 @@
 #include "Texture.hpp"
 #include "Renderer.hpp"
 
+#include "Vortex/Utils.hpp"
 #include "Platform/GraphicsAPI/Vulkan/Rendering/VulkanTexture.hpp"
 
 namespace VX
@@ -14,7 +15,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            return CreateRef<vkclass::VulkanTexture2D>(path);
+            return CreateRef<vkclass::VulkanTexture2D>(Utils::AbsolutePath(path));
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is currently not supported!");
