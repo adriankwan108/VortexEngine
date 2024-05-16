@@ -5,6 +5,7 @@
 #include "vulkan/vulkan.h"
 #include "Core/VulkanBuffer.hpp"
 #include "Core/VulkanDevice.hpp"
+#include "Core/VulkanCommandManager.hpp"
 
 namespace vkclass
 {
@@ -19,9 +20,10 @@ namespace vkclass
         virtual uint32_t GetWidth()  const override { return m_Width; }
         virtual uint32_t GetHeight() const override { return m_Height; }
 
-        static void Init(VulkanDevice* device);
+        static void Init(VulkanDevice* device, VulkanCommandManager* cmdManager);
     private:
         static VulkanDevice* s_device;
+        static VulkanCommandManager* s_cmdManager;
         
         std::string m_path = "None";
         uint32_t m_Width = 0, m_Height = 0;
@@ -29,9 +31,14 @@ namespace vkclass
         VkImage m_image;
         VkDeviceMemory m_imageMemory;
         VkImageLayout m_imageLayout;
+
+        VkImageView m_imageView;
+        VkSampler m_sampler;
         
     private:
-        void createImage();
+        void createImage(vkclass::VulkanBuffer* stagingBuffer);
+        void createImageView();
+        void createSampler();
     };
 }
 

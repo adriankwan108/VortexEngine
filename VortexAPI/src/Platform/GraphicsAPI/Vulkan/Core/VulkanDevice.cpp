@@ -142,9 +142,10 @@ namespace vkclass
     bool VulkanDevice::isGpuSuitable(VkPhysicalDevice device)
     {
         // query of basic props, e.g. name, type, supported Vulkan version
-//        VkPhysicalDeviceProperties deviceProperties;
-//        VkPhysicalDeviceFeatures deviceFeatures;
-//        retrieveGpuInfo(device, deviceProperties, deviceFeatures);
+        // TODO: make a requiring list of props/ features
+        VkPhysicalDeviceProperties deviceProperties;
+        VkPhysicalDeviceFeatures deviceFeatures;
+        retrieveGpuInfo(device, deviceProperties, deviceFeatures);
         
         QueueFamilyIndices indices = findQueueFamilies(device);
         
@@ -152,7 +153,7 @@ namespace vkclass
         bool swapChainAdequate = false;
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 
-        return indices.isComplete() && swapChainAdequate;
+        return indices.isComplete() && swapChainAdequate && deviceFeatures.samplerAnisotropy;
     }
 
     int VulkanDevice::rateGpuSuitability(VkPhysicalDevice device)
@@ -254,7 +255,8 @@ namespace vkclass
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
         
         VkPhysicalDeviceFeatures enabledGpuFeatures{};
-        createInfo.pEnabledFeatures = &enabledGpuFeatures; // nothing
+        enabledGpuFeatures.samplerAnisotropy = VK_TRUE;
+        createInfo.pEnabledFeatures = &enabledGpuFeatures;
         createInfo.enabledExtensionCount = 0;
         
         // to be compatible with older implementation
