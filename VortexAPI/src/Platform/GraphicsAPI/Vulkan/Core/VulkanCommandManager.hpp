@@ -19,28 +19,36 @@ namespace vkclass
         explicit VulkanCommandManager(vkclass::VulkanDevice* device, const int maxFramesInFlight, uint32_t& currentFrame);
         ~VulkanCommandManager();
         
-        // we need multiple command pools for multi-threading, resource separation
-        // because mulitple cmd buffers create from a cmd pool, cmd pools can only be used from one thread
-        // so if we want to record command buffers from multiple threads, then we will need more command pools, one per thread
+        /*
+        * TODO: need multiple command pools for multi-threading, resource separation
+        * i.e. one cmd pool per thread per framesInFlight
+        */
         
+        /* main thread constructor */
         void CreateCommandPool(VkCommandPoolCreateFlags flags);
-        void CreateCommandBuffers(); // this is only for rendering commands
+        void CreateCommandBuffer(VkCommandBuffer* cb);
+        void CreateCommandBuffers(std::vector<VkCommandBuffer>* cbs);
+
+        /* main thread cb operations */
         void BeginRecordCommands();
         void BeginRenderPass(VkRenderPass renderPass, VkFramebuffer frameBuffer, VkExtent2D extent);
         void Reset();
-        void SetExtent(VkExtent2D extent);
         void Submit(std::vector<VkSemaphore> waitSemaphores, std::vector<VkSemaphore> signalSemaphores, VkFence fence);
         void EndRenderPass();
         void EndCommandBuffer();
-
+        void SetExtent(VkExtent2D extent);
         void BindPipeline(VkPipeline pipeline); // TODO: bind with vertex buffer, index buffer, etc; and bind with related cmd buffer
         void BindVertexBuffer(std::vector<VkBuffer> vertexBuffers, std::vector<VkDeviceSize> offsets);
         void BindIndexBuffer(VkBuffer indexBuffer, VkDeviceSize offset = 0);
         void BindDescriptor(VkPipelineLayout pipelineLayout, const VkDescriptorSet* descriptorSetPtr);
         void Draw(uint32_t indexSize);
-        
-        VkCommandBuffer CreateCommandBuffer(); // general command buffer, may need to use thread index as para in future
+
+        /* main thread cb operations (disposable) */
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+        void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+        void TransitImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
+        /* main render pass operation */
         void SetClearColor(const glm::vec4 &color);
         
         int GetMaxFrameInFlight() const { return m_maxFramesInFlight; }
@@ -56,9 +64,12 @@ namespace vkclass
         VkCommandPool m_commandPool = VK_NULL_HANDLE; // TODO: change to vector of command pools for multi-threading and resource separation, i.e. transfer buffers, present images
         
 //        VkCommandBuffer m_commandBuffer = VK_NULL_HANDLE;
-        std::vector<VkCommandBuffer> m_commandBuffers;
+        std::vector<VkCommandBuffer> m_mainCommandBuffers;
         
         VkClearColorValue m_ClearColorValue = {0.0f, 0.0f, 0.0f, 1.0f};
         VkClearDepthStencilValue m_ClearDepthStencilValue = {1.0f, 0};
+
+    private:
+        void createMainCommandBuffers();
     };
 }
