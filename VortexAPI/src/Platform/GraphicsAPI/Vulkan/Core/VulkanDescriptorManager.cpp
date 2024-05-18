@@ -414,7 +414,7 @@ namespace vkclass
         VkPipelineLayout temporaryPipelineLayout;
         vkCreatePipelineLayout(device, &layoutCreateInfo, nullptr, &temporaryPipelineLayout);
 
-        cmdManager->BindDescriptor(temporaryPipelineLayout, &s_descriptor->GetCurrentSet());
+        cmdManager->BindDescriptor(temporaryPipelineLayout, 0, &s_descriptor->GetCurrentSet());
         vkDestroyPipelineLayout(device, temporaryPipelineLayout, nullptr);
 
         // VX_CORE_INFO("GlobalDescriptor: Bind");

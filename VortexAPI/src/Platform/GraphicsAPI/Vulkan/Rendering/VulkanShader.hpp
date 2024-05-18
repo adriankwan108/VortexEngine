@@ -63,7 +63,8 @@ namespace vkclass
         vkclass::VulkanVertexShaderLayout m_vertexLayout;
         
         std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
-        std::vector<VkDescriptorSet> m_descriptorSetToBeBind;
+
+        VX::Ref<VulkanDescriptor> m_textureDescriptor;
         
         VkPipelineLayout m_pipelineLayout;
         VkPipeline m_pipeline;

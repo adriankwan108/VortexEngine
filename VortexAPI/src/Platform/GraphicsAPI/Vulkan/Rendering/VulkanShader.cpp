@@ -80,9 +80,8 @@ namespace vkclass
 
     void VulkanShader::Bind()
     {
-        // bind descriptor set (per material / model)
-
-        m_commandBufferManager->BindDescriptor(m_pipelineLayout, &m_texture->GetDescriptor()->GetCurrentSet());
+        // bind descriptor per material / object
+        m_commandBufferManager->BindDescriptor(m_pipelineLayout, 1, &m_textureDescriptor->GetCurrentSet());
         
         m_commandBufferManager->BindPipeline(m_pipeline);
     }
@@ -115,6 +114,8 @@ namespace vkclass
         m_texture->Create();
 
         m_descriptorSetLayouts.push_back(m_texture->GetDescriptor()->layout);
+
+        m_textureDescriptor =m_texture->GetDescriptor();
     }
 
     void VulkanShader::SetObjectLayout(int binding, VX::UniformShaderLayout layout)
