@@ -12,7 +12,8 @@ Playground::Playground()
     // define shader layout
     VX::VertexShaderLayout layout = {
         {VX::ShaderDataType::Float2, "pos"},
-        {VX::ShaderDataType::Float3, "color"}
+        {VX::ShaderDataType::Float3, "color"},
+        {VX::ShaderDataType::Float2, "texCoor"}
     };
     
     VX::UniformShaderLayout viewProjLayout = {
@@ -27,14 +28,15 @@ Playground::Playground()
     // simulate vertices data (counter-clockwise, left-hand)
     std::vector<Geometry::Vertex> vertices =
     {
-        {{0.0f, 0.5f}, {1.0f, 0.0f, 0.0f}},     // top
-        {{-0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},   // bottom, left
-        {{0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}     // bottom, right
+        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}, // left bottom
+        {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},  // right bottom
+        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},   // right top
+        {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}   // left top
     };
     
     // simulate index data
     std::vector<uint16_t> triangleIndices = {
-        0, 1, 2
+        0, 1, 2, 2, 3, 0
     };
     
     m_vertexArray = VX::VertexArray::Create();
@@ -43,6 +45,7 @@ Playground::Playground()
     m_basicShader = VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv");
     m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
     m_basicShader->SetGlobalLayout(0, viewProjLayout);
+    m_basicShader->SetTexture(m_texture);
     m_basicShader->Prepare();
     
     m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));

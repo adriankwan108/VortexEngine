@@ -6,12 +6,14 @@
 
 #include "Vortex/Geometry/Geometry.hpp"
 #include "Renderer/Shader.hpp"
+#include "Renderer/Texture.hpp"
 
 #include "Core/VulkanInitializer.hpp"
 #include "Core/VulkanTools.hpp"
 #include "Core/VulkanCommandManager.hpp"
 #include "VulkanPipelineBuilder.hpp"
 #include "VulkanShaderLayout.hpp"
+#include "VulkanTexture.hpp"
 
 namespace vkclass
 {
@@ -28,7 +30,7 @@ namespace vkclass
         
         virtual void SetGlobalLayout    (int binding, VX::UniformShaderLayout layout) override;
         virtual void SetPassLayout      (int binding, VX::UniformShaderLayout layout) override;
-        virtual void SetMaterialLayout  (int binding, VX::UniformShaderLayout layout) override;
+        virtual void SetTexture         (VX::Ref<VX::Texture2D> texture )             override;
         virtual void SetObjectLayout    (int binding, VX::UniformShaderLayout layout) override;
         
         virtual void Prepare() override;
@@ -66,6 +68,8 @@ namespace vkclass
         VkPipelineLayout m_pipelineLayout;
         VkPipeline m_pipeline;
         
+        VX::Ref<VulkanTexture2D> m_texture;
+
         // private var
         VkShaderModule m_vertModule = VK_NULL_HANDLE;
         VkShaderModule m_fragModule = VK_NULL_HANDLE;

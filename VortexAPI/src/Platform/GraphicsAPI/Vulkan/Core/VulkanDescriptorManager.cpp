@@ -1,4 +1,5 @@
 #include "VulkanDescriptorManager.hpp"
+#include "VulkanInitializer.hpp"
 
 namespace vkclass
 {
@@ -63,14 +64,16 @@ namespace vkclass
     {
         //get or create a pool to allocate from
         VkDescriptorPool poolToUse;
-        if (m_currentPtr == nullptr)
+        /*if (m_currentPtr == nullptr)
         {
             poolToUse = grabPool();
             m_currentPtr = &poolToUse;
         }else
         {
+            VX_CORE_TRACE("Descriptor Allocator: Use current pool");
             poolToUse = *m_currentPtr;
-        }
+        }*/
+        poolToUse = grabPool();
 
         VkDescriptorSetAllocateInfo allocInfo = {};
         allocInfo.pNext = nullptr;
@@ -84,8 +87,8 @@ namespace vkclass
         //allocation failed. Try again
         if (result == VK_ERROR_OUT_OF_POOL_MEMORY || result == VK_ERROR_FRAGMENTED_POOL) 
         {
-            VX_CORE_INFO("DescriptorAllocator: out of pool memory || fragmented");
-            throw std::runtime_error("failed to allocate descriptor sets!");
+            VX_CORE_TRACE("DescriptorAllocator: out of pool memory || fragmented, Try growing...");
+            
             m_fullPools.push_back(poolToUse);
         
             poolToUse = grabPool();
@@ -93,6 +96,11 @@ namespace vkclass
             allocInfo.descriptorPool = poolToUse;
 
            VK_CHECK_RESULT(vkAllocateDescriptorSets(m_device, &allocInfo, targetSet));
+        }
+        else if(result != VK_SUCCESS)
+        {
+            VX_CORE_ERROR("DescriptorAllocator: Failed to allocate descriptor sets!");
+            throw std::runtime_error("failed to allocate descriptor sets!");
         }
         
         m_readyPools.push_back(poolToUse);
@@ -144,26 +152,41 @@ namespace vkclass
     }
 
 
-    void DescriptorWriter::WriteImage(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type)
+    void DescriptorWriter::WriteImage(int binding, VkImageView imageView, VkSampler sampler, VkImageLayout layout, VkDescriptorType type)
     {
-//        VkDescriptorImageInfo& info = imageInfos.emplace_back(
-//            VkDescriptorImageInfo
-//            {
-//                .sampler = sampler,
-//                .imageView = image,
-//                .imageLayout = layout
-//            }
-//        );
+        if (imageView == VK_NULL_HANDLE)
+        {
+            VX_CORE_TRACE("DescriptorManager: WriteImage: null imageView");
+        }
+        else
+        {
+            VX_CORE_TRACE("DescriptorManager: WriteImage: imageView pass");
+        }
+        VkDescriptorImageInfo imageInfo{};
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        imageInfo.imageView = imageView;
+        imageInfo.sampler = sampler;
 
-//        VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
-//
-//        write.dstBinding = binding;
-//        write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
-//        write.descriptorCount = 1;
-//        write.descriptorType = type;
-//        write.pImageInfo = &info;
-//
-//        writes.push_back(write);
+        VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+        write.dstBinding = binding;
+        write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
+        write.descriptorCount = 1;
+        write.descriptorType = type;
+        write.pImageInfo = &imageInfo;
+
+        writes.push_back(write);
+    }
+
+    void DescriptorWriter::WriteImage(int binding, VkDescriptorImageInfo* imgInfo, VkDescriptorType type)
+    {
+        VkWriteDescriptorSet write = { .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+        write.dstBinding = binding;
+        write.dstSet = VK_NULL_HANDLE; //left empty for now until we need to write it
+        write.descriptorCount = 1;
+        write.descriptorType = type;
+        write.pImageInfo = imgInfo;
+
+        writes.push_back(write);
     }
 
     void DescriptorWriter::WriteBuffer(int binding, VkDescriptorBufferInfo* bufferInfo, VkDescriptorType type)
@@ -243,27 +266,44 @@ namespace vkclass
         m_setsInFlight.clear();
     }
 
+    void VulkanDescriptor::SetStage(VkShaderStageFlags shaderStages)
+    {
+        m_stage = shaderStages;
+    }
+
     void VulkanDescriptor::AddBinding(int binding, VulkanUniformBuffer* buffer)
     {
-        m_layoutBuilder.AddBinding(binding, m_type);
+        m_layoutBuilder.AddBinding(binding, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
         
         for(int i = 0; i < m_maxFramesInFlight; i++)
         {
-            m_writers[i].WriteBuffer(binding, buffer->GetBuffersInfo()[i], m_type);
+            m_writers[i].WriteBuffer(binding, buffer->GetBuffersInfo()[i], VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
         }
-        VX_CORE_TRACE("VulkanDescriptor: Binding Added");
     }
 
-    void VulkanDescriptor::AddBinding(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout)
+    void VulkanDescriptor::AddBinding(int binding, VkImageView imageView, VkSampler sampler, VkImageLayout layout)
     {
-        m_layoutBuilder.AddBinding(binding, m_type);
-//        m_writer.WriteImage(binding, image, sampler, layout, m_type);
+        m_layoutBuilder.AddBinding(binding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
 
+        for (int i = 0; i < m_maxFramesInFlight; i++)
+        {
+            m_writers[i].WriteImage(binding, imageView, sampler, layout, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+        }
+    }
+
+    void VulkanDescriptor::AddBinding(int binding, VkDescriptorImageInfo* imgInfo)
+    {
+        m_layoutBuilder.AddBinding(binding, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+
+        for (int i = 0; i < m_maxFramesInFlight; i++)
+        {
+            m_writers[i].WriteImage(binding, imgInfo, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+        }
     }
 
     void VulkanDescriptor::Build()
     {
-        m_layout = m_layoutBuilder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT);
+        m_layout = m_layoutBuilder.Build(m_device, m_stage);
         VX_CORE_TRACE("VulkanDescriptor: Layout built");
     }
 

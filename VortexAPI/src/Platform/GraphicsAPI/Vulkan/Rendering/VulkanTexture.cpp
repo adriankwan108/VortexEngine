@@ -23,22 +23,59 @@ namespace vkclass
         vkclass::VulkanBuffer stagingBuffer = vkclass::VulkanBuffer(pixelsData, imageSize, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         
         createImage(&stagingBuffer);
+        createImageView(&m_image, &m_imageView);
+        createSampler(&m_sampler);
 
         stbi_image_free(pixelsData);
+
+        m_imgInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        m_imgInfo.imageView = m_imageView;
+        m_imgInfo.sampler = m_sampler;
     }
 
     VulkanTexture2D::~VulkanTexture2D()
     {
-        vkDestroySampler(s_device->LogicalDevice, m_sampler, nullptr);
-        vkDestroyImageView(s_device->LogicalDevice, m_imageView, nullptr);
-        vkDestroyImage(s_device->LogicalDevice, m_image, nullptr);
-        vkFreeMemory(s_device->LogicalDevice, m_imageMemory, nullptr);
+        if (m_sampler != VK_NULL_HANDLE)
+        {
+            vkDestroySampler(s_device->LogicalDevice, m_sampler, nullptr);
+        }
+
+        if (m_imageView != VK_NULL_HANDLE)
+        {
+            VX_CORE_TRACE("destroying image view");
+            vkDestroyImageView(s_device->LogicalDevice, m_imageView, nullptr);
+        }
+
+        if (m_image != VK_NULL_HANDLE)
+        {
+            vkDestroyImage(s_device->LogicalDevice, m_image, nullptr);
+        }
+
+        if (m_imageMemory != VK_NULL_HANDLE)
+        {
+            vkFreeMemory(s_device->LogicalDevice, m_imageMemory, nullptr);
+        }
     }
 
     void VulkanTexture2D::Init(VulkanDevice* device, VulkanCommandManager* cmdManager)
     {
         s_device = device;
         s_cmdManager = cmdManager;
+    }
+
+    void VulkanTexture2D::Bind(uint32_t slot)
+    {
+
+    }
+
+    void VulkanTexture2D::Create()
+    {
+        m_samplerDescriptor = DescriptorManager::CreateDescriptor();
+        m_samplerDescriptor->SetStage(VK_SHADER_STAGE_FRAGMENT_BIT);
+        m_samplerDescriptor->AddBinding(0, &m_imgInfo);
+        m_samplerDescriptor->Build();
+        m_samplerDescriptor->Allocate();
+        m_samplerDescriptor->Update();
     }
 
     void VulkanTexture2D::createImage(vkclass::VulkanBuffer* stagingBuffer)
@@ -86,13 +123,15 @@ namespace vkclass
         s_cmdManager->TransitImageLayout(m_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
         s_cmdManager->CopyBufferToImage(stagingBuffer->Buffer, m_image, m_Width, m_Height);
         s_cmdManager->TransitImageLayout(m_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    
+        VX_CORE_TRACE("VulkanTexture: Create Image");
     }
 
-    void VulkanTexture2D::createImageView()
+    void VulkanTexture2D::createImageView(VkImage* image, VkImageView* imageView)
     {
         VkImageViewCreateInfo viewInfo{};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        viewInfo.image = m_image;
+        viewInfo.image = *image;
         viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
         viewInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
         viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -101,10 +140,17 @@ namespace vkclass
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = 1;
 
-        VK_CHECK_RESULT(vkCreateImageView(s_device->LogicalDevice, &viewInfo, nullptr, &m_imageView));
+        VK_CHECK_RESULT(vkCreateImageView(s_device->LogicalDevice, &viewInfo, nullptr, imageView));
+
+        if (imageView == VK_NULL_HANDLE)
+        {
+            VX_CORE_TRACE("image view null wtf");
+        }
+
+        VX_CORE_TRACE("VulkanTexture: Create Image View");
     }
 
-    void VulkanTexture2D::createSampler()
+    void VulkanTexture2D::createSampler(VkSampler* sampler)
     {
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -129,6 +175,8 @@ namespace vkclass
         samplerInfo.minLod = 0.0f;
         samplerInfo.maxLod = 0.0f;
 
-        VK_CHECK_RESULT(vkCreateSampler(s_device->LogicalDevice, &samplerInfo, nullptr, &m_sampler));
+        VK_CHECK_RESULT(vkCreateSampler(s_device->LogicalDevice, &samplerInfo, nullptr, sampler));
+
+        VX_CORE_TRACE("VulkanTexture: Create sampler");
     }
 }

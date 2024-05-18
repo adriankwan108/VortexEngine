@@ -35,6 +35,7 @@ namespace vkclass
     {
 //        VX_CORE_INFO("VulkanCamera: Setting Descriptor...");
         m_descriptor = DescriptorManager::CreateDescriptor();
+        m_descriptor->SetStage(VK_SHADER_STAGE_VERTEX_BIT);
         m_descriptor->AddBinding(0, &m_uniformBuffer);
         m_descriptor->Build();
 //        VX_CORE_INFO("VulkanCamera: Descriptor is set.");

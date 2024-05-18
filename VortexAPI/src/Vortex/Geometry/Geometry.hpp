@@ -13,6 +13,7 @@ namespace Geometry
     {
         glm::vec2 pos;
         glm::vec3 color;
+        glm::vec2 texCoor;
     };
 
     struct Uniform_VP

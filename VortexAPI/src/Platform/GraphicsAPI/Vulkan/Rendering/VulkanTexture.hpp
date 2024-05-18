@@ -6,6 +6,7 @@
 #include "Core/VulkanBuffer.hpp"
 #include "Core/VulkanDevice.hpp"
 #include "Core/VulkanCommandManager.hpp"
+#include "Core/VulkanDescriptorManager.hpp"
 
 namespace vkclass
 {
@@ -19,6 +20,12 @@ namespace vkclass
 
         virtual uint32_t GetWidth()  const override { return m_Width; }
         virtual uint32_t GetHeight() const override { return m_Height; }
+        virtual void Bind(uint32_t slot) override;
+
+
+        VX::Ref<VulkanDescriptor> GetDescriptor() const { return m_samplerDescriptor; }
+
+        void Create();
 
         static void Init(VulkanDevice* device, VulkanCommandManager* cmdManager);
     private:
@@ -34,11 +41,14 @@ namespace vkclass
 
         VkImageView m_imageView;
         VkSampler m_sampler;
+
+        VX::Ref<VulkanDescriptor> m_samplerDescriptor;
+        VkDescriptorImageInfo m_imgInfo;
         
     private:
         void createImage(vkclass::VulkanBuffer* stagingBuffer);
-        void createImageView();
-        void createSampler();
+        void createImageView(VkImage* image, VkImageView* imageView);
+        void createSampler(VkSampler* sampler);
     };
 }
 

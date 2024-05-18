@@ -31,7 +31,7 @@ namespace vkclass
     public:
         void Init(VkDevice device, 
             int maxSets, std::vector<PoolSizeRatio> ratios, float growthRate, uint32_t maxSetLimit, 
-            bool isGrowable = true
+            bool isGrowable = false
         );
         void Destroy();
         
@@ -60,8 +60,8 @@ namespace vkclass
     struct DescriptorWriter {
         std::vector<VkWriteDescriptorSet> writes;
 
-        void WriteImage(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout, VkDescriptorType type);
-
+        void WriteImage(int binding, VkImageView imageView, VkSampler sampler, VkImageLayout layout, VkDescriptorType type);
+        void WriteImage(int binding, VkDescriptorImageInfo* imgInfo ,VkDescriptorType type);
         void WriteBuffer(int binding, VkDescriptorBufferInfo* bufferInfo, VkDescriptorType type);
 
         void Clear();
@@ -85,12 +85,12 @@ namespace vkclass
         VulkanDescriptor(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame);
         ~VulkanDescriptor();
         
-        // void SetStage(VkShaderStageFlags shaderStages); // assume uniform buffer now
-        // void SetType();
+        void SetStage(VkShaderStageFlags shaderStages); // assume uniform buffer now
         
         // adding both layout and writer at the same time
         void AddBinding(int binding, VulkanUniformBuffer* buffer);
-        void AddBinding(int binding, VkImageView image, VkSampler sampler, VkImageLayout layout );
+        void AddBinding(int binding, VkDescriptorImageInfo* imgInfo);
+        void AddBinding(int binding, VkImageView imageView, VkSampler sampler, VkImageLayout layout);
         
         // build props
         void Build();
@@ -110,10 +110,10 @@ namespace vkclass
         // helper functions
         DescriptorLayoutBuilder m_layoutBuilder;
         std::vector<DescriptorWriter> m_writers;
-        VkDescriptorType m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         
         // props
         VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
+        VkShaderStageFlags m_stage = VK_SHADER_STAGE_ALL;
         std::vector<VkDescriptorSet> m_setsInFlight;
     };
 

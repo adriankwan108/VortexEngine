@@ -2,6 +2,7 @@
 
 #include "VortexPCH.hpp"
 #include "ShaderLayout.hpp"
+#include "Texture.hpp"
 
 namespace VX
 {
@@ -20,7 +21,7 @@ namespace VX
         // grouped by update frequency
         virtual void SetGlobalLayout    (int binding, VX::UniformShaderLayout layout) = 0; //   set 0: global (per frame)
         virtual void SetPassLayout      (int binding, VX::UniformShaderLayout layout) = 0; //   set 1: per pass (shadows)
-        virtual void SetMaterialLayout  (int binding, VX::UniformShaderLayout layout) = 0; //   set 2: per material
+        virtual void SetTexture         (Ref<Texture2D> texture)                      = 0; //   set 2: per material
         virtual void SetObjectLayout    (int binding, VX::UniformShaderLayout layout) = 0; //   set 3: per object (transform)
         
         virtual void Prepare() = 0;

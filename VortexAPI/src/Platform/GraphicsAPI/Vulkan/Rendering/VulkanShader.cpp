@@ -81,9 +81,10 @@ namespace vkclass
     void VulkanShader::Bind()
     {
         // bind descriptor set (per material / model)
-        m_commandBufferManager->BindPipeline(m_pipeline);
 
-        // VX_CORE_INFO("VulkanShader: Pipeline is bound.");
+        m_commandBufferManager->BindDescriptor(m_pipelineLayout, &m_texture->GetDescriptor()->GetCurrentSet());
+        
+        m_commandBufferManager->BindPipeline(m_pipeline);
     }
 
     void VulkanShader::UnBind() const
@@ -102,16 +103,18 @@ namespace vkclass
         // TODO: add name to UniformShaderLayout, then search global desciprot library
 
         m_descriptorSetLayouts.push_back( GlobalDescriptor::GetDescriptor()->layout);
-        // VX_CORE_INFO("VulkanShader: global layout retrieved.");
     }
 
     void VulkanShader::SetPassLayout(int binding, VX::UniformShaderLayout layout)
     {
          
     }
-    void VulkanShader::SetMaterialLayout(int binding, VX::UniformShaderLayout layout)
+    void VulkanShader::SetTexture(VX::Ref<VX::Texture2D> texture)
     {
-        
+        m_texture = std::static_pointer_cast<VulkanTexture2D>(texture);
+        m_texture->Create();
+
+        m_descriptorSetLayouts.push_back(m_texture->GetDescriptor()->layout);
     }
 
     void VulkanShader::SetObjectLayout(int binding, VX::UniformShaderLayout layout)
