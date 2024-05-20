@@ -6,7 +6,7 @@
 
 namespace VX
 {
-    Ref<Texture2D> Texture2D::Create(const std::string& path)
+    Ref<Texture2D> Texture2D::Create()
     {
         switch (Renderer::GetAPI())
         {
@@ -15,7 +15,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            return CreateRef<vkclass::VulkanTexture2D>(Utils::AbsolutePath(path));
+            return CreateRef<vkclass::VulkanTexture2D>();
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is currently not supported!");

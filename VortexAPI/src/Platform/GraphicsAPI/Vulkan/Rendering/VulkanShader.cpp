@@ -111,11 +111,15 @@ namespace vkclass
     void VulkanShader::SetTexture(VX::Ref<VX::Texture2D> texture)
     {
         m_texture = std::static_pointer_cast<VulkanTexture2D>(texture);
-        m_texture->Create();
+        
+        m_textureDescriptor = m_texture->GetDescriptor();
+        m_descriptorSetLayouts.push_back(m_textureDescriptor->layout);
+    }
 
-        m_descriptorSetLayouts.push_back(m_texture->GetDescriptor()->layout);
-
-        m_textureDescriptor =m_texture->GetDescriptor();
+    void VulkanShader::SetPushConstant(VkShaderStageFlags stage, uint32_t size)
+    {
+        VkPushConstantRange pushConstantRange = vkclass::initializers::pushConstantRange(stage, size, 0);
+        m_pushConstants.push_back(pushConstantRange);
     }
 
     void VulkanShader::SetObjectLayout(int binding, VX::UniformShaderLayout layout)
@@ -136,8 +140,8 @@ namespace vkclass
         VX_CORE_TRACE("VulkanShader: descriptor layout count: {0}", m_descriptorSetLayouts.size());
         pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
         pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
-        pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-        pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+        pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(m_pushConstants.size());
+        pipelineLayoutInfo.pPushConstantRanges = m_pushConstants.data();
         if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
         {
             m_isValid = false;

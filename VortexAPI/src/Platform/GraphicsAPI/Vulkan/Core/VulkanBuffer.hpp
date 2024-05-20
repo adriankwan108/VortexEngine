@@ -79,13 +79,14 @@ namespace vkclass
     class VulkanVertexBuffer : public VX::VertexBuffer
     {
     public:
+        VulkanVertexBuffer() = default;
         VulkanVertexBuffer(void* data, VkDeviceSize size);
         virtual ~VulkanVertexBuffer() = default;
         
         virtual void Bind() const override;
         virtual void Unbind() const override;
         
-        virtual void SetData(const void* data, uint64_t size) override;
+        virtual void SetData(void* data, uint64_t size) override;
 
         virtual void SetLayout(const VX::VertexShaderLayout& layout) override;
         virtual const VX::VertexShaderLayout& GetLayout() const override { return m_Layout; }
@@ -100,6 +101,7 @@ namespace vkclass
     class VulkanIndexBuffer : public VX::IndexBuffer
     {
     public:
+        VulkanIndexBuffer() = default;
         // optimized, device local final vertex buffer
         VulkanIndexBuffer(void* data, VkDeviceSize size, unsigned long count);
         virtual ~VulkanIndexBuffer() = default;
@@ -108,6 +110,8 @@ namespace vkclass
         virtual void Unbind() const override;
 
         virtual uint32_t GetCount() const override { return m_Count; }
+        
+        virtual void SetData(void* data, uint64_t size, unsigned long count) override;
         
     public:
         VkBuffer GetBuffer() const { return m_indexBuffer.Buffer ;}

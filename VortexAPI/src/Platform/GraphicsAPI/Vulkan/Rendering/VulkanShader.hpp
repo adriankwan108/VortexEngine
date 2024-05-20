@@ -46,6 +46,8 @@ namespace vkclass
         bool& Valid = m_isValid;
         
     public:
+        void SetPushConstant(VkShaderStageFlags stage, uint32_t size);
+        
         static void Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager, VkRenderPass renderPass);
         
     private:
@@ -63,6 +65,7 @@ namespace vkclass
         vkclass::VulkanVertexShaderLayout m_vertexLayout;
         
         std::vector<VkDescriptorSetLayout> m_descriptorSetLayouts;
+        std::vector<VkPushConstantRange> m_pushConstants;
 
         VX::Ref<VulkanDescriptor> m_textureDescriptor;
         

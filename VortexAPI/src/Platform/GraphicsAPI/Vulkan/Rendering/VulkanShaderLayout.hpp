@@ -45,10 +45,8 @@ namespace vkclass
         {
             case VX::ShaderDataType::None:     return VK_FORMAT_UNDEFINED;
             case VX::ShaderDataType::Float:    return VK_FORMAT_R32_SFLOAT;
-            case VX::ShaderDataType::Float2:
-                return VK_FORMAT_R32G32_SFLOAT;
-            case VX::ShaderDataType::Float3:
-                return VK_FORMAT_R32G32B32_SFLOAT;
+            case VX::ShaderDataType::Float2:   return VK_FORMAT_R32G32_SFLOAT;
+            case VX::ShaderDataType::Float3:   return VK_FORMAT_R32G32B32_SFLOAT;
             case VX::ShaderDataType::Float4:   return VK_FORMAT_R32G32B32A32_SFLOAT;
             case VX::ShaderDataType::Mat3:     return VK_FORMAT_R32G32B32_SFLOAT;
             case VX::ShaderDataType::Mat4:     return VK_FORMAT_R32G32B32A32_SFLOAT;
@@ -57,6 +55,7 @@ namespace vkclass
             case VX::ShaderDataType::Int3:     return VK_FORMAT_R32G32B32_SINT;
             case VX::ShaderDataType::Int4:     return VK_FORMAT_R32G32B32A32_SINT;
             case VX::ShaderDataType::Bool:     return VK_FORMAT_R8_UINT;
+            case VX::ShaderDataType::U32:      return VK_FORMAT_R8G8B8A8_UNORM;
             default: VX_CORE_ASSERT(false, "Layout: Unknown Shader data type.");
         }
     }

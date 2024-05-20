@@ -13,7 +13,7 @@ namespace vkclass
     class VulkanTexture2D : public VX::Texture2D
     {
     public:
-        VulkanTexture2D(const std::string& path);
+        VulkanTexture2D();
         ~VulkanTexture2D();
 
         const std::string& GetPath() override { return m_path; }
@@ -21,11 +21,12 @@ namespace vkclass
         virtual uint32_t GetWidth()  const override { return m_Width; }
         virtual uint32_t GetHeight() const override { return m_Height; }
         virtual void Bind(uint32_t slot) override;
-
-
+        
+        virtual void LoadFromFile(std::string path) override;
+        virtual void LoadFromData(unsigned char* data, int width, int height) override;
+        
+    public:
         VX::Ref<VulkanDescriptor> GetDescriptor() const { return m_samplerDescriptor; }
-
-        void Create();
 
         static void Init(VulkanDevice* device, VulkanCommandManager* cmdManager);
     private:

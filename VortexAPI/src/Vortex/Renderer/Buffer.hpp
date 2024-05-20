@@ -17,11 +17,12 @@ namespace VX
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
         
-        virtual void SetData(const void* data, uint64_t size) = 0;
+        virtual void SetData(void* data, uint64_t size) = 0;
         
         virtual void SetLayout(const VertexShaderLayout& layout) = 0;
         virtual const VertexShaderLayout& GetLayout() const = 0;
         
+        static Ref<VertexBuffer> Create();
         static Ref<VertexBuffer> Create(void* data, uint64_t size);
     };
 
@@ -35,6 +36,9 @@ namespace VX
 
         virtual uint32_t GetCount() const = 0;
         
+        virtual void SetData(void* data, uint64_t size, unsigned long count);
+        
+        static Ref<IndexBuffer> Create();
         static Ref<IndexBuffer> Create(void* data, uint64_t size, unsigned long count);
     };
 

@@ -2,35 +2,15 @@
 #include "VulkanTexture.hpp"
 
 #include "stb_image.hpp"
+#include "Vortex/Utils.hpp"
 
 namespace vkclass
 {
     VulkanDevice* VulkanTexture2D::s_device = nullptr;
     VulkanCommandManager* VulkanTexture2D::s_cmdManager = nullptr;
 
-    VulkanTexture2D::VulkanTexture2D(const std::string& path)
-        :m_path(path)
+    VulkanTexture2D::VulkanTexture2D()
     {
-        VX_CORE_INFO("Texture: Loading {0}", m_path);
-        int texWidth, texHeight, texChannels;
-        stbi_uc* pixelsData = stbi_load(m_path.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-        VkDeviceSize imageSize = texWidth * texHeight * 4;
-
-        VX_CORE_ASSERT( pixelsData,"VulkanTexture2D: Failed to load image!");
-        m_Width  = static_cast<uint32_t>(texWidth);
-        m_Height = static_cast<uint32_t>(texHeight);
-
-        vkclass::VulkanBuffer stagingBuffer = vkclass::VulkanBuffer(pixelsData, imageSize, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-        
-        createImage(&stagingBuffer);
-        createImageView(&m_image, &m_imageView);
-        createSampler(&m_sampler);
-
-        stbi_image_free(pixelsData);
-
-        m_imgInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        m_imgInfo.imageView = m_imageView;
-        m_imgInfo.sampler = m_sampler;
     }
 
     VulkanTexture2D::~VulkanTexture2D()
@@ -57,6 +37,69 @@ namespace vkclass
         }
     }
 
+    void VulkanTexture2D::LoadFromFile(std::string path)
+    {
+        m_path = path;
+
+        // loading by staging buffer
+        VX_CORE_INFO("Texture: Loading from {0} ...", m_path);
+        int texWidth, texHeight, texChannels;
+        stbi_uc* pixelsData = stbi_load( VX::Utils::AbsolutePath(m_path).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+        VX_CORE_ASSERT( pixelsData,"VulkanTexture2D: Failed to load image!");
+        m_Width  = static_cast<uint32_t>(texWidth);
+        m_Height = static_cast<uint32_t>(texHeight);
+
+        vkclass::VulkanBuffer stagingBuffer = vkclass::VulkanBuffer(pixelsData, imageSize, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        createImage(&stagingBuffer);
+        createImageView(&m_image, &m_imageView);
+        createSampler(&m_sampler);
+
+        stbi_image_free(pixelsData);
+
+        // retreive infos
+        m_imgInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        m_imgInfo.imageView = m_imageView;
+        m_imgInfo.sampler = m_sampler;
+
+        // desriptor
+        m_samplerDescriptor = DescriptorManager::CreateDescriptor();
+        m_samplerDescriptor->SetStage(VK_SHADER_STAGE_FRAGMENT_BIT);
+        m_samplerDescriptor->AddBinding(0, &m_imgInfo);
+        m_samplerDescriptor->Build();
+        m_samplerDescriptor->Allocate();
+        m_samplerDescriptor->Update();
+    }
+
+    void VulkanTexture2D::LoadFromData(unsigned char* data, int width, int height)
+    {
+        // loading by staging buffer
+        VX_CORE_INFO("Texture: Loading from data ...");
+        m_Width  = static_cast<uint32_t>(width);
+        m_Height = static_cast<uint32_t>(height);
+        VkDeviceSize uploadSize = m_Width * m_Height * 4 * sizeof(char);
+
+        vkclass::VulkanBuffer stagingBuffer = vkclass::VulkanBuffer(data, uploadSize, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+
+        createImage(&stagingBuffer);
+        createImageView(&m_image, &m_imageView);
+        createSampler(&m_sampler);
+
+        // retreive infos
+        m_imgInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        m_imgInfo.imageView = m_imageView;
+        m_imgInfo.sampler = m_sampler;
+
+        // desriptor
+        m_samplerDescriptor = DescriptorManager::CreateDescriptor();
+        m_samplerDescriptor->SetStage(VK_SHADER_STAGE_FRAGMENT_BIT);
+        m_samplerDescriptor->AddBinding(0, &m_imgInfo);
+        m_samplerDescriptor->Build();
+        m_samplerDescriptor->Allocate();
+        m_samplerDescriptor->Update();
+    }
+
     void VulkanTexture2D::Init(VulkanDevice* device, VulkanCommandManager* cmdManager)
     {
         s_device = device;
@@ -66,16 +109,6 @@ namespace vkclass
     void VulkanTexture2D::Bind(uint32_t slot)
     {
 
-    }
-
-    void VulkanTexture2D::Create()
-    {
-        m_samplerDescriptor = DescriptorManager::CreateDescriptor();
-        m_samplerDescriptor->SetStage(VK_SHADER_STAGE_FRAGMENT_BIT);
-        m_samplerDescriptor->AddBinding(0, &m_imgInfo);
-        m_samplerDescriptor->Build();
-        m_samplerDescriptor->Allocate();
-        m_samplerDescriptor->Update();
     }
 
     void VulkanTexture2D::createImage(vkclass::VulkanBuffer* stagingBuffer)

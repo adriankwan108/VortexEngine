@@ -148,19 +148,28 @@ namespace vkclass
         // no op in vulkan,
     }
 
-    void VulkanVertexBuffer::SetData(const void* data, uint64_t size)
+    void VulkanVertexBuffer::SetData(void* data, uint64_t size)
     {
-        m_vertexBuffer.Flush();
-        m_vertexBuffer.Unmap();
-        m_vertexBuffer.Map();
-        m_vertexBuffer.SetData(&data, size);
-        m_vertexBuffer.Unmap();
+//        m_vertexBuffer.Flush();
+//        m_vertexBuffer.Unmap();
+//        m_vertexBuffer.Map();
+//        m_vertexBuffer.SetData(&data, size);
+//        m_vertexBuffer.Unmap();
+        
+        // staging in CPU accesible memory
+        VulkanBuffer stagingBuffer = VulkanBuffer(data, static_cast<VkDeviceSize>(size), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+
+        m_vertexBuffer.Setup(size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+        // copy data from staging buffer to device local final vertex buffer
+        VulkanBuffer::CopyTo(&stagingBuffer, &m_vertexBuffer, size);
     }
 
     void VulkanVertexBuffer::SetLayout(const VX::VertexShaderLayout& layout)
     {
         m_Layout = layout;
     }
+
 
     VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size, unsigned long count):
         m_Count(static_cast<uint32_t>(count))
@@ -179,6 +188,14 @@ namespace vkclass
     void VulkanIndexBuffer::Unbind() const
     {
         // no op in vulkan,
+    }
+
+    void VulkanIndexBuffer::SetData(void* data, uint64_t size, unsigned long count)
+    {
+        VulkanBuffer stagingBuffer = VulkanBuffer(data, size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        
+        m_indexBuffer.Setup(size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+        VulkanBuffer::CopyTo(&stagingBuffer, &m_indexBuffer, size);
     }
 
     VulkanUniformBuffer::VulkanUniformBuffer(VkDeviceSize size)
