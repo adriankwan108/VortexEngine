@@ -82,7 +82,10 @@ namespace vkclass
     {
         // bind descriptor per material / object
         m_commandBufferManager->BindDescriptor(m_pipelineLayout, 1, &m_textureDescriptor->GetCurrentSet());
-        
+        for (auto& [range, pvalue] : m_pushConstants)
+        {
+            m_commandBufferManager->PushConstant(m_pipelineLayout, range.stageFlags, range.size, pvalue);
+        }
         m_commandBufferManager->BindPipeline(m_pipeline);
     }
 
@@ -116,10 +119,11 @@ namespace vkclass
         m_descriptorSetLayouts.push_back(m_textureDescriptor->layout);
     }
 
-    void VulkanShader::SetPushConstant(VkShaderStageFlags stage, uint32_t size)
+    void VulkanShader::SetPushConstant(VkShaderStageFlags stage, uint32_t size, void* pValue)
     {
-        VkPushConstantRange pushConstantRange = vkclass::initializers::pushConstantRange(stage, size, 0);
-        m_pushConstants.push_back(pushConstantRange);
+        m_pushConstants.push_back( 
+            std::make_pair(vkclass::initializers::pushConstantRange(stage, size, 0), pValue)
+        );
     }
 
     void VulkanShader::SetObjectLayout(int binding, VX::UniformShaderLayout layout)
@@ -140,8 +144,14 @@ namespace vkclass
         VX_CORE_TRACE("VulkanShader: descriptor layout count: {0}", m_descriptorSetLayouts.size());
         pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
         pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
+
+        std::vector<VkPushConstantRange> vkPushConstantRanges;
+        std::transform(m_pushConstants.begin(), m_pushConstants.end(), std::back_inserter(vkPushConstantRanges),
+            [](const std::pair<VkPushConstantRange, void*>& pair) {
+                return pair.first;
+            });
         pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(m_pushConstants.size());
-        pipelineLayoutInfo.pPushConstantRanges = m_pushConstants.data();
+        pipelineLayoutInfo.pPushConstantRanges = vkPushConstantRanges.data();
         if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
         {
             m_isValid = false;

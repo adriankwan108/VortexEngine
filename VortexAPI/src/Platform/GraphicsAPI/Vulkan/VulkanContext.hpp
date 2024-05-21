@@ -30,6 +30,7 @@
 #include "Rendering/VulkanTexture.hpp"
 #include "Rendering/VulkanPipelineBuilder.hpp"
 #include "Rendering/VulkanRendererAPI.hpp"
+#include "Rendering/VulkanVertexArray.hpp"
 
 #include "Vortex/Geometry/Geometry.hpp"
 

@@ -41,7 +41,8 @@ namespace vkclass
         void BindVertexBuffer(std::vector<VkBuffer> vertexBuffers, std::vector<VkDeviceSize> offsets);
         void BindIndexBuffer(VkBuffer indexBuffer, VkDeviceSize offset = 0);
         void BindDescriptor(VkPipelineLayout pipelineLayout, uint32_t setIndex, const VkDescriptorSet* descriptorSetPtr);
-        void Draw(uint32_t indexSize);
+        void PushConstant(VkPipelineLayout pipelineLayout, VkShaderStageFlags stage, uint32_t size, void* pValue);
+        void DrawIndexed(uint32_t indexCount, uint32_t firstIndex = 0, int32_t vertexOffset = 0);
 
         /* main thread cb operations (disposable) */
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

@@ -2,6 +2,8 @@
 
 namespace vkclass
 {
+    vkclass::VulkanCommandManager* VulkanVertexArray::s_commandBufferManager = nullptr;
+
     VulkanVertexArray::VulkanVertexArray()
     {
         // glcreatevertexarray(1, &rendererid)
@@ -15,7 +17,9 @@ namespace vkclass
     void VulkanVertexArray::Bind() const
     {
         // OpenGL: Binding VAO, each vbo bind in their related buffer
-        // Vulkan: No VAO => no operations, But binding VBOs to command buffers in the caller
+        // Vulkan: No VAO, but bind all vbos here
+        s_commandBufferManager->BindVertexBuffer(m_VkVertexBuffers, m_VkVBsOffsets);
+        s_commandBufferManager->BindIndexBuffer(m_VkIndexBuffer);
     }
 
     void VulkanVertexArray::Unbind() const
@@ -23,9 +27,14 @@ namespace vkclass
         
     }
 
+    void VulkanVertexArray::Init(vkclass::VulkanCommandManager* commandBufferManager)
+    {
+        s_commandBufferManager = commandBufferManager;
+    }
+
     void VulkanVertexArray::AddVertexBuffer(VX::Ref<VX::VertexBuffer>& vertexBuffer)
     {
-        vertexBuffer->Bind();
+        // vertexBuffer->Bind(); // used by opengl
         m_VertexBuffers.push_back(vertexBuffer);
         
         auto vkVB = std::static_pointer_cast<VulkanVertexBuffer>(vertexBuffer);

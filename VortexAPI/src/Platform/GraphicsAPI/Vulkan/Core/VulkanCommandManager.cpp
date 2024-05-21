@@ -158,10 +158,15 @@ namespace vkclass
 
     }
 
-    void VulkanCommandManager::Draw(uint32_t indexSize)
+    void VulkanCommandManager::PushConstant(VkPipelineLayout pipelineLayout, VkShaderStageFlags stage, uint32_t size, void* pValue)
+    {
+        vkCmdPushConstants(m_mainCommandBuffers[m_currentFrame], pipelineLayout, stage, 0, size, pValue);
+    }
+
+    void VulkanCommandManager::DrawIndexed(uint32_t indexCount, uint32_t firstIndex, int32_t vertexOffset)
     {
 //        vkCmdDraw(m_commandBuffers[m_currentFrame], 1, 1, 0, 0);
-        vkCmdDrawIndexed(m_mainCommandBuffers[m_currentFrame], indexSize, 1, 0, 0, 0);
+        vkCmdDrawIndexed(m_mainCommandBuffers[m_currentFrame], indexCount, 1, firstIndex, vertexOffset, 0);
     }
 
     void VulkanCommandManager::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)

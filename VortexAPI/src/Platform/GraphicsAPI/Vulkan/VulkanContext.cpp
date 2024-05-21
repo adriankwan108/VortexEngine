@@ -44,6 +44,8 @@ namespace VX
 
         vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
         vkclass::VulkanBuffer::Init(&m_Device, &m_CommandManager);
+
+        vkclass::VulkanVertexArray::Init(&m_CommandManager);
         
         m_SwapChain = VX::CreateScope<vkclass::VulkanSwapChain>(&m_Surface);
         m_SwapChain->CreateSwapChain(m_isVSync);

@@ -36,7 +36,7 @@ namespace VX
 
         virtual uint32_t GetCount() const = 0;
         
-        virtual void SetData(void* data, uint64_t size, unsigned long count);
+        virtual void SetData(void* data, uint64_t size, unsigned long count) = 0;
         
         static Ref<IndexBuffer> Create();
         static Ref<IndexBuffer> Create(void* data, uint64_t size, unsigned long count);

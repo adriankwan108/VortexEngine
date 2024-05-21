@@ -33,13 +33,19 @@ namespace vkclass
             glm::vec2 translate;
         } FontPushConstant;
         
+        VX::VertexShaderLayout ImguiLayout = {
+            {VX::ShaderDataType::Float2, "pos"},
+            {VX::ShaderDataType::Float2, "uv"},
+            {VX::ShaderDataType::U32, "col"}
+        };
+
     private:
         VX::Ref<VulkanShader> m_fontShader;
         VX::Ref<VulkanTexture2D> m_fontTexture;
         
-        VX::Ref<VX::VertexArray> m_vertexArray;
-        VX::Ref<VX::VertexBuffer> m_vertexBuffer;
-        VX::Ref<VX::IndexBuffer> m_indexBuffer;
+        VX::Ref<VulkanVertexArray> m_vertexArray;
+        VX::Ref<VulkanVertexBuffer> m_vertexBuffer;
+        VX::Ref<VulkanIndexBuffer> m_indexBuffer;
         
         int32_t vertexCount = 0;
         int32_t indexCount = 0;

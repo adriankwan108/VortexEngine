@@ -7,6 +7,7 @@
 
 #include "Core/VulkanTools.hpp"
 #include "Core/VulkanBuffer.hpp"
+#include "Core/VulkanCommandManager.hpp"
 
 #include "Renderer/VertexArray.hpp"
 
@@ -24,18 +25,26 @@ namespace vkclass
         virtual void AddVertexBuffer(VX::Ref<VX::VertexBuffer>& vertexBuffer) override;
         virtual void SetIndexBuffer (VX::Ref<VX::IndexBuffer>& indexBuffer) override;
         
+        // TODO: revise this as this is not in used ?
         virtual const std::vector<VX::Ref<VX::VertexBuffer>>& GetVertexBuffer() const override { return m_VertexBuffers; }
         virtual const VX::Ref<VX::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
         
     public:
-        std::vector<VkBuffer> GetVertexBuffers() { return m_VkVertexBuffers; }
-        std::vector<VkDeviceSize> GetVBsOffsets() { return m_VkVBsOffsets; }
-        VkBuffer GetIndexBuffer() { return m_VkIndexBuffer; }
+        // TODO: revise this as this is not in used ?
+        // std::vector<VkBuffer> GetVertexBuffers() { return m_VkVertexBuffers; }
+        // std::vector<VkDeviceSize> GetVBsOffsets() { return m_VkVBsOffsets; }
+        // VkBuffer GetIndexBuffer() { return m_VkIndexBuffer; }
+
+
         uint32_t GetIndicesSize();
+
+        static void Init(vkclass::VulkanCommandManager* commandBufferManager);
         
     private:
         std::vector<VX::Ref<VX::VertexBuffer>> m_VertexBuffers;
         VX::Ref<VX::IndexBuffer> m_IndexBuffer;
+
+        static vkclass::VulkanCommandManager* s_commandBufferManager;
         
     private:
         std::vector<VkBuffer> m_VkVertexBuffers;

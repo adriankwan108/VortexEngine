@@ -106,9 +106,9 @@ void Playground::OnUpdate(VX::Timestep ts)
 
 void Playground::OnEvent(VX::Event& event)
 {
-    if (event.GetEventType() == VX::EventType::KeyPressed)
-    {
-        VX::KeyPressedEvent& e = static_cast<VX::KeyPressedEvent&>(event);
-        // VX_TRACE("{0}", (char)e.GetKeyCode());
-    }
+    //if (event.GetEventType() == VX::EventType::KeyPressed)
+    //{
+    //    VX::KeyPressedEvent& e = static_cast<VX::KeyPressedEvent&>(event);
+    //    VX_TRACE("{0}", (char)e.GetKeyCode());
+    //}
 }

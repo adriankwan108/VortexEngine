@@ -164,14 +164,17 @@ namespace vkclass
     {
         for (const auto& availablePresentMode : availablePresentModes)
         {
-            if(availablePresentMode == isVSync
-                ? VK_PRESENT_MODE_MAILBOX_KHR 
-                : VK_PRESENT_MODE_IMMEDIATE_KHR)
+            VkPresentModeKHR targetMode = isVSync ? VK_PRESENT_MODE_MAILBOX_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
+
+            if(availablePresentMode == targetMode)
             {
+                std::string presentMode = (targetMode == VK_PRESENT_MODE_MAILBOX_KHR) ? "VK_PRESENT_MODE_MAILBOX_KHR" : "VK_PRESENT_MODE_IMMEDIATE_KHR";
+                VX_CORE_INFO("SwapChain: PresentMode: {0}", presentMode);
                 return availablePresentMode;
             }
         }
         
+        VX_CORE_INFO("SwapChain: PresentMode: {0}", "VK_PRESENT_MODE_FIFO_KHR");
         return VK_PRESENT_MODE_FIFO_KHR;
     }
 

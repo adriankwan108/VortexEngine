@@ -41,43 +41,17 @@ namespace vkclass
         m_fontTexture = VX::CreateRef<VulkanTexture2D>();
         m_fontTexture->LoadFromData(fontData, texWidth, texHeight);
         
-        VX::VertexShaderLayout imguiLayout = {
-            {VX::ShaderDataType::Float2, "pos"},
-            {VX::ShaderDataType::Float2, "uv"},
-            {VX::ShaderDataType::U32, "col"}
-        };
+     
         m_fontShader = VX::CreateRef<VulkanShader>("ImGuiFont", "Resources/VortexAPI/shaders/ui.vert.spv", "Resources/VortexAPI/shaders/ui.frag.spv");
-        m_fontShader->SetVertexLayout(imguiLayout);
+        m_fontShader->SetVertexLayout(ImguiLayout);
         m_fontShader->SetTexture(m_fontTexture);
-        m_fontShader->SetPushConstant(VK_SHADER_STAGE_VERTEX_BIT, sizeof(PushConstBlock));
+        m_fontShader->SetPushConstant(VK_SHADER_STAGE_VERTEX_BIT, sizeof(PushConstBlock), &FontPushConstant);
         m_fontShader->Prepare();
         
         FontPushConstant.scale = {1.0f, 1.0f};
         FontPushConstant.translate = {1.0f, 1.0f};
         
-//        m_vertexBuffer = VX::CreateRef<VulkanVertexBuffer>();
-//        m_indexBuffer = VX::CreateRef<VulkanIndexBuffer>();
-//        m_vertexArray = VX::CreateRef<VulkanVertexArray>();
-        
-//        ImDrawData* imDrawData = ImGui::GetDrawData();
-//        ImDrawVert* vtxDst;
-//        ImDrawIdx* idxDst;
-//        for (int n = 0; n < imDrawData->CmdListsCount; n++)
-//        {
-//            const ImDrawList* cmd_list = imDrawData->CmdLists[n];
-//            memcpy(vtxDst, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
-//            memcpy(idxDst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
-//            vtxDst += cmd_list->VtxBuffer.Size;
-//            idxDst += cmd_list->IdxBuffer.Size;
-//        }
-//        m_vertexBuffer->SetLayout(imguiLayout);
-//        m_vertexBuffer->SetData(vtxDst, imDrawData->CmdLists[0]->VtxBuffer.Size * sizeof(ImDrawVert));
-//        m_indexBuffer->SetData(idxDst, imDrawData->CmdLists[0]->VtxBuffer.Size * sizeof(ImDrawVert), 0);
-//
-//        m_vertexArray->AddVertexBuffer(m_vertexBuffer);
-//        m_vertexArray->SetIndexBuffer(m_indexBuffer);
-//
-//        updateBuffers();
+        // updateBuffers();
     }
 
     void VulkanUILayer::OnDetach()
@@ -107,8 +81,10 @@ namespace vkclass
         {
             ImGui::ShowDemoWindow();
         }
+
+        // updateBuffers();
         
-         VX::Renderer::Submit(m_fontShader ,m_vertexArray);
+         // VX::Renderer::Submit(m_fontShader ,m_vertexArray);
     }
 
     void VulkanUILayer::OnUpdateEnd()
@@ -118,6 +94,48 @@ namespace vkclass
 
     void VulkanUILayer::updateBuffers()
     {
-        
+        // Update buffers only if vertex or index count has been changed compared to current buffer size
+
+        ImDrawData* imDrawData = ImGui::GetDrawData();
+
+        VkDeviceSize vertexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawVert);
+        VkDeviceSize indexBufferSize = imDrawData->TotalIdxCount * sizeof(ImDrawIdx);
+
+        if ((vertexBufferSize == 0) || (indexBufferSize == 0)) 
+        {
+            return;
+        }
+
+        if (m_vertexBuffer->GetBuffer() == VK_NULL_HANDLE || (vertexCount != imDrawData->TotalVtxCount))
+        {
+            m_vertexBuffer.reset();
+            m_vertexBuffer = VX::CreateRef<VulkanVertexBuffer>();
+            m_vertexBuffer->SetLayout(ImguiLayout);
+
+            ImDrawVert* vtxDst = new ImDrawVert[imDrawData->TotalVtxCount];
+            int offset = 0;
+            for (int n = 0; n < imDrawData->CmdListsCount; n++)
+            {
+                const ImDrawList* cmd_list = imDrawData->CmdLists[n];
+                memcpy(vtxDst + offset, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
+                offset += cmd_list->VtxBuffer.Size;
+            }
+            m_vertexBuffer->SetData(vtxDst, imDrawData->TotalVtxCount);
+
+            m_indexBuffer.reset();
+            ImDrawVert* idxDst = new ImDrawVert[imDrawData->TotalIdxCount];
+            int idxOffset = 0;
+            for (int n = 0; n < imDrawData->CmdListsCount; n++)
+            {
+                const ImDrawList* cmd_list = imDrawData->CmdLists[n];
+                memcpy(idxDst + idxOffset, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
+                idxOffset += cmd_list->IdxBuffer.Size;
+            }
+
+            /*m_indexBuffer = VX::CreateRef<VulkanIndexBuffer>(void* data, VkDeviceSize size, unsigned long count);
+
+            m_vertexArray->AddVertexBuffer(m_vertexBuffer);
+            m_vertexArray->SetIndexBuffer(m_indexBuffer);*/
+        }
     }
 }

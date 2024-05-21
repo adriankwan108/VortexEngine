@@ -22,10 +22,7 @@ namespace vkclass
     {
         auto va = std::static_pointer_cast<VulkanVertexArray>(vertexArray);
         
-        s_CommandManager->BindVertexBuffer(va->GetVertexBuffers(), va->GetVBsOffsets());
-        s_CommandManager->BindIndexBuffer(va->GetIndexBuffer());
-        
-        s_CommandManager->Draw(va->GetIndicesSize());
+        s_CommandManager->DrawIndexed(va->GetIndicesSize());
     }
 
     void VulkanRendererAPI::Clear()
