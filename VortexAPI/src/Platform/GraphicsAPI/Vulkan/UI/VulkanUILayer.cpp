@@ -81,15 +81,14 @@ namespace vkclass
         {
             ImGui::ShowDemoWindow();
         }
-
-        // updateBuffers();
-        
-         // VX::Renderer::Submit(m_fontShader ,m_vertexArray);
     }
 
     void VulkanUILayer::OnUpdateEnd()
     {
         ImGui::Render();
+        
+        updateBuffers();
+        // VX::Renderer::Submit(m_fontShader ,m_vertexArray);
     }
 
     void VulkanUILayer::updateBuffers()
@@ -101,41 +100,67 @@ namespace vkclass
         VkDeviceSize vertexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawVert);
         VkDeviceSize indexBufferSize = imDrawData->TotalIdxCount * sizeof(ImDrawIdx);
 
+        bool updateVA = false;
         if ((vertexBufferSize == 0) || (indexBufferSize == 0)) 
         {
             return;
         }
-
-        if (m_vertexBuffer->GetBuffer() == VK_NULL_HANDLE || (vertexCount != imDrawData->TotalVtxCount))
+        
+        if(m_vertexBuffer == nullptr || m_vertexBuffer->GetBuffer() == VK_NULL_HANDLE || (vertexCount != imDrawData->TotalVtxCount))
         {
+            // recreate all buffers and array
             m_vertexBuffer.reset();
-            m_vertexBuffer = VX::CreateRef<VulkanVertexBuffer>();
-            m_vertexBuffer->SetLayout(ImguiLayout);
-
+            
             ImDrawVert* vtxDst = new ImDrawVert[imDrawData->TotalVtxCount];
-            int offset = 0;
+            int vtxOffset = 0;
             for (int n = 0; n < imDrawData->CmdListsCount; n++)
             {
                 const ImDrawList* cmd_list = imDrawData->CmdLists[n];
-                memcpy(vtxDst + offset, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
-                offset += cmd_list->VtxBuffer.Size;
+                
+                // vertex
+                memcpy(vtxDst + vtxOffset, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
+                vtxOffset += cmd_list->VtxBuffer.Size;
             }
-            m_vertexBuffer->SetData(vtxDst, imDrawData->TotalVtxCount);
+            m_vertexBuffer = VX::CreateRef<VulkanVertexBuffer>(vtxDst, vtxOffset * sizeof(ImDrawVert));
 
+            if(vtxDst != nullptr)
+            {
+                delete[] vtxDst;
+                vtxDst = nullptr;
+            }
+            
+            updateVA = true;
+        }
+        
+        if(m_indexBuffer == nullptr || m_indexBuffer->GetBuffer() == VK_NULL_HANDLE || (indexCount != imDrawData->TotalIdxCount))
+        {
+            // recreate all buffers and array
             m_indexBuffer.reset();
+            
             ImDrawVert* idxDst = new ImDrawVert[imDrawData->TotalIdxCount];
             int idxOffset = 0;
             for (int n = 0; n < imDrawData->CmdListsCount; n++)
             {
                 const ImDrawList* cmd_list = imDrawData->CmdLists[n];
+                
+                // vertex
                 memcpy(idxDst + idxOffset, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
                 idxOffset += cmd_list->IdxBuffer.Size;
             }
+            // m_indexBuffer = VX::CreateRef<VulkanIndexBuffer>(idxDst, idxOffset * sizeof(ImDrawIdx));
 
-            /*m_indexBuffer = VX::CreateRef<VulkanIndexBuffer>(void* data, VkDeviceSize size, unsigned long count);
+            if(idxDst != nullptr)
+            {
+                delete[] idxDst;
+                idxDst = nullptr;
+            }
+            
+            updateVA = true;
+        }
 
-            m_vertexArray->AddVertexBuffer(m_vertexBuffer);
-            m_vertexArray->SetIndexBuffer(m_indexBuffer);*/
+        if(updateVA == true)
+        {
+            // update vertex array
         }
     }
 }
