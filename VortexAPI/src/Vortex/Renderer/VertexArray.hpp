@@ -20,9 +20,12 @@ namespace VX
         virtual void SetIndexBuffer (Ref<IndexBuffer>& indexBuffer) = 0;
         
         virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffer() const = 0;
-        
         virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
         
+    public:
         static Ref<VertexArray> Create();
+        
+    private:
+
     };
 }

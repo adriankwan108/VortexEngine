@@ -33,13 +33,32 @@ namespace VX
 
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
-
-        virtual uint32_t GetCount() const = 0;
         
-        virtual void SetData(void* data, uint64_t size, unsigned long count) = 0;
+        virtual void SetData(void* data, uint64_t size) = 0;
+        
+    public:
+        struct DrawCmdInfo{
+            uint32_t indexCount;
+            uint32_t firstIndex;
+            int32_t vertexOffset;
+            
+            int32_t offsetX;
+            int32_t offsetY;
+            uint32_t width;
+            uint32_t height;
+        };
+        
+        virtual void AddDrawCmd(uint32_t indexCount, uint32_t firstIndex = 0, int32_t vertexOffset = 0,
+                                int32_t offsetX = 0,
+                                int32_t offsetY = 0,
+                                uint32_t width = 0,
+                                uint32_t height = 0);
+        virtual std::vector<DrawCmdInfo> GetDrawInfoList() const { return m_drawInfoList; }
         
         static Ref<IndexBuffer> Create();
-        static Ref<IndexBuffer> Create(void* data, uint64_t size, unsigned long count);
+        static Ref<IndexBuffer> Create(void* data, uint64_t size);
+    private:
+        std::vector<DrawCmdInfo> m_drawInfoList;
     };
 
     

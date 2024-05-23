@@ -30,14 +30,6 @@ namespace vkclass
         virtual const VX::Ref<VX::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
         
     public:
-        // TODO: revise this as this is not in used ?
-        // std::vector<VkBuffer> GetVertexBuffers() { return m_VkVertexBuffers; }
-        // std::vector<VkDeviceSize> GetVBsOffsets() { return m_VkVBsOffsets; }
-        // VkBuffer GetIndexBuffer() { return m_VkIndexBuffer; }
-
-
-        uint32_t GetIndicesSize();
-
         static void Init(vkclass::VulkanCommandManager* commandBufferManager);
         
     private:

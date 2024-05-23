@@ -43,8 +43,11 @@ namespace VX
         /* update per-material / per-object data here */
         shader->Bind();
         
-        vertexArray->Bind();
-        RenderCommand::DrawIndexed(vertexArray);
+        if(vertexArray != nullptr)
+        {
+            vertexArray->Bind();
+            RenderCommand::DrawIndexed(vertexArray);
+        }
         // VX_CORE_TRACE("Renderer:: Submited...");
     }
 }

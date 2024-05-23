@@ -36,7 +36,10 @@ namespace vkclass
         void Submit(std::vector<VkSemaphore> waitSemaphores, std::vector<VkSemaphore> signalSemaphores, VkFence fence);
         void EndRenderPass();
         void EndCommandBuffer();
+        
         void SetExtent(VkExtent2D extent);
+        void SetScissor(VkRect2D rect);
+        
         void BindPipeline(VkPipeline pipeline); // TODO: bind with vertex buffer, index buffer, etc; and bind with related cmd buffer
         void BindVertexBuffer(std::vector<VkBuffer> vertexBuffers, std::vector<VkDeviceSize> offsets);
         void BindIndexBuffer(VkBuffer indexBuffer, VkDeviceSize offset = 0);

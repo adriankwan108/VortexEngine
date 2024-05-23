@@ -20,9 +20,19 @@ namespace vkclass
 
     void VulkanRendererAPI::DrawIndexed(const VX::Ref<VX::VertexArray> &vertexArray)
     {
-        auto va = std::static_pointer_cast<VulkanVertexArray>(vertexArray);
+        auto drawInfoList = vertexArray->GetIndexBuffer()->GetDrawInfoList();
         
-        s_CommandManager->DrawIndexed(va->GetIndicesSize());
+        for(auto& info : drawInfoList)
+        {
+            VkRect2D scissorRect;
+            scissorRect.offset.x = info.offsetX;
+            scissorRect.offset.y = info.offsetY;
+            scissorRect.extent.width = info.width;
+            scissorRect.extent.height = info.height;
+            
+            s_CommandManager->SetScissor(scissorRect);
+            s_CommandManager->DrawIndexed(info.indexCount, info.firstIndex, info.vertexOffset);
+        }
     }
 
     void VulkanRendererAPI::Clear()

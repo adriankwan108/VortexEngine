@@ -171,8 +171,7 @@ namespace vkclass
     }
 
 
-    VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size, unsigned long count):
-        m_Count(static_cast<uint32_t>(count))
+    VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size)
     {
         VulkanBuffer stagingBuffer = VulkanBuffer(data, size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         
@@ -190,7 +189,7 @@ namespace vkclass
         // no op in vulkan,
     }
 
-    void VulkanIndexBuffer::SetData(void* data, uint64_t size, unsigned long count)
+    void VulkanIndexBuffer::SetData(void* data, uint64_t size)
     {
         VulkanBuffer stagingBuffer = VulkanBuffer(data, size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         

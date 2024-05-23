@@ -103,22 +103,19 @@ namespace vkclass
     public:
         VulkanIndexBuffer() = default;
         // optimized, device local final vertex buffer
-        VulkanIndexBuffer(void* data, VkDeviceSize size, unsigned long count);
+        VulkanIndexBuffer(void* data, VkDeviceSize size);
         virtual ~VulkanIndexBuffer() = default;
 
         virtual void Bind() const override;
         virtual void Unbind() const override;
-
-        virtual uint32_t GetCount() const override { return m_Count; }
         
-        virtual void SetData(void* data, uint64_t size, unsigned long count) override;
+        virtual void SetData(void* data, uint64_t size) override;
         
     public:
         VkBuffer GetBuffer() const { return m_indexBuffer.Buffer ;}
 
     private:
         VulkanBuffer m_indexBuffer;
-        uint32_t m_Count;
     };
 
     /*

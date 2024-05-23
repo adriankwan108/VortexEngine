@@ -57,6 +57,21 @@ namespace VX
         return nullptr;
     }
 
+    void IndexBuffer::AddDrawCmd(uint32_t indexCount, uint32_t firstIndex, int32_t vertexOffset, int32_t offsetX, int32_t offsetY, uint32_t width, uint32_t height)
+    {
+        DrawCmdInfo info;
+        info.indexCount = indexCount;
+        info.firstIndex = firstIndex;
+        info.vertexOffset = vertexOffset;
+        
+        info.offsetX = offsetX;
+        info.offsetY = offsetY;
+        info.width = width;
+        info.height = height;
+        
+        m_drawInfoList.push_back(info);
+    }
+
     Ref<IndexBuffer> IndexBuffer::Create()
     {
         switch (Renderer::GetAPI()) {
@@ -83,7 +98,7 @@ namespace VX
         return nullptr;
     }
 
-    Ref<IndexBuffer> IndexBuffer::Create(void* data, uint64_t size, unsigned long count)
+    Ref<IndexBuffer> IndexBuffer::Create(void* data, uint64_t size)
     {
         switch (Renderer::GetAPI()) {
             case RendererAPI::API::None:
@@ -91,7 +106,7 @@ namespace VX
                 return nullptr;
                 break;
             case RendererAPI::API::Vulkan:
-                return CreateRef<vkclass::VulkanIndexBuffer>(data, size, count);
+                return CreateRef<vkclass::VulkanIndexBuffer>(data, size);
                 break;
             case RendererAPI::API::DX12:
                 VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::DX12 is currently not supported!");

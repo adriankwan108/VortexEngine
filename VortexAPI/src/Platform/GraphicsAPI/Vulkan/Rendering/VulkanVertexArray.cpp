@@ -18,6 +18,7 @@ namespace vkclass
     {
         // OpenGL: Binding VAO, each vbo bind in their related buffer
         // Vulkan: No VAO, but bind all vbos here
+
         s_commandBufferManager->BindVertexBuffer(m_VkVertexBuffers, m_VkVBsOffsets);
         s_commandBufferManager->BindIndexBuffer(m_VkIndexBuffer);
     }
@@ -48,10 +49,5 @@ namespace vkclass
     {
         m_IndexBuffer = indexBuffer;
         m_VkIndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(m_IndexBuffer)->GetBuffer();
-    }
-
-    uint32_t VulkanVertexArray::GetIndicesSize()
-    {
-        return m_IndexBuffer->GetCount();
     }
 }

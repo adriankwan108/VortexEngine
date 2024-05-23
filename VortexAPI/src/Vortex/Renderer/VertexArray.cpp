@@ -30,6 +30,4 @@ namespace VX
         }
         return nullptr;
     }
-
-
 }

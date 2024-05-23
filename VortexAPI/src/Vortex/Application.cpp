@@ -96,6 +96,7 @@ namespace VX
             m_Window->OnUpdate(); // reserved
 
             m_Window->OnUpdateEnd();
+            VX_CORE_TRACE("Application: Next Frame");
         }
     }
 
