@@ -35,6 +35,7 @@ namespace VX
 
             return tempPath.string();
         }
+
         static std::string AbsolutePath(const std::string& inputPath)
         {
             //std::string path = std::move(inputPath);
@@ -47,10 +48,10 @@ namespace VX
     #endif
         }
 
-        static std::vector<char> readFile(const std::string& filename) {
+        static std::vector<uint32_t> readFile(const std::string& filename) {
             
             std::ifstream file(AbsolutePath(filename), std::ios::ate | std::ios::binary);
-            std::vector<char> buffer(0);
+            std::vector<uint32_t> buffer(0);
             if (!file.good())
             {
                 VX_CORE_WARN("Utils: File ({0}) not exists.", filename);
@@ -62,12 +63,11 @@ namespace VX
                 throw std::runtime_error("failed to open file!");
             }
             
-            size_t fileSize = (size_t) file.tellg();
-            buffer.resize(fileSize);
+            size_t fileSize = static_cast<size_t>(file.tellg());
+            buffer.resize(fileSize / sizeof(uint32_t));
             
             file.seekg(0);
-            file.read(buffer.data(), fileSize);
-            
+            file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
             file.close();
 
             return buffer;

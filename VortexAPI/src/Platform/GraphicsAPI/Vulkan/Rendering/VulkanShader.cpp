@@ -7,6 +7,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <spirv_cross/spirv_glsl.hpp>
+
 namespace vkclass
 {
     VkDevice vkclass::VulkanShader::m_device = VK_NULL_HANDLE;
@@ -17,19 +19,22 @@ namespace vkclass
         : m_Name(name), m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
     {
         // read file
-        std::vector<char> vertShaderCode = VX::Utils::readFile(m_vertFilePath);
-        std::vector<char> fragShaderCode = VX::Utils::readFile(m_fragFilePath);
+        std::vector<uint32_t> vertShaderCode = VX::Utils::readFile(m_vertFilePath);
+        std::vector<uint32_t> fragShaderCode = VX::Utils::readFile(m_fragFilePath);
         
         if (vertShaderCode.empty() || fragShaderCode.empty())
         {
             VX_CORE_WARN("Vulkan Shader: Read failed. Shader files require both non-empty .vert & .frag");
             return;
         }
+
+        reflect(vertShaderCode);
+        reflect(fragShaderCode);
         
         VkShaderModuleCreateInfo vertModuleCI{};
         vertModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        vertModuleCI.codeSize = vertShaderCode.size();
-        vertModuleCI.pCode = reinterpret_cast<const uint32_t*>(vertShaderCode.data());
+        vertModuleCI.codeSize = vertShaderCode.size() * sizeof(uint32_t);
+        vertModuleCI.pCode = vertShaderCode.data();
         if(vkCreateShaderModule(m_device, &vertModuleCI, nullptr, &m_vertModule) != VK_SUCCESS)
         {
             m_isValid = false;
@@ -39,8 +44,8 @@ namespace vkclass
         
         VkShaderModuleCreateInfo fragModuleCI{};
         fragModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        fragModuleCI.codeSize = fragShaderCode.size();
-        fragModuleCI.pCode = reinterpret_cast<const uint32_t*>(fragShaderCode.data());
+        fragModuleCI.codeSize = fragShaderCode.size() * sizeof(uint32_t);
+        fragModuleCI.pCode = fragShaderCode.data();
         if(vkCreateShaderModule(m_device, &fragModuleCI, nullptr, &m_fragModule) != VK_SUCCESS)
         {
             m_isValid = false;
@@ -111,6 +116,7 @@ namespace vkclass
     {
          
     }
+
     void VulkanShader::SetTexture(VX::Ref<VX::Texture2D> texture)
     {
         m_texture = std::static_pointer_cast<VulkanTexture2D>(texture);
@@ -169,4 +175,42 @@ namespace vkclass
         VX_CORE_TRACE("Vulkan Shader: Pipeline set");
     }
 
+    void VulkanShader::reflect(const std::vector<uint32_t>& data)
+    {
+        VX_CORE_TRACE("VulkanShader: Reflecting...");
+        spirv_cross::CompilerGLSL glsl(data);
+        spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+
+        for (auto& resource: resources.stage_inputs)
+        {
+            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+
+            VX_CORE_TRACE("Reflect: Input {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+        }
+
+        for (auto& resource : resources.uniform_buffers)
+        {
+            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+
+            VX_CORE_TRACE("Reflect: UniformBuffer {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+        }
+
+        for (auto& resource : resources.sampled_images)
+        {
+            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+
+            VX_CORE_TRACE("Reflect: Sampler {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+        }
+
+        for (auto& resource : resources.push_constant_buffers)
+        {
+            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+
+            VX_CORE_TRACE("Reflect: PushConstant {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+        }
+    }
 }

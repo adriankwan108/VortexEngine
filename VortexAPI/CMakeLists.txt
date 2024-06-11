@@ -25,11 +25,25 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # vulkan
-find_package(Vulkan REQUIRED)
+set(VULKAN_COMPONENTS
+	"glslc"
+	"glslangValidator"
+	"glslang"
+	"shaderc_combined"
+	"SPIRV-Tools"
+	"dxc"
+)
+find_package(Vulkan REQUIRED COMPONENTS ${VULKAN_COMPONENTS})
+message(STATUS "VulkanDir: ${Vulkan_INCLUDE_DIR}")
+message(STATUS "VulkanLib: ${Vulkan_LIBRARIES}")
 
+string(REGEX REPLACE "/[^/]+$" "" Vulkan_LIB_FOLDER ${Vulkan_LIBRARIES})
+
+# glm
 if(APPLE)
     find_package(glm REQUIRED)
 endif()
+
 
 # libaries
 add_library(VortexAPI SHARED)
@@ -50,13 +64,26 @@ if(MSVC)
     target_link_libraries(VortexAPI PUBLIC
         glfw
         Vulkan::Vulkan
+        Vulkan::shaderc_combined
+        $<$<CONFIG:Release>:${Vulkan_LIB_FOLDER}/spirv-cross-core.lib>
+        $<$<CONFIG:Release>:${Vulkan_LIB_FOLDER}/spirv-cross-glsl.lib>
+
+        $<$<CONFIG:Debug>:${Vulkan_LIB_FOLDER}/spirv-cross-cored.lib>
+        $<$<CONFIG:Debug>:${Vulkan_LIB_FOLDER}/spirv-cross-glsld.lib>
+
     )
 else()
     if(APPLE)
         target_link_libraries(VortexAPI PUBLIC
             glfw
-            Vulkan::Vulkan
             glm::glm
+            Vulkan::Vulkan
+            Vulkan::shaderc_combined
+            $<$<CONFIG:Release>:${Vulkan_LIB_FOLDER}/spirv-cross-core.lib>
+            $<$<CONFIG:Release>:${Vulkan_LIB_FOLDER}/spirv-cross-glsl.lib>
+
+            $<$<CONFIG:Debug>:${Vulkan_LIB_FOLDER}/spirv-cross-cored.lib>
+            $<$<CONFIG:Debug>:${Vulkan_LIB_FOLDER}/spirv-cross-glsld.lib>
         )
     endif()
 endif()

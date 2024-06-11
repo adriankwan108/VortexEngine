@@ -46,7 +46,7 @@ Playground::Playground()
     m_basicShader = VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv");
     m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
     m_basicShader->SetGlobalLayout(0, viewProjLayout);
-    // m_basicShader->SetTexture(m_texture);
+    m_basicShader->SetTexture(m_texture);
     m_basicShader->Prepare();
     
     m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));

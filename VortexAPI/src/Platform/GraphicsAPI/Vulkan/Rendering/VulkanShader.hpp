@@ -79,5 +79,8 @@ namespace vkclass
         VkShaderModule m_fragModule = VK_NULL_HANDLE;
         
         bool m_isValid = false;
+
+    private:
+        void reflect(const std::vector<uint32_t>& data);
     };
 }
