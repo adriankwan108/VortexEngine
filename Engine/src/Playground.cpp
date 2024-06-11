@@ -46,7 +46,7 @@ Playground::Playground()
     m_basicShader = VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv");
     m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
     m_basicShader->SetGlobalLayout(0, viewProjLayout);
-    m_basicShader->SetTexture(m_texture);
+    // m_basicShader->SetTexture(m_texture);
     m_basicShader->Prepare();
     
     m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
@@ -77,32 +77,32 @@ void Playground::OnDetach()
 
 void Playground::OnUpdate(VX::Timestep ts)
 {
-//    VX::Renderer::BeginScene(m_camera);
-//    
-//    // m_camera->Update();
-//    // m_camera->SetPosition({0.5f, 0.5f, 0.0f});
-//    // m_camera->SetRotation(45.0f);
-//
-//    // testing
-//    if (VX::Input::IsKeyPressed(VX::Key::A))
-//    {
-//        m_cameraPosition.x += m_CameraMoveSpeed * ts;
-//    }
-//
-//    if (VX::Input::IsKeyPressed(VX::Key::D))
-//    {
-//        m_cameraPosition.x -= m_CameraMoveSpeed * ts;
-//    }
-//
-//    m_camera->SetPosition(m_cameraPosition);
-//    
-//    // set clear color
-//    VX::RenderCommand::SetClearColor(glm::vec4(0.11f, 0.12f, 0.13f, 1.0f));
-//    
-//    VX::Renderer::Submit(m_basicShader ,m_vertexArray);
-//    
-//    VX::Renderer::EndScene();
-//    // renderer::Flush
+    VX::Renderer::BeginScene(m_camera);
+    
+    // m_camera->Update();
+    // m_camera->SetPosition({0.5f, 0.5f, 0.0f});
+    // m_camera->SetRotation(45.0f);
+
+    // testing
+    if (VX::Input::IsKeyPressed(VX::Key::A))
+    {
+        m_cameraPosition.x += m_CameraMoveSpeed * ts;
+    }
+
+    if (VX::Input::IsKeyPressed(VX::Key::D))
+    {
+        m_cameraPosition.x -= m_CameraMoveSpeed * ts;
+    }
+
+    m_camera->SetPosition(m_cameraPosition);
+    
+    // set clear color
+    VX::RenderCommand::SetClearColor(glm::vec4(0.11f, 0.12f, 0.13f, 1.0f));
+    
+    VX::Renderer::Submit(m_basicShader ,m_vertexArray);
+    
+    VX::Renderer::EndScene();
+    // renderer::Flush
 }
 
 void Playground::OnEvent(VX::Event& event)

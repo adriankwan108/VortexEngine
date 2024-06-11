@@ -81,7 +81,7 @@ namespace vkclass
     void VulkanShader::Bind()
     {
         // bind descriptor per material / object
-        m_commandBufferManager->BindDescriptor(m_pipelineLayout, 0, &m_textureDescriptor->GetCurrentSet());
+        // m_commandBufferManager->BindDescriptor(m_pipelineLayout, 0, &m_textureDescriptor->GetCurrentSet());
         for (auto& [range, pvalue] : m_pushConstants)
         {
             m_commandBufferManager->PushConstant(m_pipelineLayout, range.stageFlags, range.size, pvalue);

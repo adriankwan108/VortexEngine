@@ -27,8 +27,8 @@ namespace VX
         Renderer::Init();
         
         VX_CORE_INFO("Application: preparing ui layer...");
-        m_uiLayer = UILayer::Create();
-        PushOverlay(m_uiLayer);
+        // m_uiLayer = UILayer::Create();
+        // PushOverlay(m_uiLayer);
         
         VX_CORE_INFO("Application initiated.");
     }
@@ -86,12 +86,12 @@ namespace VX
                     layer->OnUpdate(timestep); // playground: update
                 }
 
-                m_uiLayer->OnUpdateStart();
+                // m_uiLayer->OnUpdateStart();
                 for (Layer* layer : m_LayerStack)
                 {
                     // layer->OnUIRender();
                 }
-                m_uiLayer->OnUpdateEnd();
+                // m_uiLayer->OnUpdateEnd();
             }
             m_Window->OnUpdate(); // reserved
 

@@ -30,7 +30,9 @@ namespace vkclass
             scissorRect.extent.width = info.width;
             scissorRect.extent.height = info.height;
             
-            s_CommandManager->SetScissor(scissorRect);
+            // not working
+            // s_CommandManager->SetScissor(scissorRect);
+            
             s_CommandManager->DrawIndexed(info.indexCount, info.firstIndex, info.vertexOffset);
         }
     }
