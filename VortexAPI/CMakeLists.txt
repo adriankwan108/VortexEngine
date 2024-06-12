@@ -79,11 +79,8 @@ else()
             glm::glm
             Vulkan::Vulkan
             Vulkan::shaderc_combined
-            $<$<CONFIG:Release>:${Vulkan_LIB_FOLDER}/spirv-cross-core.lib>
-            $<$<CONFIG:Release>:${Vulkan_LIB_FOLDER}/spirv-cross-glsl.lib>
-
-            $<$<CONFIG:Debug>:${Vulkan_LIB_FOLDER}/spirv-cross-cored.lib>
-            $<$<CONFIG:Debug>:${Vulkan_LIB_FOLDER}/spirv-cross-glsld.lib>
+            ${Vulkan_LIB_FOLDER}/libspirv-cross-core.a
+            ${Vulkan_LIB_FOLDER}/libspirv-cross-glsl.a
         )
     endif()
 endif()
