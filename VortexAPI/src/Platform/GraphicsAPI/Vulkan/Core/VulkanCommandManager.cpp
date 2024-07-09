@@ -145,38 +145,38 @@ namespace vkclass
     void VulkanCommandManager::BindPipeline(VkPipeline pipeline)
     {
         vkCmdBindPipeline(m_mainCommandBuffers[m_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        VX_CORE_TRACE("CmdManager: Bind pipeline.");
+        // VX_CORE_TRACE("CmdManager: Bind pipeline.");
     }
 
     void VulkanCommandManager::BindVertexBuffer(std::vector<VkBuffer> vertexBuffers, std::vector<VkDeviceSize> offsets)
     {
         vkCmdBindVertexBuffers(m_mainCommandBuffers[m_currentFrame], 0, 1, vertexBuffers.data(), offsets.data());
-        VX_CORE_TRACE("CmdManager: Bind vertex buffer.");
+        // VX_CORE_TRACE("CmdManager: Bind vertex buffer.");
     }
 
     void VulkanCommandManager::BindIndexBuffer(VkBuffer indexBuffer, VkDeviceSize offset)
     {
         vkCmdBindIndexBuffer(m_mainCommandBuffers[m_currentFrame], indexBuffer, offset, VK_INDEX_TYPE_UINT16);
-        VX_CORE_TRACE("CmdManager: Bind index buffer.");
+        // VX_CORE_TRACE("CmdManager: Bind index buffer.");
     }
 
     void VulkanCommandManager::BindDescriptor(VkPipelineLayout pipelineLayout, uint32_t setIndex, const VkDescriptorSet* descriptorSetPtr)
     {
         vkCmdBindDescriptorSets(m_mainCommandBuffers[m_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, setIndex, 1, descriptorSetPtr, 0, nullptr);
-        VX_CORE_TRACE("CmdManager: Bind descriptor sets.");
+        // VX_CORE_TRACE("CmdManager: Bind descriptor sets.");
     }
 
     void VulkanCommandManager::PushConstant(VkPipelineLayout pipelineLayout, VkShaderStageFlags stage, uint32_t size, void* pValue)
     {
         vkCmdPushConstants(m_mainCommandBuffers[m_currentFrame], pipelineLayout, stage, 0, size, pValue);
-        VX_CORE_TRACE("CmdManager: Push Constants.");
+        // VX_CORE_TRACE("CmdManager: Push Constants.");
     }
 
     void VulkanCommandManager::DrawIndexed(uint32_t indexCount, uint32_t firstIndex, int32_t vertexOffset)
     {
 //        vkCmdDraw(m_commandBuffers[m_currentFrame], 1, 1, 0, 0);
         vkCmdDrawIndexed(m_mainCommandBuffers[m_currentFrame], indexCount, 1, firstIndex, vertexOffset, 0);
-        VX_CORE_TRACE("CmdManager: draw indexed.");
+        // VX_CORE_TRACE("CmdManager: draw indexed.");
     }
 
     void VulkanCommandManager::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)

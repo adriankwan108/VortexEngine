@@ -165,10 +165,10 @@ namespace vkclass
         VulkanBuffer::CopyTo(&stagingBuffer, &m_vertexBuffer, size);
     }
 
-    void VulkanVertexBuffer::SetLayout(const VX::VertexShaderLayout& layout)
+    /*void VulkanVertexBuffer::SetLayout(const VX::VertexShaderLayout& layout)
     {
         m_Layout = layout;
-    }
+    }*/
 
 
     VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size)

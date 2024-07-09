@@ -19,8 +19,8 @@ namespace VX
         
         virtual void SetData(void* data, uint64_t size) = 0;
         
-        virtual void SetLayout(const VertexShaderLayout& layout) = 0;
-        virtual const VertexShaderLayout& GetLayout() const = 0;
+        /*virtual void SetLayout(const VertexShaderLayout& layout) = 0;
+        virtual const VertexShaderLayout& GetLayout() const = 0;*/
         
         static Ref<VertexBuffer> Create();
         static Ref<VertexBuffer> Create(void* data, uint64_t size);

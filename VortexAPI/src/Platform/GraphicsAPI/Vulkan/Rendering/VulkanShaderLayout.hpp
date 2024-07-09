@@ -8,7 +8,7 @@
 
 namespace vkclass
 {
-    class VulkanVertexShaderLayout
+    /*class VulkanVertexShaderLayout
     {
     public:
         VulkanVertexShaderLayout() = default;
@@ -27,17 +27,6 @@ namespace vkclass
         uint32_t m_stride = 0;
     };
 
-//    class VulkanUniformLayout
-//    {
-//    public:
-//        VulkanUniformLayout();
-//        ~VulkanUniformLayout() = default;
-//
-//        void SetLayout(VX::UniformShaderLayout layout);
-//        const VkDescriptorSetLayout& GetDescripotSetLayout() const { return m_descriptorSetLayout; }
-//    private:
-//        VkDescriptorSetLayout m_descriptorSetLayout;
-//    };
 
     static VkFormat ShaderDataTypeToVulkanFormat(VX::ShaderDataType type)
     {
@@ -58,5 +47,5 @@ namespace vkclass
             case VX::ShaderDataType::U32:      return VK_FORMAT_R8G8B8A8_UNORM;
             default: VX_CORE_ASSERT(false, "Layout: Unknown Shader data type.");
         }
-    }
+    }*/
 }

@@ -11,206 +11,207 @@
 
 namespace vkclass
 {
-    VkDevice vkclass::VulkanShader::m_device = VK_NULL_HANDLE;
-    vkclass::VulkanCommandManager* vkclass::VulkanShader::m_commandBufferManager = nullptr;
-    VkRenderPass vkclass::VulkanShader::s_RenderPass = VK_NULL_HANDLE;
+    //VkDevice vkclass::VulkanShader::m_device = VK_NULL_HANDLE;
+    //vkclass::VulkanCommandManager* vkclass::VulkanShader::m_commandBufferManager = nullptr;
+    //VkRenderPass vkclass::VulkanShader::s_RenderPass = VK_NULL_HANDLE;
 
-    VulkanShader::VulkanShader(const std::string& name, const std::string& vertFilePath, const std::string fragFilePath)
-        : m_Name(name), m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
-    {
-        // read file
-        std::vector<uint32_t> vertShaderCode = VX::Utils::readFile(m_vertFilePath);
-        std::vector<uint32_t> fragShaderCode = VX::Utils::readFile(m_fragFilePath);
-        
-        if (vertShaderCode.empty() || fragShaderCode.empty())
-        {
-            VX_CORE_WARN("Vulkan Shader: Read failed. Shader files require both non-empty .vert & .frag");
-            return;
-        }
+    //VulkanShader::VulkanShader(const std::string& name, const std::string& vertFilePath, const std::string fragFilePath)
+    //    : m_Name(name), m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
+    //{
+    //    // read file
+    //    std::vector<uint32_t> vertShaderCode = VX::Utils::readFile(m_vertFilePath);
+    //    std::vector<uint32_t> fragShaderCode = VX::Utils::readFile(m_fragFilePath);
+    //    
+    //    if (vertShaderCode.empty() || fragShaderCode.empty())
+    //    {
+    //        VX_CORE_WARN("Vulkan Shader: Read failed. Shader files require both non-empty .vert & .frag");
+    //        return;
+    //    }
 
-        reflect(vertShaderCode);
-        reflect(fragShaderCode);
-        
-        VkShaderModuleCreateInfo vertModuleCI{};
-        vertModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        vertModuleCI.codeSize = vertShaderCode.size() * sizeof(uint32_t);
-        vertModuleCI.pCode = vertShaderCode.data();
-        if(vkCreateShaderModule(m_device, &vertModuleCI, nullptr, &m_vertModule) != VK_SUCCESS)
-        {
-            m_isValid = false;
-            VX_CORE_INFO("Vulkan Shader: Failed to create vert shader module");
-            return;
-        }
-        
-        VkShaderModuleCreateInfo fragModuleCI{};
-        fragModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        fragModuleCI.codeSize = fragShaderCode.size() * sizeof(uint32_t);
-        fragModuleCI.pCode = fragShaderCode.data();
-        if(vkCreateShaderModule(m_device, &fragModuleCI, nullptr, &m_fragModule) != VK_SUCCESS)
-        {
-            m_isValid = false;
-            VX_CORE_INFO("Vulkan Shader: Failed to create frag shader module");
-            return;
-        }
-        
-        m_isValid = true;
-        // TODO: if not valid, use default shader (guaranteed)
-        
-        
-    }
+    //    reflect(vertShaderCode);
+    //    reflect(fragShaderCode);
+    //    
+    //    VkShaderModuleCreateInfo vertModuleCI{};
+    //    vertModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    //    vertModuleCI.codeSize = vertShaderCode.size() * sizeof(uint32_t);
+    //    vertModuleCI.pCode = vertShaderCode.data();
+    //    if(vkCreateShaderModule(m_device, &vertModuleCI, nullptr, &m_vertModule) != VK_SUCCESS)
+    //    {
+    //        m_isValid = false;
+    //        VX_CORE_INFO("Vulkan Shader: Failed to create vert shader module");
+    //        return;
+    //    }
+    //    
+    //    VkShaderModuleCreateInfo fragModuleCI{};
+    //    fragModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    //    fragModuleCI.codeSize = fragShaderCode.size() * sizeof(uint32_t);
+    //    fragModuleCI.pCode = fragShaderCode.data();
+    //    if(vkCreateShaderModule(m_device, &fragModuleCI, nullptr, &m_fragModule) != VK_SUCCESS)
+    //    {
+    //        m_isValid = false;
+    //        VX_CORE_INFO("Vulkan Shader: Failed to create frag shader module");
+    //        return;
+    //    }
+    //    
+    //    m_isValid = true;
+    //    // TODO: if not valid, use default shader (guaranteed)
+    //    
+    //    
+    //}
 
-    VulkanShader::~VulkanShader()
-    {
-        if (m_isValid)
-        {
-            if(m_pipeline != VK_NULL_HANDLE)
-            {
-                vkDestroyPipeline(m_device, m_pipeline, nullptr);
-            }
-            
-            if(m_pipelineLayout != VK_NULL_HANDLE)
-            {
-                vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-            }
-            VX_CORE_INFO("VulkanShader: Pipeline & layout destroyed");
-        }
-    }
+    //VulkanShader::~VulkanShader()
+    //{
+    //    if (m_isValid)
+    //    {
+    //        if(m_pipeline != VK_NULL_HANDLE)
+    //        {
+    //            vkDestroyPipeline(m_device, m_pipeline, nullptr);
+    //        }
+    //        
+    //        if(m_pipelineLayout != VK_NULL_HANDLE)
+    //        {
+    //            vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+    //        }
+    //        VX_CORE_INFO("VulkanShader: Pipeline & layout destroyed");
+    //    }
+    //}
 
-    void VulkanShader::Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager, VkRenderPass renderPass)
-    {
-        m_device = device;
-        m_commandBufferManager = commandBufferManager;
-        s_RenderPass = renderPass;
-    }
+    //void VulkanShader::Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager, VkRenderPass renderPass)
+    //{
+    //    m_device = device;
+    //    m_commandBufferManager = commandBufferManager;
+    //    s_RenderPass = renderPass;
+    //}
 
-    void VulkanShader::Bind()
-    {
-        // bind descriptor per material / object
-        // m_commandBufferManager->BindDescriptor(m_pipelineLayout, 0, &m_textureDescriptor->GetCurrentSet());
-        for (auto& [range, pvalue] : m_pushConstants)
-        {
-            m_commandBufferManager->PushConstant(m_pipelineLayout, range.stageFlags, range.size, pvalue);
-        }
-        m_commandBufferManager->BindPipeline(m_pipeline);
-    }
+    //void VulkanShader::Bind()
+    //{
+    //    // bind descriptor per material / object
+    //    // m_commandBufferManager->BindDescriptor(m_pipelineLayout, 0, &m_textureDescriptor->GetCurrentSet());
 
-    void VulkanShader::UnBind() const
-    {
-        
-    }
+    //    /*for (auto& [range, pvalue] : m_pushConstants)
+    //    {
+    //        m_commandBufferManager->PushConstant(m_pipelineLayout, range.stageFlags, range.size, pvalue);
+    //    }*/
+    //    m_commandBufferManager->BindPipeline(m_pipeline);
+    //}
 
-    void VulkanShader::SetVertexLayout(VX::VertexShaderLayout layout)
-    {
-        m_vertexLayout.SetLayout(layout);
-    }
+    //void VulkanShader::UnBind() const
+    //{
+    //    
+    //}
 
-    
-    void VulkanShader::SetGlobalLayout(int binding, VX::UniformShaderLayout layout)
-    {
-        // TODO: add name to UniformShaderLayout, then search global desciprot library
+    //void VulkanShader::SetVertexLayout(VX::VertexShaderLayout layout)
+    //{
+    //    m_vertexLayout.SetLayout(layout);
+    //}
 
-        m_descriptorSetLayouts.push_back( GlobalDescriptor::GetDescriptor()->layout);
-    }
+    //
+    //void VulkanShader::SetGlobalLayout(int binding, VX::UniformShaderLayout layout)
+    //{
+    //    // TODO: add name to UniformShaderLayout, then search global desciprot library
 
-    void VulkanShader::SetPassLayout(int binding, VX::UniformShaderLayout layout)
-    {
-         
-    }
+    //    m_descriptorSetLayouts.push_back( GlobalDescriptor::GetDescriptor()->layout);
+    //}
 
-    void VulkanShader::SetTexture(VX::Ref<VX::Texture2D> texture)
-    {
-        m_texture = std::static_pointer_cast<VulkanTexture2D>(texture);
-        
-        m_textureDescriptor = m_texture->GetDescriptor();
-        m_descriptorSetLayouts.push_back(m_textureDescriptor->layout);
-    }
+    //void VulkanShader::SetPassLayout(int binding, VX::UniformShaderLayout layout)
+    //{
+    //     
+    //}
 
-    void VulkanShader::SetPushConstant(VkShaderStageFlags stage, uint32_t size, void* pValue)
-    {
-        m_pushConstants.push_back( 
-            std::make_pair(vkclass::initializers::pushConstantRange(stage, size, 0), pValue)
-        );
-    }
+    //void VulkanShader::SetTexture(VX::Ref<VX::Texture2D> texture)
+    //{
+    //    m_texture = std::static_pointer_cast<VulkanTexture2D>(texture);
+    //    
+    //    m_textureDescriptor = m_texture->GetDescriptor();
+    //    m_descriptorSetLayouts.push_back(m_textureDescriptor->layout);
+    //}
 
-    void VulkanShader::SetObjectLayout(int binding, VX::UniformShaderLayout layout)
-    {
-        
-    }
+    //void VulkanShader::SetPushConstant(VkShaderStageFlags stage, uint32_t size, void* pValue)
+    //{
+    //    m_pushConstants.push_back( 
+    //        std::make_pair(vkclass::initializers::pushConstantRange(stage, size, 0), pValue)
+    //    );
+    //}
 
-    void VulkanShader::Prepare()
-    {
-        VX_CORE_TRACE("VulkanShader: Preparing pipeline...");
-        VulkanPipelineBuilder builder;
-        builder.SetShaders(m_vertModule, m_fragModule);
-        builder.SetVertexInput(m_vertexLayout.GetBinding(), m_vertexLayout.GetAttributes());
-        builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
-        
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        VX_CORE_TRACE("VulkanShader: descriptor layout count: {0}", m_descriptorSetLayouts.size());
-        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
-        pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
+    //void VulkanShader::SetObjectLayout(int binding, VX::UniformShaderLayout layout)
+    //{
+    //    
+    //}
 
-        std::vector<VkPushConstantRange> vkPushConstantRanges;
-        std::transform(m_pushConstants.begin(), m_pushConstants.end(), std::back_inserter(vkPushConstantRanges),
-            [](const std::pair<VkPushConstantRange, void*>& pair) {
-                return pair.first;
-            });
-        pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(m_pushConstants.size());
-        pipelineLayoutInfo.pPushConstantRanges = vkPushConstantRanges.data();
-        if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
-        {
-            m_isValid = false;
-            VX_CORE_WARN("VulkanShader: Failed to create pipeline layout!");
-            return;
-        }
-        
-        // build operation
-        m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
-        
-        // destroy unused resources
-        vkDestroyShaderModule(m_device, m_vertModule, nullptr);
-        vkDestroyShaderModule(m_device, m_fragModule, nullptr);
-        
-        VX_CORE_TRACE("Vulkan Shader: Pipeline set");
-    }
+    //void VulkanShader::Prepare()
+    //{
+    //    VX_CORE_TRACE("VulkanShader: Preparing pipeline...");
+    //    VulkanPipelineBuilder builder;
+    //    builder.SetShaders(m_vertModule, m_fragModule);
+    //    builder.SetVertexInput(m_vertexLayout.GetBinding(), m_vertexLayout.GetAttributes());
+    //    builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+    //    
+    //    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    //    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    //    VX_CORE_TRACE("VulkanShader: descriptor layout count: {0}", m_descriptorSetLayouts.size());
+    //    pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(m_descriptorSetLayouts.size());
+    //    pipelineLayoutInfo.pSetLayouts = m_descriptorSetLayouts.data();
 
-    void VulkanShader::reflect(const std::vector<uint32_t>& data)
-    {
-        VX_CORE_TRACE("VulkanShader: Reflecting...");
-        spirv_cross::CompilerGLSL glsl(data);
-        spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+    //    std::vector<VkPushConstantRange> vkPushConstantRanges;
+    //    std::transform(m_pushConstants.begin(), m_pushConstants.end(), std::back_inserter(vkPushConstantRanges),
+    //        [](const std::pair<VkPushConstantRange, void*>& pair) {
+    //            return pair.first;
+    //        });
+    //    pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(m_pushConstants.size());
+    //    pipelineLayoutInfo.pPushConstantRanges = vkPushConstantRanges.data();
+    //    if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
+    //    {
+    //        m_isValid = false;
+    //        VX_CORE_WARN("VulkanShader: Failed to create pipeline layout!");
+    //        return;
+    //    }
+    //    
+    //    // build operation
+    //    m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
+    //    
+    //    // destroy unused resources
+    //    vkDestroyShaderModule(m_device, m_vertModule, nullptr);
+    //    vkDestroyShaderModule(m_device, m_fragModule, nullptr);
+    //    
+    //    VX_CORE_TRACE("Vulkan Shader: Pipeline set");
+    //}
 
-        for (auto& resource: resources.stage_inputs)
-        {
-            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+    //void VulkanShader::reflect(const std::vector<uint32_t>& data)
+    //{
+    //    VX_CORE_TRACE("VulkanShader: Reflecting...");
+    //    spirv_cross::CompilerGLSL glsl(data);
+    //    spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 
-            VX_CORE_TRACE("Reflect: Input {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
-        }
+    //    for (auto& resource: resources.stage_inputs)
+    //    {
+    //        unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+    //        unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
 
-        for (auto& resource : resources.uniform_buffers)
-        {
-            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+    //        VX_CORE_TRACE("Reflect: Input {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+    //    }
 
-            VX_CORE_TRACE("Reflect: UniformBuffer {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
-        }
+    //    for (auto& resource : resources.uniform_buffers)
+    //    {
+    //        unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+    //        unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
 
-        for (auto& resource : resources.sampled_images)
-        {
-            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+    //        VX_CORE_TRACE("Reflect: UniformBuffer {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+    //    }
 
-            VX_CORE_TRACE("Reflect: Sampler {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
-        }
+    //    for (auto& resource : resources.sampled_images)
+    //    {
+    //        unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+    //        unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
 
-        for (auto& resource : resources.push_constant_buffers)
-        {
-            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+    //        VX_CORE_TRACE("Reflect: Sampler {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+    //    }
 
-            VX_CORE_TRACE("Reflect: PushConstant {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
-        }
-    }
+    //    for (auto& resource : resources.push_constant_buffers)
+    //    {
+    //        unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+    //        unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+
+    //        VX_CORE_TRACE("Reflect: PushConstant {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+    //    }
+    //}
 }

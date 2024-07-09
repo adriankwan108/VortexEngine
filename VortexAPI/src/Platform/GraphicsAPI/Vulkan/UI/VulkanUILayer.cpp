@@ -46,11 +46,11 @@ namespace vkclass
         FontPushConstant.scale = {2.0f / 1920, 2.0f /1080};
         FontPushConstant.translate = {-1.0f, -1.0f};
      
-        m_fontShader = VX::CreateRef<VulkanShader>("ImGuiFont", "Resources/VortexAPI/shaders/ui.vert.spv", "Resources/VortexAPI/shaders/ui.frag.spv");
+        /*m_fontShader = VX::CreateRef<VulkanShader>("ImGuiFont", "Resources/VortexAPI/shaders/ui.vert.spv", "Resources/VortexAPI/shaders/ui.frag.spv");
         m_fontShader->SetVertexLayout(ImguiLayout);
         m_fontShader->SetTexture(m_fontTexture);
         m_fontShader->SetPushConstant(VK_SHADER_STAGE_VERTEX_BIT, sizeof(PushConstBlock), &FontPushConstant);
-        m_fontShader->Prepare();
+        m_fontShader->Prepare();*/
     }
 
     void VulkanUILayer::OnDetach()
@@ -88,7 +88,7 @@ namespace vkclass
         
         updateBuffers();
        
-        VX::Renderer::Submit(m_fontShader ,m_vertexArray);
+        // VX::Renderer::Submit(m_fontShader ,m_vertexArray);
     }
 
     void VulkanUILayer::updateBuffers()
@@ -122,7 +122,7 @@ namespace vkclass
                 vtxOffset += cmd_list->VtxBuffer.Size;
             }
             m_vertexBuffer = VX::VertexBuffer::Create(vtxDst, vtxOffset * sizeof(ImDrawVert));
-            m_vertexBuffer->SetLayout(ImguiLayout);
+            //m_vertexBuffer->SetLayout(ImguiLayout);
             if(vtxDst != nullptr)
             {
                 delete[] vtxDst;

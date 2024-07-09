@@ -11,7 +11,7 @@ Playground::Playground()
     
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
     // define shader layout
-    VX::VertexShaderLayout layout = {
+    /*VX::VertexShaderLayout layout = {
         {VX::ShaderDataType::Float2, "pos"},
         {VX::ShaderDataType::Float3, "color"},
         {VX::ShaderDataType::Float2, "texCoor"}
@@ -24,7 +24,7 @@ Playground::Playground()
 
     VX::UniformShaderLayout modelLayout = {
         {VX::ShaderDataType::Mat4, "model"},
-    };
+    };*/
     
     // simulate vertices data (counter-clockwise, left-hand)
     std::vector<Geometry::Vertex> vertices =
@@ -43,20 +43,20 @@ Playground::Playground()
     m_vertexArray = VX::VertexArray::Create();
     
     // properly use a material system to create pipeline would be better
-    m_basicShader = VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv");
-    m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
-    m_basicShader->SetGlobalLayout(0, viewProjLayout);
-    m_basicShader->SetTexture(m_texture);
-    m_basicShader->Prepare();
+    //m_basicShader = VX::Shader::Create("Triangle", "Resources/VortexAPI/shaders/vert.spv", "Resources/VortexAPI/shaders/frag.spv");
+    //m_basicShader->SetVertexLayout(layout); // for getting attributes, bindings
+    //m_basicShader->SetGlobalLayout(0, viewProjLayout);
+    //m_basicShader->SetTexture(m_texture);
+    //m_basicShader->Prepare();
     
-    m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
-    m_vertexBuffer->SetLayout(layout); // for getting stride
+    //m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
+    //m_vertexBuffer->SetLayout(layout); // for getting stride
     
-    m_indexBuffer = VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices));
+    /*m_indexBuffer = VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices));
     m_indexBuffer->AddDrawCmd(static_cast<uint32_t>(triangleIndices.size()));
     
     m_vertexArray->AddVertexBuffer(m_vertexBuffer);
-    m_vertexArray->SetIndexBuffer(m_indexBuffer);
+    m_vertexArray->SetIndexBuffer(m_indexBuffer);*/
     
     
     VX_INFO("{0}: Created", GetName());
@@ -99,7 +99,7 @@ void Playground::OnUpdate(VX::Timestep ts)
     // set clear color
     VX::RenderCommand::SetClearColor(glm::vec4(0.11f, 0.12f, 0.13f, 1.0f));
     
-    VX::Renderer::Submit(m_basicShader ,m_vertexArray);
+     //VX::Renderer::Submit(m_basicShader ,m_vertexArray);
     
     VX::Renderer::EndScene();
     // renderer::Flush

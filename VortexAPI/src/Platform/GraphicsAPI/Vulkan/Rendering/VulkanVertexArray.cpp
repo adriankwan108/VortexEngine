@@ -38,11 +38,11 @@ namespace vkclass
         // vertexBuffer->Bind(); // used by opengl
         m_VertexBuffers.push_back(vertexBuffer);
         
-        auto vkVB = std::static_pointer_cast<VulkanVertexBuffer>(vertexBuffer);
+        /*auto vkVB = std::static_pointer_cast<VulkanVertexBuffer>(vertexBuffer);
         m_VkVertexBuffers.push_back(vkVB->GetBuffer());
         
         m_VkVBsOffsets.push_back(static_cast<VkDeviceSize>(m_LastStride));
-        m_LastStride += vkVB->GetLayout().GetStride();
+        m_LastStride += vkVB->GetLayout().GetStride();*/
     }
 
     void VulkanVertexArray::SetIndexBuffer(VX::Ref<VX::IndexBuffer>& indexBuffer)
