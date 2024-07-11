@@ -15,50 +15,6 @@ namespace vkclass
     //vkclass::VulkanCommandManager* vkclass::VulkanShader::m_commandBufferManager = nullptr;
     //VkRenderPass vkclass::VulkanShader::s_RenderPass = VK_NULL_HANDLE;
 
-    //VulkanShader::VulkanShader(const std::string& name, const std::string& vertFilePath, const std::string fragFilePath)
-    //    : m_Name(name), m_vertFilePath(vertFilePath),m_fragFilePath(fragFilePath)
-    //{
-    //    // read file
-    //    std::vector<uint32_t> vertShaderCode = VX::Utils::readFile(m_vertFilePath);
-    //    std::vector<uint32_t> fragShaderCode = VX::Utils::readFile(m_fragFilePath);
-    //    
-    //    if (vertShaderCode.empty() || fragShaderCode.empty())
-    //    {
-    //        VX_CORE_WARN("Vulkan Shader: Read failed. Shader files require both non-empty .vert & .frag");
-    //        return;
-    //    }
-
-    //    reflect(vertShaderCode);
-    //    reflect(fragShaderCode);
-    //    
-    //    VkShaderModuleCreateInfo vertModuleCI{};
-    //    vertModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    //    vertModuleCI.codeSize = vertShaderCode.size() * sizeof(uint32_t);
-    //    vertModuleCI.pCode = vertShaderCode.data();
-    //    if(vkCreateShaderModule(m_device, &vertModuleCI, nullptr, &m_vertModule) != VK_SUCCESS)
-    //    {
-    //        m_isValid = false;
-    //        VX_CORE_INFO("Vulkan Shader: Failed to create vert shader module");
-    //        return;
-    //    }
-    //    
-    //    VkShaderModuleCreateInfo fragModuleCI{};
-    //    fragModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    //    fragModuleCI.codeSize = fragShaderCode.size() * sizeof(uint32_t);
-    //    fragModuleCI.pCode = fragShaderCode.data();
-    //    if(vkCreateShaderModule(m_device, &fragModuleCI, nullptr, &m_fragModule) != VK_SUCCESS)
-    //    {
-    //        m_isValid = false;
-    //        VX_CORE_INFO("Vulkan Shader: Failed to create frag shader module");
-    //        return;
-    //    }
-    //    
-    //    m_isValid = true;
-    //    // TODO: if not valid, use default shader (guaranteed)
-    //    
-    //    
-    //}
-
     //VulkanShader::~VulkanShader()
     //{
     //    if (m_isValid)
@@ -183,6 +139,7 @@ namespace vkclass
         m_name = name;
         m_filePath = filePath;
         m_stage = stage;
+        m_layoutGroups["Input"] = std::vector<VX::ShaderBlock>();
 
         std::vector<uint32_t> shaderCode = VX::Utils::readFile(m_filePath);
             
@@ -199,24 +156,6 @@ namespace vkclass
         VK_CHECK_RESULT(vkCreateShaderModule(s_device, &moduleCI, nullptr, &m_module));
 
         reflect(shaderCode);
-
-        switch (m_stage)
-        {
-        case VX::ShaderStage::None:
-            break;
-        case VX::ShaderStage::Vertex:
-            break;
-        case VX::ShaderStage::Fragment:
-            break;
-        case VX::ShaderStage::Tessellation:
-            break;
-        case VX::ShaderStage::Geometry:
-            break;
-        case VX::ShaderStage::Compute:
-            break;
-        default:
-            break;
-        }
     }
 
     VulkanShader::~VulkanShader()
@@ -237,12 +176,12 @@ namespace vkclass
         {
             unsigned location = glsl.get_decoration(resource.id, spv::DecorationLocation);
             const spirv_cross::SPIRType& type = glsl.get_type(resource.type_id);
-
-            if (type.columns == 1)
-            {
-                auto& vecSize = type.vecsize;
-                VX_CORE_TRACE("Reflect: location = {0} in vec{1} {2} ", location, vecSize, resource.name.c_str());
-            }
+            
+            m_layoutGroups["Input"].push_back(
+                VX::ShaderBlock(location, -1, -1, {
+                    VX::ShaderElement(VX::SpirTypeToShaderDataType(type), resource.name.c_str())
+                })
+            );
         }
 
         for (auto& resource : resources.uniform_buffers)
@@ -255,20 +194,10 @@ namespace vkclass
             
             auto& type = glsl.get_type(resource.base_type_id);
             
-            unsigned member_count = type.member_types.size();
+            unsigned int member_count = static_cast<unsigned int>(type.member_types.size());
             for (unsigned i = 0; i < member_count; i++)
             {
                 auto& member_type = glsl.get_type(type.member_types[i]);
-                switch (member_type.basetype)
-                {
-                case spirv_cross::SPIRType::Int:
-                    VX_CORE_TRACE("int found");
-                    break;
-                case spirv_cross::SPIRType::Struct:
-                    VX_CORE_TRACE("struct found");
-                    break;
-                }
-
                 size_t memberSize = glsl.get_declared_struct_member_size(type, i);
 
                 // Get member offset within this struct.
@@ -281,21 +210,7 @@ namespace vkclass
                     size_t array_stride = glsl.type_struct_member_array_stride(type, i);
                 }
 
-                if (member_type.columns == 1)
-                {
-                    auto& vecSize = member_type.vecsize;
-                    VX_CORE_TRACE("vec found, {0}", vecSize);
-                }
-
-                if (member_type.columns > 1)
-                {
-                    auto& vecSize = member_type.vecsize;
-                    const std::string& memberName = glsl.get_member_name(type.self, i);
-                    VX_CORE_TRACE("mat{0} {1}", vecSize, memberName);
-                    
-                    // Get bytes stride between columns (if column major), for float4x4 -> 16 bytes.
-                    size_t matrix_stride = glsl.type_struct_member_matrix_stride(type, i);
-                }
+                
                 //const std::string& memberName = glsl.get_member_name(type.self, i);
                 
                 //VX_CORE_TRACE("Reflect: UniformBuffer: {0}, {1}, {2}", memberName, memberSize, offset);
@@ -322,5 +237,24 @@ namespace vkclass
     void VulkanShader::Init(VkDevice device)
     {
         s_device = device;
+    }
+
+    VulkanShaderPass::VulkanShaderPass()
+    {
+        
+    }
+
+    void VulkanShaderPass::Prepare()
+    {
+        for(auto& shader : m_shaders)
+        {
+            // determine shader stage
+            
+            // vertex: prepare vertex attribute from layout[input]
+            
+            // prepare descriptor sets layouts
+        }
+        
+        // prepare pipeline layouts from all shader modules
     }
 }

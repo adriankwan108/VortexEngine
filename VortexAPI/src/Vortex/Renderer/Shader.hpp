@@ -3,6 +3,9 @@
 #include "VortexPCH.hpp"
 #include "ShaderLayout.hpp"
 #include "Texture.hpp"
+#include <map>
+
+#include <spirv_cross/spirv_glsl.hpp>
 
 namespace VX
 {
@@ -73,6 +76,56 @@ namespace VX
         }
     }
 
+    static VX::ShaderDataType SpirTypeToShaderDataType(spirv_cross::SPIRType type)
+    {
+        auto& columnSize = type.columns;
+        auto& vecSize = type.vecsize;
+        
+        if(columnSize == 1)
+        {
+            // vector
+            if (type.basetype == spirv_cross::SPIRType::Float)
+            {
+                VX_CORE_TRACE("GetShaderDataType: Float{0}",vecSize);
+                switch (vecSize)
+                {
+                    case 1: return VX::ShaderDataType::Float;
+                    case 2: return VX::ShaderDataType::Float2;
+                    case 3: return VX::ShaderDataType::Float3;
+                    case 4: return VX::ShaderDataType::Float4;
+                    default: return VX::ShaderDataType::None;
+                }
+            }else if(type.basetype == spirv_cross::SPIRType::Int)
+            {
+                VX_CORE_TRACE("GetShaderDataType: Int{0}",vecSize);
+                switch (vecSize)
+                {
+                    case 1: return VX::ShaderDataType::Int;
+                    case 2: return VX::ShaderDataType::Int2;
+                    case 3: return VX::ShaderDataType::Int3;
+                    case 4: return VX::ShaderDataType::Int4;
+                    default: return VX::ShaderDataType::None;
+                }
+            }
+        }else if(columnSize > 1)
+        {
+            // matrix
+            VX_CORE_TRACE("GetShaderDataType: Mat{0}",vecSize);
+            switch (vecSize)
+            {
+                case 3: return VX::ShaderDataType::Mat3;
+                case 4: return VX::ShaderDataType::Mat4;
+                default: return VX::ShaderDataType::None;
+            }
+        }else if(columnSize == 0)
+        {
+            // basic type
+        }
+        
+        VX_CORE_TRACE("GetShaderDataType: None");
+        return VX::ShaderDataType::None;
+    }
+
     struct ShaderElement
     {
         std::string Name;
@@ -86,9 +139,23 @@ namespace VX
         }
     };
 
+    struct ShaderBlock
+    {
+        int Location;
+        int Set;
+        int Binding;
+        std::vector<ShaderElement> Elements;
+        
+        ShaderBlock() = default;
+        ShaderBlock(int location, int set, int binding, const std::vector<ShaderElement>& elements)
+            : Location(location), Set(set), Binding(binding), Elements(elements)
+        {
+        }
+    };
+
     /*
     * An api-agnostic shader, loading targeted shader path, and reflect elements (paramaters inside shader)
-    * In Vulkan, this also manage shader module, pipeline layout, descriptorSetLayout
+    * In Vulkan, this also manage shader module, descriptorSetLayout
     */
     class Shader
     {
@@ -99,8 +166,21 @@ namespace VX
         std::string m_name;
         std::string m_filePath;
         ShaderStage m_stage;
+        
+        std::map<std::string, std::vector<ShaderBlock>> m_layoutGroups;
+    };
 
-        std::vector<ShaderElement> elements;
+    class ShaderPass
+    {
+    public:
+        static Ref<ShaderPass> Create();
+        
+        void AddShader(VX::Ref<Shader> shader);
+        virtual void Prepare() = 0;
+        // pipeline settings
+    protected:
+        std::vector<VX::Ref<Shader>> m_shaders;
+        // vk pipeline
     };
 
     class ShaderEffect
@@ -109,6 +189,6 @@ namespace VX
 
 
     private:
-
+        std::vector<ShaderPass> m_shaderPasses;
     };
 }

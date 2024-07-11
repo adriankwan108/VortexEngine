@@ -58,7 +58,18 @@ Playground::Playground()
     m_vertexArray->AddVertexBuffer(m_vertexBuffer);
     m_vertexArray->SetIndexBuffer(m_indexBuffer);*/
 
-    m_basicShader = VX::Shader::Create("TriangleVert", "Resources/VortexAPI/shaders/vert.spv", VX::ShaderStage::Vertex);
+    m_basicShaderPass = VX::ShaderPass::Create();
+    auto baseVertShader = VX::Shader::Create("TriangleVert", "Resources/VortexAPI/shaders/vert.spv", VX::ShaderStage::Vertex);
+    // auto baseFragShader = VX::Shader::Create("TriangleFrag", "Resources/VortexAPI/shaders/frag.spv", VX::ShaderStage::Fragment);
+    m_basicShaderPass->AddShader(baseVertShader);
+    m_basicShaderPass->Prepare();
+    
+    // ShaderEffect("base", m_basicShaderPass);
+    // ShaderEffect->RenderPass[0] = ...;
+    // ShaderEffect->Build();
+    
+    // Material->UseEffect(ShaderEffect);
+    // Material->SetResource("name", *ref);
     
     
     VX_INFO("{0}: Created", GetName());

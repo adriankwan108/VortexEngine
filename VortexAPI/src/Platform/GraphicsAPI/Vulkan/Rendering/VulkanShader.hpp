@@ -97,4 +97,12 @@ namespace vkclass
         VkShaderModule m_module = VK_NULL_HANDLE;
         static VkDevice s_device;
     };
+
+    class VulkanShaderPass : public VX::ShaderPass
+    {
+    public:
+        VulkanShaderPass();
+        
+        virtual void Prepare() override;
+    };
 }
