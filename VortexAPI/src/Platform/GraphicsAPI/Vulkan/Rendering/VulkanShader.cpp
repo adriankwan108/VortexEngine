@@ -176,42 +176,151 @@ namespace vkclass
     //    VX_CORE_TRACE("Vulkan Shader: Pipeline set");
     //}
 
-    //void VulkanShader::reflect(const std::vector<uint32_t>& data)
-    //{
-    //    VX_CORE_TRACE("VulkanShader: Reflecting...");
-    //    spirv_cross::CompilerGLSL glsl(data);
-    //    spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+    VkDevice vkclass::VulkanShader::s_device = VK_NULL_HANDLE;
 
-    //    for (auto& resource: resources.stage_inputs)
-    //    {
-    //        unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-    //        unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+    VulkanShader::VulkanShader(const std::string& name, const std::string& filePath, VX::ShaderStage stage)
+    {
+        m_name = name;
+        m_filePath = filePath;
+        m_stage = stage;
 
-    //        VX_CORE_TRACE("Reflect: Input {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
-    //    }
+        std::vector<uint32_t> shaderCode = VX::Utils::readFile(m_filePath);
+            
+        if (shaderCode.empty())
+        {
+            VX_CORE_WARN("VulkanShader: {0} read failed. Path: {1}", m_name, m_filePath);
+            return;
+        }
 
-    //    for (auto& resource : resources.uniform_buffers)
-    //    {
-    //        unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-    //        unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+        VkShaderModuleCreateInfo moduleCI{};
+        moduleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        moduleCI.codeSize = shaderCode.size() * sizeof(uint32_t);
+        moduleCI.pCode = shaderCode.data();
+        VK_CHECK_RESULT(vkCreateShaderModule(s_device, &moduleCI, nullptr, &m_module));
 
-    //        VX_CORE_TRACE("Reflect: UniformBuffer {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
-    //    }
+        reflect(shaderCode);
 
-    //    for (auto& resource : resources.sampled_images)
-    //    {
-    //        unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-    //        unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+        switch (m_stage)
+        {
+        case VX::ShaderStage::None:
+            break;
+        case VX::ShaderStage::Vertex:
+            break;
+        case VX::ShaderStage::Fragment:
+            break;
+        case VX::ShaderStage::Tessellation:
+            break;
+        case VX::ShaderStage::Geometry:
+            break;
+        case VX::ShaderStage::Compute:
+            break;
+        default:
+            break;
+        }
+    }
 
-    //        VX_CORE_TRACE("Reflect: Sampler {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
-    //    }
+    VulkanShader::~VulkanShader()
+    {
+        if (m_module != VK_NULL_HANDLE)
+        {
+            vkDestroyShaderModule(s_device, m_module, nullptr);
+        }
+    }
 
-    //    for (auto& resource : resources.push_constant_buffers)
-    //    {
-    //        unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-    //        unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+    void VulkanShader::reflect(const std::vector<uint32_t>& data)
+    {
+        VX_CORE_TRACE("VulkanShader: Reflecting...");
+        spirv_cross::CompilerGLSL glsl(data);
+        spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 
-    //        VX_CORE_TRACE("Reflect: PushConstant {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
-    //    }
-    //}
+        for (auto& resource: resources.stage_inputs)
+        {
+            unsigned location = glsl.get_decoration(resource.id, spv::DecorationLocation);
+            const spirv_cross::SPIRType& type = glsl.get_type(resource.type_id);
+
+            if (type.columns == 1)
+            {
+                auto& vecSize = type.vecsize;
+                VX_CORE_TRACE("Reflect: location = {0} in vec{1} {2} ", location, vecSize, resource.name.c_str());
+            }
+        }
+
+        for (auto& resource : resources.uniform_buffers)
+        {
+            /*unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+
+            VX_CORE_TRACE("Reflect: UniformBuffer {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);*/
+            VX_CORE_TRACE("Reflect: {0}", resource.name);
+            
+            auto& type = glsl.get_type(resource.base_type_id);
+            
+            unsigned member_count = type.member_types.size();
+            for (unsigned i = 0; i < member_count; i++)
+            {
+                auto& member_type = glsl.get_type(type.member_types[i]);
+                switch (member_type.basetype)
+                {
+                case spirv_cross::SPIRType::Int:
+                    VX_CORE_TRACE("int found");
+                    break;
+                case spirv_cross::SPIRType::Struct:
+                    VX_CORE_TRACE("struct found");
+                    break;
+                }
+
+                size_t memberSize = glsl.get_declared_struct_member_size(type, i);
+
+                // Get member offset within this struct.
+                size_t offset = glsl.type_struct_member_offset(type, i);
+
+                if (!member_type.array.empty())
+                {
+                    VX_CORE_TRACE("array found");
+                    // Get array stride, e.g. float4 foo[]; Will have array stride of 16 bytes.
+                    size_t array_stride = glsl.type_struct_member_array_stride(type, i);
+                }
+
+                if (member_type.columns == 1)
+                {
+                    auto& vecSize = member_type.vecsize;
+                    VX_CORE_TRACE("vec found, {0}", vecSize);
+                }
+
+                if (member_type.columns > 1)
+                {
+                    auto& vecSize = member_type.vecsize;
+                    const std::string& memberName = glsl.get_member_name(type.self, i);
+                    VX_CORE_TRACE("mat{0} {1}", vecSize, memberName);
+                    
+                    // Get bytes stride between columns (if column major), for float4x4 -> 16 bytes.
+                    size_t matrix_stride = glsl.type_struct_member_matrix_stride(type, i);
+                }
+                //const std::string& memberName = glsl.get_member_name(type.self, i);
+                
+                //VX_CORE_TRACE("Reflect: UniformBuffer: {0}, {1}, {2}", memberName, memberSize, offset);
+            }
+        }
+
+        for (auto& resource : resources.sampled_images)
+        {
+            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+
+            VX_CORE_TRACE("Reflect: Sampler {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+        }
+
+        for (auto& resource : resources.push_constant_buffers)
+        {
+            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
+
+            VX_CORE_TRACE("Reflect: PushConstant {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+        }
+    }
+
+    void VulkanShader::Init(VkDevice device)
+    {
+        s_device = device;
+    }
 }

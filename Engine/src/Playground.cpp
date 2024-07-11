@@ -57,6 +57,8 @@ Playground::Playground()
     
     m_vertexArray->AddVertexBuffer(m_vertexBuffer);
     m_vertexArray->SetIndexBuffer(m_indexBuffer);*/
+
+    m_basicShader = VX::Shader::Create("TriangleVert", "Resources/VortexAPI/shaders/vert.spv", VX::ShaderStage::Vertex);
     
     
     VX_INFO("{0}: Created", GetName());

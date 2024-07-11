@@ -16,7 +16,7 @@ public:
     
 private:
     // prepare resources here
-    //VX::Ref<VX::Shader> m_basicShader;
+    VX::Ref<VX::Shader> m_basicShader;
     VX::Ref<VX::VertexArray> m_vertexArray;
     VX::Ref<VX::VertexBuffer> m_vertexBuffer;
     VX::Ref<VX::IndexBuffer> m_indexBuffer;

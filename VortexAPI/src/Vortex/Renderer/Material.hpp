@@ -19,6 +19,9 @@ namespace VX
         virtual void Bind() = 0;
         virtual void Render() = 0;
 
+        virtual void SetRenderPass();
+
+
     private:
         // vector of texture
         // std::vector<VX::Ref<ShaderEffect>> m_effects;

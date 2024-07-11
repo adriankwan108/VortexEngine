@@ -83,4 +83,18 @@ namespace vkclass
     //private:
     //    void reflect(const std::vector<uint32_t>& data);
     //};
+
+    class VulkanShader : public VX::Shader
+    {
+    public:
+        VulkanShader(const std::string& name, const std::string& filePath, VX::ShaderStage stage);
+        ~VulkanShader();
+        static void Init(VkDevice device);
+    private:
+        void reflect(const std::vector<uint32_t>& data);
+
+    private:
+        VkShaderModule m_module = VK_NULL_HANDLE;
+        static VkDevice s_device;
+    };
 }
