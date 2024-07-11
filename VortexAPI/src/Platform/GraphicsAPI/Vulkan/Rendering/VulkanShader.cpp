@@ -178,7 +178,7 @@ namespace vkclass
             const spirv_cross::SPIRType& type = glsl.get_type(resource.type_id);
             
             m_layoutGroups["Input"].push_back(
-                VX::ShaderBlock(location, -1, -1, {
+                VX::ShaderBlock(location, 0, 0, {
                     VX::ShaderElement(VX::SpirTypeToShaderDataType(type), resource.name.c_str())
                 })
             );
@@ -248,13 +248,44 @@ namespace vkclass
     {
         for(auto& shader : m_shaders)
         {
-            // determine shader stage
-            
-            // vertex: prepare vertex attribute from layout[input]
-            
-            // prepare descriptor sets layouts
+            if ( shader->GetStage() == VX::ShaderStage::Vertex)
+            {
+                auto& layout = shader->GetShaderLayout("Input");
+                for (const auto& block : layout)
+                {
+                    if ( block.Elements.size() != 1 )
+                    {
+                        VX_CORE_WARN("VulkanShaderPass: Vertex input data type is not supported...");
+                        // std::runtime_error("VulkanShaderPass: Vertex input data type is not supported...");
+                        return;
+                    }
+                    VkVertexInputAttributeDescription attribute{};
+                    attribute.binding = block.Binding;
+                    attribute.location = block.Location;
+                    attribute.offset = m_vertexStride;
+                    attribute.format = ShaderDataTypeToVulkanFormat(block.Elements[0].Type);
+
+                    m_attributeDescriptions.push_back(attribute);
+                    m_vertexStride += block.Stride;
+                }
+
+                // all per-vertex data is packed together in one array, so only one binding
+                m_bindingDescription.binding = 0; // specify the index of binding in the array of bindings
+                m_bindingDescription.stride = m_vertexStride; // number of bytes from one entry to the next
+                m_bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // per-vertex data, TODO: change this for particle system
+            }
         }
         
         // prepare pipeline layouts from all shader modules
+    }
+
+    VulkanShaderEffect::VulkanShaderEffect(VX::Ref<VX::ShaderPass> shaderPass)
+    {
+        m_shaderPass = shaderPass;
+    }
+
+    void VulkanShaderEffect::Build()
+    {
+
     }
 }

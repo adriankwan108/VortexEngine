@@ -144,12 +144,17 @@ namespace VX
         int Location;
         int Set;
         int Binding;
+        uint32_t Stride = 0;
         std::vector<ShaderElement> Elements;
         
         ShaderBlock() = default;
         ShaderBlock(int location, int set, int binding, const std::vector<ShaderElement>& elements)
             : Location(location), Set(set), Binding(binding), Elements(elements)
         {
+            for (const auto& element : Elements)
+            {
+                Stride += element.Size;
+            }
         }
     };
 
@@ -161,7 +166,9 @@ namespace VX
     {
     public:
         static Ref<Shader> Create(const std::string& name, const std::string& filePath, ShaderStage stage = ShaderStage::None);
-
+        inline ShaderStage GetStage() { return m_stage; }
+        
+        const std::vector<ShaderBlock>& GetShaderLayout(const std::string& type) { return m_layoutGroups[type]; }
     protected:
         std::string m_name;
         std::string m_filePath;
@@ -177,18 +184,22 @@ namespace VX
         
         void AddShader(VX::Ref<Shader> shader);
         virtual void Prepare() = 0;
-        // pipeline settings
+
     protected:
         std::vector<VX::Ref<Shader>> m_shaders;
-        // vk pipeline
+        uint32_t m_vertexStride = 0;
     };
 
     class ShaderEffect
     {
     public:
+        static Ref<ShaderEffect> Create(Ref<ShaderPass> shaderPass);
 
+        void SetRenderPass();
 
-    private:
-        std::vector<ShaderPass> m_shaderPasses;
+        virtual void Build() = 0;
+
+    protected:
+        Ref<ShaderPass> m_shaderPass;
     };
 }

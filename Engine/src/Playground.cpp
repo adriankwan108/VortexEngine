@@ -49,8 +49,8 @@ Playground::Playground()
     //m_basicShader->SetTexture(m_texture);
     //m_basicShader->Prepare();
     
-    //m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
-    //m_vertexBuffer->SetLayout(layout); // for getting stride
+    // m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
+    // m_vertexBuffer->SetLayout(layout); // for getting stride
     
     /*m_indexBuffer = VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices));
     m_indexBuffer->AddDrawCmd(static_cast<uint32_t>(triangleIndices.size()));
@@ -64,9 +64,11 @@ Playground::Playground()
     m_basicShaderPass->AddShader(baseVertShader);
     m_basicShaderPass->Prepare();
     
-    // ShaderEffect("base", m_basicShaderPass);
+    m_basicShaderEffect = VX::ShaderEffect::Create(m_basicShaderPass);
     // ShaderEffect->RenderPass[0] = ...;
-    // ShaderEffect->Build();
+    m_basicShaderEffect->Build();
+
+    m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
     
     // Material->UseEffect(ShaderEffect);
     // Material->SetResource("name", *ref);
