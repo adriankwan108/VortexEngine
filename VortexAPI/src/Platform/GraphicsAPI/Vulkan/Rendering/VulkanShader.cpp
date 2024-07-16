@@ -132,6 +132,8 @@ namespace vkclass
     //    VX_CORE_TRACE("Vulkan Shader: Pipeline set");
     //}
 
+    VkDevice vkclass::VulkanShader::s_device = VK_NULL_HANDLE;
+
     VulkanShader::VulkanShader(const std::string& name, const std::string& filePath, VX::ShaderStage stage)
     {
         m_name = name;
@@ -163,6 +165,11 @@ namespace vkclass
         {
             vkDestroyShaderModule(s_device, m_module, nullptr);
         }
+    }
+
+    void VulkanShader::Init(VkDevice device)
+    {
+        s_device = device;
     }
 
     void VulkanShader::reflect(const std::vector<uint32_t>& data)
@@ -238,6 +245,19 @@ namespace vkclass
         
     }
 
+    VulkanShaderPass::~VulkanShaderPass()
+    {
+        for(auto& handle: m_descriptorLayoutHandles)
+        {
+            vkDestroyDescriptorSetLayout(s_device, handle.Layout, nullptr);
+        }
+        
+        if(m_pipelineLayout != VK_NULL_HANDLE)
+        {
+            vkDestroyPipelineLayout(s_device, m_pipelineLayout, nullptr);
+        }
+    }
+
     void VulkanShaderPass::Prepare()
     {
         for(auto& shader : m_shaders)
@@ -251,6 +271,31 @@ namespace vkclass
         }
         
         // prepare pipeline layouts from all shader modules
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        
+        std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
+        descriptorSetLayouts.reserve(m_descriptorLayoutHandles.size());
+
+        for (const auto& handle : m_descriptorLayoutHandles) {
+            descriptorSetLayouts.push_back(handle.Layout);
+        }
+        
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+
+//        std::vector<VkPushConstantRange> vkPushConstantRanges;
+//        std::transform(m_pushConstants.begin(), m_pushConstants.end(), std::back_inserter(vkPushConstantRanges),
+//            [](const std::pair<VkPushConstantRange, void*>& pair) {
+//                return pair.first;
+//            });
+//        pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(m_pushConstants.size());
+//        pipelineLayoutInfo.pPushConstantRanges = vkPushConstantRanges.data();
+        
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+        
+        VK_CHECK_RESULT(vkCreatePipelineLayout(s_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout));
     }
 
     void VulkanShaderPass::prepareVertexShader(VX::Ref<VX::Shader> shader)
@@ -260,7 +305,7 @@ namespace vkclass
         {
             if (block.Elements.size() != 1)
             {
-                VX_CORE_WARN("VulkanShaderPass: Vertex input data type is not supported yet...");
+                VX_CORE_WARN("VulkanShaderPass::prepareVertexShader: Vertex input data type is not supported yet...");
                 // std::runtime_error("VulkanShaderPass: Vertex input data type is not supported...");
                 return;
             }
@@ -292,7 +337,15 @@ namespace vkclass
 
     void VulkanShaderPass::prepareFragmentShader(VX::Ref<VX::Shader> shader)
     {
-
+        auto& uboLayout = shader->GetShaderLayout("UniformBuffers");
+        for (const auto& uboBlock : uboLayout)
+        {
+            DescriptorLayoutHandle handle;
+            handle.AddBinding(uboBlock.Binding, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+            handle.SetShaderStage(VulkanShaderStage(shader->GetStage()));
+            handle.Build(s_device);
+            m_descriptorLayoutHandles.push_back(handle);
+        }
     }
 
     void VulkanShaderPass::Init(VkDevice device)

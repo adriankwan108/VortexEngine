@@ -180,6 +180,7 @@ namespace VX
     class ShaderPass
     {
     public:
+        virtual ~ShaderPass() = default;
         static Ref<ShaderPass> Create();
         
         void AddShader(VX::Ref<Shader> shader);

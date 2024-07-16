@@ -114,6 +114,10 @@ namespace vkclass
     public:
         VulkanShader(const std::string& name, const std::string& filePath, VX::ShaderStage stage);
         ~VulkanShader();
+        
+    public:
+        static VkDevice s_device;
+        static void Init(VkDevice device);
     private:
         void reflect(const std::vector<uint32_t>& data);
 
@@ -139,6 +143,7 @@ namespace vkclass
     {
     public:
         VulkanShaderPass();
+        virtual ~VulkanShaderPass() override;
         virtual void Prepare() override;
 
     public:
@@ -150,6 +155,7 @@ namespace vkclass
         std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
 
         std::vector<DescriptorLayoutHandle> m_descriptorLayoutHandles;
+//        std::vector<std::pair<VkPushConstantRange, void*>> m_pushConstants;
         VkPipelineLayout m_pipelineLayout;
 
         // necessary ubo (set 2, 3) / push constants to-be-prepared info
@@ -174,5 +180,6 @@ namespace vkclass
         // requested renderpass
         // reference of resources
         // pipeline
+        VulkanPipelineBuilder m_builder;
     };
 }

@@ -60,8 +60,9 @@ Playground::Playground()
 
     m_basicShaderPass = VX::ShaderPass::Create();
     auto baseVertShader = VX::Shader::Create("TriangleVert", "Resources/VortexAPI/shaders/vert.spv", VX::ShaderStage::Vertex);
-    // auto baseFragShader = VX::Shader::Create("TriangleFrag", "Resources/VortexAPI/shaders/frag.spv", VX::ShaderStage::Fragment);
+    auto baseFragShader = VX::Shader::Create("TriangleFrag", "Resources/VortexAPI/shaders/frag.spv", VX::ShaderStage::Fragment);
     m_basicShaderPass->AddShader(baseVertShader);
+    m_basicShaderPass->AddShader(baseFragShader);
     m_basicShaderPass->Prepare();
     
     m_basicShaderEffect = VX::ShaderEffect::Create(m_basicShaderPass);
