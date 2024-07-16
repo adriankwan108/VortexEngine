@@ -86,7 +86,7 @@ namespace VX
             // vector
             if (type.basetype == spirv_cross::SPIRType::Float)
             {
-                VX_CORE_TRACE("GetShaderDataType: Float{0}",vecSize);
+                // VX_CORE_TRACE("GetShaderDataType: Float{0}",vecSize);
                 switch (vecSize)
                 {
                     case 1: return VX::ShaderDataType::Float;
@@ -97,7 +97,7 @@ namespace VX
                 }
             }else if(type.basetype == spirv_cross::SPIRType::Int)
             {
-                VX_CORE_TRACE("GetShaderDataType: Int{0}",vecSize);
+                // VX_CORE_TRACE("GetShaderDataType: Int{0}",vecSize);
                 switch (vecSize)
                 {
                     case 1: return VX::ShaderDataType::Int;
@@ -110,7 +110,7 @@ namespace VX
         }else if(columnSize > 1)
         {
             // matrix
-            VX_CORE_TRACE("GetShaderDataType: Mat{0}",vecSize);
+            // VX_CORE_TRACE("GetShaderDataType: Mat{0}",vecSize);
             switch (vecSize)
             {
                 case 3: return VX::ShaderDataType::Mat3;
@@ -159,8 +159,8 @@ namespace VX
     };
 
     /*
-    * An api-agnostic shader, loading targeted shader path, and reflect elements (paramaters inside shader)
-    * In Vulkan, this also manage shader module, descriptorSetLayout
+    * An api-agnostic shader, loading targeted shader path, and reflecting elements (paramaters inside shader) into layout
+    * In Vulkan, this also manage shader module
     */
     class Shader
     {

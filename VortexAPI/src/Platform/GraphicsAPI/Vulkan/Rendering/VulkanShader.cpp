@@ -356,10 +356,11 @@ namespace vkclass
     VulkanShaderEffect::VulkanShaderEffect(VX::Ref<VX::ShaderPass> shaderPass)
     {
         m_shaderPass = shaderPass;
+        m_VulkanShaderPass = std::static_pointer_cast<VulkanShaderPass>(shaderPass);
     }
 
     void VulkanShaderEffect::Build()
     {
-
+        
     }
 }

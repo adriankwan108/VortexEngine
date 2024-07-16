@@ -176,7 +176,12 @@ namespace vkclass
         VulkanShaderEffect(VX::Ref<VX::ShaderPass> shaderPass);
 
         virtual void Build() override;
+
+    public:
+        void SetRenderPass();
     private:
+        VX::Ref<VulkanShaderPass> m_VulkanShaderPass;
+
         // requested renderpass
         // reference of resources
         // pipeline

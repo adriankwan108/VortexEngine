@@ -69,11 +69,15 @@ Playground::Playground()
     // ShaderEffect->RenderPass[0] = ...;
     m_basicShaderEffect->Build();
 
-    m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
-    
     // Material->UseEffect(ShaderEffect);
     // Material->SetResource("name", *ref);
-    
+
+    m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
+    // vertex buffer set layout
+    m_indexBuffer = VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices));
+
+    m_vertexArray->AddVertexBuffer(m_vertexBuffer);
+    m_vertexArray->SetIndexBuffer(m_indexBuffer);
     
     VX_INFO("{0}: Created", GetName());
 }
@@ -116,6 +120,7 @@ void Playground::OnUpdate(VX::Timestep ts)
     VX::RenderCommand::SetClearColor(glm::vec4(0.11f, 0.12f, 0.13f, 1.0f));
     
      //VX::Renderer::Submit(m_basicShader ,m_vertexArray);
+    // renderer::submit(m_basicMaterial, m_vertexArray)
     
     VX::Renderer::EndScene();
     // renderer::Flush
