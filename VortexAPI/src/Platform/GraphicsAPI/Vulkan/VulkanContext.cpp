@@ -27,7 +27,7 @@ namespace VX
         }
         
         
-        vkclass::GlobalDescriptor::Remove();
+        // vkclass::GlobalDescriptor::Remove();
 
         VX_CORE_INFO("Vulkan: Resources cleared.");
         VX_CORE_INFO("Vulkan: Destroying context...");
@@ -57,7 +57,7 @@ namespace VX
         
         vkclass::VulkanCamera::Init(&m_Device);
         vkclass::VulkanTexture2D::Init(&m_Device, &m_CommandManager);
-        vkclass::VulkanShader::Init(m_Device.LogicalDevice);
+        vkclass::VulkanShaderPass::Init(m_Device.LogicalDevice);
         // vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager, m_RenderPass->RenderPass);
         
         createFrameBuffers();
@@ -98,7 +98,7 @@ namespace VX
             m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent
         );
         
-         vkclass::GlobalDescriptor::Bind(m_Device.LogicalDevice, &m_CommandManager);
+         // vkclass::GlobalDescriptor::Bind(m_Device.LogicalDevice, &m_CommandManager);
     }
 
     void VulkanContext::DisplayEnd()

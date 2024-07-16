@@ -64,12 +64,12 @@ namespace vkclass
         m_imgInfo.sampler = m_sampler;
 
         // desriptor
-        m_samplerDescriptor = DescriptorManager::CreateDescriptor();
+        /*m_samplerDescriptor = DescriptorManager::CreateDescriptor();
         m_samplerDescriptor->SetStage(VK_SHADER_STAGE_FRAGMENT_BIT);
         m_samplerDescriptor->AddBinding(0, &m_imgInfo);
         m_samplerDescriptor->Build();
         m_samplerDescriptor->Allocate();
-        m_samplerDescriptor->Update();
+        m_samplerDescriptor->Update();*/
     }
 
     void VulkanTexture2D::LoadFromData(unsigned char* data, int width, int height)
@@ -92,12 +92,12 @@ namespace vkclass
         m_imgInfo.sampler = m_sampler;
 
         // desriptor
-        m_samplerDescriptor = DescriptorManager::CreateDescriptor();
+        /*m_samplerDescriptor = DescriptorManager::CreateDescriptor();
         m_samplerDescriptor->SetStage(VK_SHADER_STAGE_FRAGMENT_BIT);
         m_samplerDescriptor->AddBinding(0, &m_imgInfo);
         m_samplerDescriptor->Build();
         m_samplerDescriptor->Allocate();
-        m_samplerDescriptor->Update();
+        m_samplerDescriptor->Update();*/
     }
 
     void VulkanTexture2D::Init(VulkanDevice* device, VulkanCommandManager* cmdManager)

@@ -68,54 +68,56 @@ namespace vkclass
         void UpdateSet(VkDevice device, VkDescriptorSet set);
     };
 
-    struct DescriptorLayoutBuilder {
-        std::vector<VkDescriptorSetLayoutBinding> bindings;
-
+    struct DescriptorLayoutHandle {
+        VkDescriptorSetLayout Layout = VK_NULL_HANDLE;
+        std::vector<VkDescriptorSetLayoutBinding> Bindings;
+        VkShaderStageFlags ShaderStage;
         void AddBinding(uint32_t binding, VkDescriptorType type);
+        void SetShaderStage(VkShaderStageFlags shaderStage);
         void Clear();
-        VkDescriptorSetLayout Build(VkDevice device, VkShaderStageFlags shaderStages, void* pNext = nullptr, VkDescriptorSetLayoutCreateFlags flags = 0);
+        void Build(VkDevice device, void* pNext = nullptr, VkDescriptorSetLayoutCreateFlags flags = 0);
     };
 
     /*
      * Descriptor set and set layout by frames in flight
      */
-    class VulkanDescriptor
-    {
-    public:
-        VulkanDescriptor(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame);
-        ~VulkanDescriptor();
-        
-        void SetStage(VkShaderStageFlags shaderStages); // assume uniform buffer now
-        
-        // adding both layout and writer at the same time
-        void AddBinding(int binding, VulkanUniformBuffer* buffer);
-        void AddBinding(int binding, VkDescriptorImageInfo* imgInfo);
-        void AddBinding(int binding, VkImageView imageView, VkSampler sampler, VkImageLayout layout);
-        
-        // build props
-        void Build();
-        void Allocate();
-        void Update();
-        
-        // get props
-        const VkDescriptorSetLayout& layout = m_layout;
-        std::vector<VkDescriptorSet> GetSets() const { return m_setsInFlight; }
-        VkDescriptorSet& GetCurrentSet() { return m_setsInFlight.at(m_currentFrame); }
-        
-    private:
-        int m_maxFramesInFlight = 1;
-        uint32_t& m_currentFrame;
-        VkDevice m_device;
-        
-        // helper functions
-        DescriptorLayoutBuilder m_layoutBuilder;
-        std::vector<DescriptorWriter> m_writers;
-        
-        // props
-        VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
-        VkShaderStageFlags m_stage = VK_SHADER_STAGE_ALL;
-        std::vector<VkDescriptorSet> m_setsInFlight;
-    };
+    //class VulkanDescriptor
+    //{
+    //public:
+    //    VulkanDescriptor(VkDevice device, const int maxFramesInFlight, uint32_t& currentFrame);
+    //    ~VulkanDescriptor();
+    //    
+    //    void SetStage(VkShaderStageFlags shaderStages); // assume uniform buffer now
+    //    
+    //    // adding both layout and writer at the same time
+    //    void AddBinding(int binding, VulkanUniformBuffer* buffer);
+    //    void AddBinding(int binding, VkDescriptorImageInfo* imgInfo);
+    //    void AddBinding(int binding, VkImageView imageView, VkSampler sampler, VkImageLayout layout);
+    //    
+    //    // build props
+    //    void Build();
+    //    void Allocate();
+    //    void Update();
+    //    
+    //    // get props
+    //    const VkDescriptorSetLayout& layout = m_layout;
+    //    std::vector<VkDescriptorSet> GetSets() const { return m_setsInFlight; }
+    //    VkDescriptorSet& GetCurrentSet() { return m_setsInFlight.at(m_currentFrame); }
+    //    
+    //private:
+    //    int m_maxFramesInFlight = 1;
+    //    uint32_t& m_currentFrame;
+    //    VkDevice m_device;
+    //    
+    //    // helper functions
+    //    DescriptorLayoutBuilder m_layoutBuilder;
+    //    std::vector<DescriptorWriter> m_writers;
+    //    
+    //    // props
+    //    VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
+    //    VkShaderStageFlags m_stage = VK_SHADER_STAGE_ALL;
+    //    std::vector<VkDescriptorSet> m_setsInFlight;
+    //};
 
     /*
      * Manager that controls setting and the growable descriptor pools by frames
@@ -127,7 +129,7 @@ namespace vkclass
         ~VulkanDescriptorManager();
         
         void Reset();
-        VX::Ref<VulkanDescriptor> CreateDescriptor();
+        // VX::Ref<VulkanDescriptor> CreateDescriptor();
         void Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
 
     private:
@@ -154,27 +156,27 @@ namespace vkclass
     {
     public:
         static void Init(VulkanDescriptorManager* manager);
-        static VX::Ref<VulkanDescriptor> CreateDescriptor();
+        // static VX::Ref<VulkanDescriptor> CreateDescriptor();
         static void Allocate(VkDescriptorSetLayout& layout, std::vector<VkDescriptorSet>& sets);
 
     private:
         static VulkanDescriptorManager* s_manager;
     };
 
-    class GlobalDescriptor
-    {
-    public:
-        static VX::Ref<VulkanDescriptor> GetDescriptor() { return s_descriptor; }
-        static void SetDescriptor(VX::Ref<VulkanDescriptor> descriptor);
+    //class GlobalDescriptor
+    //{
+    //public:
+    //    static VX::Ref<VulkanDescriptor> GetDescriptor() { return s_descriptor; }
+    //    static void SetDescriptor(VX::Ref<VulkanDescriptor> descriptor);
 
-        static void Update();
-        static void Bind(VkDevice device, VulkanCommandManager* cmdManager);
-        
-        // TODO: make a deletetion queue for descriptor would be better than RAII
-        static void Remove();
-    
-    private:
-        static VX::Ref<VulkanDescriptor> s_descriptor;
-    };
+    //    static void Update();
+    //    static void Bind(VkDevice device, VulkanCommandManager* cmdManager);
+    //    
+    //    // TODO: make a deletetion queue for descriptor would be better than RAII
+    //    static void Remove();
+    //
+    //private:
+    //    static VX::Ref<VulkanDescriptor> s_descriptor;
+    //};
 
 }

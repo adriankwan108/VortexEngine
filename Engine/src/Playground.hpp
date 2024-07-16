@@ -27,7 +27,7 @@ private:
     
     VX::Ref<VX::OrthographicCamera> m_camera;
     
-    VX::Ref<VX::Texture2D> m_texture;
+    // VX::Ref<VX::Texture2D> m_texture;
 
     glm::vec3 m_cameraPosition = {0.0f, 0.0f, 0.0f};
     float m_CameraMoveSpeed = 1.0f;

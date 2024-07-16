@@ -11,6 +11,7 @@
 #include "Core/VulkanInitializer.hpp"
 #include "Core/VulkanTools.hpp"
 #include "Core/VulkanCommandManager.hpp"
+#include "Core/VulkanDescriptorManager.hpp"
 #include "VulkanPipelineBuilder.hpp"
 #include "VulkanShaderLayout.hpp"
 #include "VulkanTexture.hpp"
@@ -105,31 +106,64 @@ namespace vkclass
         }
     }
 
+    /*
+    * VulkanShader serves for loading, reflecting, and storing the necessary information
+    */
     class VulkanShader : public VX::Shader
     {
     public:
         VulkanShader(const std::string& name, const std::string& filePath, VX::ShaderStage stage);
         ~VulkanShader();
-        static void Init(VkDevice device);
     private:
         void reflect(const std::vector<uint32_t>& data);
 
     private:
         VkShaderModule m_module = VK_NULL_HANDLE;
-        static VkDevice s_device;
     };
 
+    static VkShaderStageFlags VulkanShaderStage(VX::ShaderStage stage)
+    {
+        switch (stage)
+        {
+        case VX::ShaderStage::Vertex:   return VK_SHADER_STAGE_VERTEX_BIT;
+        case VX::ShaderStage::Fragment: return VK_SHADER_STAGE_FRAGMENT_BIT;
+        default: return VK_SHADER_STAGE_ALL;
+        }
+    }
+
+    /*
+    * VulkanShaderPass serves for combining & transforming shader infos into essential Vulkan's layouts or formats
+    * for the usage of Vertex Shader creation, pipelines creation, ...
+    */
     class VulkanShaderPass : public VX::ShaderPass
     {
     public:
         VulkanShaderPass();
         virtual void Prepare() override;
 
+    public:
+        // get descriptor set layout
+        // get pipeline layout
+        static void Init(VkDevice device);
     private:
         VkVertexInputBindingDescription m_bindingDescription{};
         std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
+
+        std::vector<DescriptorLayoutHandle> m_descriptorLayoutHandles;
+        VkPipelineLayout m_pipelineLayout;
+
+        // necessary ubo (set 2, 3) / push constants to-be-prepared info
+
+        void prepareVertexShader    (VX::Ref<VX::Shader> shader);
+        void prepareFragmentShader  (VX::Ref<VX::Shader> shader);
+
+    private:
+        static VkDevice s_device;
     };
 
+    /*
+    * VulkanShaderEffect is the actual built version of VulkanShaderPass, which requires several renderpass
+    */
     class VulkanShaderEffect : public VX::ShaderEffect
     {
     public:
@@ -137,6 +171,8 @@ namespace vkclass
 
         virtual void Build() override;
     private:
-
+        // requested renderpass
+        // reference of resources
+        // pipeline
     };
 }

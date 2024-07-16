@@ -132,14 +132,13 @@ namespace vkclass
     //    VX_CORE_TRACE("Vulkan Shader: Pipeline set");
     //}
 
-    VkDevice vkclass::VulkanShader::s_device = VK_NULL_HANDLE;
-
     VulkanShader::VulkanShader(const std::string& name, const std::string& filePath, VX::ShaderStage stage)
     {
         m_name = name;
         m_filePath = filePath;
         m_stage = stage;
-        m_layoutGroups["Input"] = std::vector<VX::ShaderBlock>();
+        m_layoutGroups["Input"]     = std::vector<VX::ShaderBlock>();
+        m_layoutGroups["UniformBuffers"] = std::vector<VX::ShaderBlock>();
 
         std::vector<uint32_t> shaderCode = VX::Utils::readFile(m_filePath);
             
@@ -186,35 +185,33 @@ namespace vkclass
 
         for (auto& resource : resources.uniform_buffers)
         {
-            /*unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            unsigned set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
             unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
-
-            VX_CORE_TRACE("Reflect: UniformBuffer {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);*/
-            VX_CORE_TRACE("Reflect: {0}", resource.name);
-            
-            auto& type = glsl.get_type(resource.base_type_id);
+            const spirv_cross::SPIRType& type = glsl.get_type(resource.base_type_id);
             
             unsigned int member_count = static_cast<unsigned int>(type.member_types.size());
+            std::vector<VX::ShaderElement> elements;
             for (unsigned i = 0; i < member_count; i++)
             {
                 auto& member_type = glsl.get_type(type.member_types[i]);
                 size_t memberSize = glsl.get_declared_struct_member_size(type, i);
+                const std::string& memberName = glsl.get_member_name(type.self, i);
 
                 // Get member offset within this struct.
                 size_t offset = glsl.type_struct_member_offset(type, i);
 
                 if (!member_type.array.empty())
                 {
-                    VX_CORE_TRACE("array found");
                     // Get array stride, e.g. float4 foo[]; Will have array stride of 16 bytes.
                     size_t array_stride = glsl.type_struct_member_array_stride(type, i);
+                    VX_CORE_TRACE("VulkanShader::Reflect: Array is not yet supported in uniform buffers.");
                 }
 
-                
-                //const std::string& memberName = glsl.get_member_name(type.self, i);
-                
-                //VX_CORE_TRACE("Reflect: UniformBuffer: {0}, {1}, {2}", memberName, memberSize, offset);
+                elements.push_back(VX::ShaderElement(VX::SpirTypeToShaderDataType(member_type), memberName));
             }
+            m_layoutGroups["UniformBuffers"].push_back(
+                VX::ShaderBlock(0, set, binding, elements)
+            );
         }
 
         for (auto& resource : resources.sampled_images)
@@ -234,10 +231,7 @@ namespace vkclass
         }
     }
 
-    void VulkanShader::Init(VkDevice device)
-    {
-        s_device = device;
-    }
+    VkDevice vkclass::VulkanShaderPass::s_device = VK_NULL_HANDLE;
 
     VulkanShaderPass::VulkanShaderPass()
     {
@@ -248,35 +242,62 @@ namespace vkclass
     {
         for(auto& shader : m_shaders)
         {
-            if ( shader->GetStage() == VX::ShaderStage::Vertex)
+            switch (shader->GetStage())
             {
-                auto& layout = shader->GetShaderLayout("Input");
-                for (const auto& block : layout)
-                {
-                    if ( block.Elements.size() != 1 )
-                    {
-                        VX_CORE_WARN("VulkanShaderPass: Vertex input data type is not supported...");
-                        // std::runtime_error("VulkanShaderPass: Vertex input data type is not supported...");
-                        return;
-                    }
-                    VkVertexInputAttributeDescription attribute{};
-                    attribute.binding = block.Binding;
-                    attribute.location = block.Location;
-                    attribute.offset = m_vertexStride;
-                    attribute.format = ShaderDataTypeToVulkanFormat(block.Elements[0].Type);
-
-                    m_attributeDescriptions.push_back(attribute);
-                    m_vertexStride += block.Stride;
-                }
-
-                // all per-vertex data is packed together in one array, so only one binding
-                m_bindingDescription.binding = 0; // specify the index of binding in the array of bindings
-                m_bindingDescription.stride = m_vertexStride; // number of bytes from one entry to the next
-                m_bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // per-vertex data, TODO: change this for particle system
+            case VX::ShaderStage::Vertex:   prepareVertexShader(shader);    break;
+            case VX::ShaderStage::Fragment: prepareFragmentShader(shader);  break;
+            default: VX_CORE_WARN("ShaderPass::Prepare: shader stage is not supported yet."); break;
             }
         }
         
         // prepare pipeline layouts from all shader modules
+    }
+
+    void VulkanShaderPass::prepareVertexShader(VX::Ref<VX::Shader> shader)
+    {
+        auto& inputLayout = shader->GetShaderLayout("Input");
+        for (const auto& block : inputLayout)
+        {
+            if (block.Elements.size() != 1)
+            {
+                VX_CORE_WARN("VulkanShaderPass: Vertex input data type is not supported yet...");
+                // std::runtime_error("VulkanShaderPass: Vertex input data type is not supported...");
+                return;
+            }
+            VkVertexInputAttributeDescription attribute{};
+            attribute.binding = block.Binding;
+            attribute.location = block.Location;
+            attribute.offset = m_vertexStride;
+            attribute.format = ShaderDataTypeToVulkanFormat(block.Elements[0].Type);
+
+            m_attributeDescriptions.push_back(attribute);
+            m_vertexStride += block.Stride;
+        }
+
+        // all per-vertex data is packed together in one array, so only one binding
+        m_bindingDescription.binding = 0; // specify the index of binding in the array of bindings
+        m_bindingDescription.stride = m_vertexStride; // number of bytes from one entry to the next
+        m_bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // per-vertex data, TODO: change this for particle system
+    
+        auto& uboLayout = shader->GetShaderLayout("UniformBuffers");
+        for (const auto& uboBlock : uboLayout)
+        {
+            DescriptorLayoutHandle handle;
+            handle.AddBinding(uboBlock.Binding, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+            handle.SetShaderStage(VulkanShaderStage(shader->GetStage()));
+            handle.Build(s_device);
+            m_descriptorLayoutHandles.push_back(handle);
+        }
+    }
+
+    void VulkanShaderPass::prepareFragmentShader(VX::Ref<VX::Shader> shader)
+    {
+
+    }
+
+    void VulkanShaderPass::Init(VkDevice device)
+    {
+        s_device = device;
     }
 
     VulkanShaderEffect::VulkanShaderEffect(VX::Ref<VX::ShaderPass> shaderPass)

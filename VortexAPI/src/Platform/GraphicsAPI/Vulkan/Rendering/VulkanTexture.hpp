@@ -24,9 +24,6 @@ namespace vkclass
         
         virtual void LoadFromFile(std::string path) override;
         virtual void LoadFromData(unsigned char* data, int width, int height) override;
-        
-    public:
-        VX::Ref<VulkanDescriptor> GetDescriptor() const { return m_samplerDescriptor; }
 
         static void Init(VulkanDevice* device, VulkanCommandManager* cmdManager);
     private:
@@ -43,7 +40,6 @@ namespace vkclass
         VkImageView m_imageView;
         VkSampler m_sampler;
 
-        VX::Ref<VulkanDescriptor> m_samplerDescriptor;
         VkDescriptorImageInfo m_imgInfo;
         
     private:

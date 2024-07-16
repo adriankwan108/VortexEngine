@@ -6,8 +6,8 @@ Playground::Playground()
     VX_INFO("{0}: Creating...", GetName());
     
     m_camera = VX::OrthographicCamera::Create(-1.6f, 1.6f, -0.9f, 0.9f);
-    m_texture = VX::Texture2D::Create();
-    m_texture->LoadFromFile("Resources/VortexAPI/textures/statue-1275469_1280.jpg");
+    // m_texture = VX::Texture2D::Create();
+    // m_texture->LoadFromFile("Resources/VortexAPI/textures/statue-1275469_1280.jpg");
     
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
     // define shader layout
