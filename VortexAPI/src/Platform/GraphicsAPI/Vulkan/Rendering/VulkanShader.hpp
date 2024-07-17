@@ -116,16 +116,34 @@ namespace vkclass
         ~VulkanShader();
         
     public:
+        // Vulkan Specific funcs
         static VkDevice s_device;
         static void Init(VkDevice device);
-    private:
-        void reflect(const std::vector<uint32_t>& data);
+        
+        void ClearModule();
+        VkShaderModule GetModule();
+        
+    protected:
+        virtual bool read() override;
+        virtual void reflect() override;
 
     private:
         VkShaderModule m_module = VK_NULL_HANDLE;
+        bool isModuleLoaded = false;
+        void loadModule();
     };
 
     static VkShaderStageFlags VulkanShaderStage(VX::ShaderStage stage)
+    {
+        switch (stage)
+        {
+        case VX::ShaderStage::Vertex:   return VK_SHADER_STAGE_VERTEX_BIT;
+        case VX::ShaderStage::Fragment: return VK_SHADER_STAGE_FRAGMENT_BIT;
+        default: return VK_SHADER_STAGE_ALL;
+        }
+    }
+
+    static VkShaderStageFlagBits VulkanShaderStageFlagBits(VX::ShaderStage stage)
     {
         switch (stage)
         {
@@ -145,26 +163,25 @@ namespace vkclass
         VulkanShaderPass();
         virtual ~VulkanShaderPass() override;
         virtual void Prepare() override;
-
     public:
-        // get descriptor set layout
-        // get pipeline layout
+        // Vulkan Specific functions
+        VkVertexInputBindingDescription GetVertexInputBinding() { return m_bindingDescription; }
+        std::vector<VkVertexInputAttributeDescription> GetVertexInputAttributes() { return m_attributeDescriptions; }
+        VkPipelineLayout GetPipelineLayout() { return m_pipelineLayout; }
+        std::vector<VX::Ref<VulkanShader>> GetVulkanShaders();
         static void Init(VkDevice device);
+        
     private:
         VkVertexInputBindingDescription m_bindingDescription{};
         std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
-
         std::vector<DescriptorLayoutHandle> m_descriptorLayoutHandles;
-//        std::vector<std::pair<VkPushConstantRange, void*>> m_pushConstants;
+        // std::vector<std::pair<VkPushConstantRange, void*>> m_pushConstants;
         VkPipelineLayout m_pipelineLayout;
-
-        // necessary ubo (set 2, 3) / push constants to-be-prepared info
+        
+        static VkDevice s_device;
 
         void prepareVertexShader    (VX::Ref<VX::Shader> shader);
         void prepareFragmentShader  (VX::Ref<VX::Shader> shader);
-
-    private:
-        static VkDevice s_device;
     };
 
     /*
@@ -176,14 +193,16 @@ namespace vkclass
         VulkanShaderEffect(VX::Ref<VX::ShaderPass> shaderPass);
 
         virtual void Build() override;
-
+        virtual void Bind() override;
     public:
         void SetRenderPass();
+        VX::Ref<VulkanShaderPass> GetVulkanShaderPass() { return m_VulkanShaderPass; }
+        
     private:
         VX::Ref<VulkanShaderPass> m_VulkanShaderPass;
 
-        // requested renderpass
-        // reference of resources
+        // request renderpass
+        // request resources
         // pipeline
         VulkanPipelineBuilder m_builder;
     };

@@ -15,23 +15,6 @@ namespace vkclass
     //vkclass::VulkanCommandManager* vkclass::VulkanShader::m_commandBufferManager = nullptr;
     //VkRenderPass vkclass::VulkanShader::s_RenderPass = VK_NULL_HANDLE;
 
-    //VulkanShader::~VulkanShader()
-    //{
-    //    if (m_isValid)
-    //    {
-    //        if(m_pipeline != VK_NULL_HANDLE)
-    //        {
-    //            vkDestroyPipeline(m_device, m_pipeline, nullptr);
-    //        }
-    //        
-    //        if(m_pipelineLayout != VK_NULL_HANDLE)
-    //        {
-    //            vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-    //        }
-    //        VX_CORE_INFO("VulkanShader: Pipeline & layout destroyed");
-    //    }
-    //}
-
     //void VulkanShader::Init(VkDevice device, vkclass::VulkanCommandManager* commandBufferManager, VkRenderPass renderPass)
     //{
     //    m_device = device;
@@ -49,16 +32,6 @@ namespace vkclass
     //        m_commandBufferManager->PushConstant(m_pipelineLayout, range.stageFlags, range.size, pvalue);
     //    }*/
     //    m_commandBufferManager->BindPipeline(m_pipeline);
-    //}
-
-    //void VulkanShader::UnBind() const
-    //{
-    //    
-    //}
-
-    //void VulkanShader::SetVertexLayout(VX::VertexShaderLayout layout)
-    //{
-    //    m_vertexLayout.SetLayout(layout);
     //}
 
     //
@@ -87,11 +60,6 @@ namespace vkclass
     //    m_pushConstants.push_back( 
     //        std::make_pair(vkclass::initializers::pushConstantRange(stage, size, 0), pValue)
     //    );
-    //}
-
-    //void VulkanShader::SetObjectLayout(int binding, VX::UniformShaderLayout layout)
-    //{
-    //    
     //}
 
     //void VulkanShader::Prepare()
@@ -142,29 +110,13 @@ namespace vkclass
         m_layoutGroups["Input"]     = std::vector<VX::ShaderBlock>();
         m_layoutGroups["UniformBuffers"] = std::vector<VX::ShaderBlock>();
 
-        std::vector<uint32_t> shaderCode = VX::Utils::readFile(m_filePath);
-            
-        if (shaderCode.empty())
-        {
-            VX_CORE_WARN("VulkanShader: {0} read failed. Path: {1}", m_name, m_filePath);
-            return;
-        }
-
-        VkShaderModuleCreateInfo moduleCI{};
-        moduleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        moduleCI.codeSize = shaderCode.size() * sizeof(uint32_t);
-        moduleCI.pCode = shaderCode.data();
-        VK_CHECK_RESULT(vkCreateShaderModule(s_device, &moduleCI, nullptr, &m_module));
-
-        reflect(shaderCode);
+        read();
+        reflect();
     }
 
     VulkanShader::~VulkanShader()
     {
-        if (m_module != VK_NULL_HANDLE)
-        {
-            vkDestroyShaderModule(s_device, m_module, nullptr);
-        }
+        ClearModule();
     }
 
     void VulkanShader::Init(VkDevice device)
@@ -172,10 +124,29 @@ namespace vkclass
         s_device = device;
     }
 
-    void VulkanShader::reflect(const std::vector<uint32_t>& data)
+    bool VulkanShader::read()
     {
-        VX_CORE_TRACE("VulkanShader: Reflecting...");
-        spirv_cross::CompilerGLSL glsl(data);
+        m_shaderCode = VX::Utils::readFile(m_filePath);
+            
+        if (m_shaderCode.empty())
+        {
+            VX_CORE_WARN("VulkanShader: {0} read failed. Path: {1}", m_name, m_filePath);
+            return false;
+        }
+        
+        m_isRead = true;
+        return true;
+    }
+
+    void VulkanShader::reflect()
+    {
+        if(!m_isRead)
+        {
+            VX_CORE_WARN("VulkanShader::reflect: shader is not yet read.");
+            return;
+        }
+        
+        spirv_cross::CompilerGLSL glsl(m_shaderCode);
         spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 
         for (auto& resource: resources.stage_inputs)
@@ -235,6 +206,46 @@ namespace vkclass
             unsigned binding = glsl.get_decoration(resource.id, spv::DecorationBinding);
 
             VX_CORE_TRACE("Reflect: PushConstant {0} at set = {1}, binding = {2}", resource.name.c_str(), set, binding);
+        }
+        
+        m_isReflected = true;
+    }
+
+    void VulkanShader::loadModule()
+    {
+        if(m_isRead == false)
+        {
+            if(read() == false)
+            {
+                VX_CORE_WARN("VulkanShader::loadMoudle: read failed.");
+                return;
+            }
+        }
+        if(m_isReflected == false) reflect();
+        
+        VkShaderModuleCreateInfo moduleCI{};
+        moduleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        moduleCI.codeSize = m_shaderCode.size() * sizeof(uint32_t);
+        moduleCI.pCode = m_shaderCode.data();
+        VK_CHECK_RESULT(vkCreateShaderModule(s_device, &moduleCI, nullptr, &m_module));
+    }
+
+    VkShaderModule VulkanShader::GetModule()
+    {
+        if(!isModuleLoaded)
+        {
+            loadModule();
+            isModuleLoaded = true;
+        }
+        return m_module;
+    }
+
+    void VulkanShader::ClearModule()
+    {
+        if (m_module != VK_NULL_HANDLE)
+        {
+            vkDestroyShaderModule(s_device, m_module, nullptr);
+            isModuleLoaded = false;
         }
     }
 
@@ -296,6 +307,16 @@ namespace vkclass
         pipelineLayoutInfo.pPushConstantRanges = nullptr;
         
         VK_CHECK_RESULT(vkCreatePipelineLayout(s_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout));
+    }
+
+    std::vector<VX::Ref<VulkanShader>> VulkanShaderPass::GetVulkanShaders()
+    {
+        std::vector<VX::Ref<VulkanShader>> vulkanShaders;
+        for(auto& shader : m_shaders)
+        {
+            vulkanShaders.push_back(std::static_pointer_cast<VulkanShader>(shader));
+        }
+        return vulkanShaders;
     }
 
     void VulkanShaderPass::prepareVertexShader(VX::Ref<VX::Shader> shader)
@@ -361,6 +382,19 @@ namespace vkclass
 
     void VulkanShaderEffect::Build()
     {
+        for( auto& shader : m_VulkanShaderPass->GetVulkanShaders())
+        {
+            m_builder.AddShader(shader->GetModule(), VulkanShaderStageFlagBits(shader->GetStage()));
+        }
+        m_builder.SetVertexInput(m_VulkanShaderPass->GetVertexInputBinding(), m_VulkanShaderPass->GetVertexInputAttributes());
+        m_builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+        //    m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
+    }
+
+    void VulkanShaderEffect::Bind()
+    {
+        // bind pipeline
         
+        // descriptor sets binding (pipelinelayout, firstSet, *sets, *descriptor set[current]) -> material's responsibility
     }
 }

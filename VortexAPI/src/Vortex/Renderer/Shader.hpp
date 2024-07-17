@@ -159,31 +159,44 @@ namespace VX
     };
 
     /*
-    * An api-agnostic shader, loading targeted shader path, and reflecting elements (paramaters inside shader) into layout
+    * An api-agnostic shader, reading targeted shader path, and reflecting elements (paramaters inside shader) into layout
     * In Vulkan, this also manage shader module
     */
     class Shader
     {
     public:
         static Ref<Shader> Create(const std::string& name, const std::string& filePath, ShaderStage stage = ShaderStage::None);
-        inline ShaderStage GetStage() { return m_stage; }
         
+        inline std::string GetName() { return m_name; }
+        inline std::string GetPath() { return m_filePath; }
+        inline ShaderStage GetStage() { return m_stage; }
         const std::vector<ShaderBlock>& GetShaderLayout(const std::string& type) { return m_layoutGroups[type]; }
     protected:
         std::string m_name;
         std::string m_filePath;
         ShaderStage m_stage;
-        
         std::map<std::string, std::vector<ShaderBlock>> m_layoutGroups;
+        
+        std::vector<uint32_t> m_shaderCode; // binary data read
+        bool m_isRead = false;
+        bool m_isReflected = false;
+        
+        virtual bool read() = 0;
+        virtual void reflect() = 0;
     };
 
+    /*
+     * An api-agnostic shaderpass, this is the layout combination of different stages of shaders
+     * In Vulkan, this is the pipeline layout
+     */
     class ShaderPass
     {
     public:
-        virtual ~ShaderPass() = default;
         static Ref<ShaderPass> Create();
+        virtual ~ShaderPass() = default;
         
         void AddShader(VX::Ref<Shader> shader);
+        std::vector<VX::Ref<Shader>> GetShaders() { return m_shaders; }
         virtual void Prepare() = 0;
 
     protected:
@@ -191,14 +204,19 @@ namespace VX
         uint32_t m_vertexStride = 0;
     };
 
+    /*
+     * An api-agnostic shadereffect, this is the built shader pass, which requires the input of render pass
+     * In Vulkan, this is the pipeline, and require Material to prepare necessary resources
+     */
     class ShaderEffect
     {
     public:
         static Ref<ShaderEffect> Create(Ref<ShaderPass> shaderPass);
 
         void SetRenderPass();
-
+        
         virtual void Build() = 0;
+        virtual void Bind() = 0;
 
     protected:
         Ref<ShaderPass> m_shaderPass;

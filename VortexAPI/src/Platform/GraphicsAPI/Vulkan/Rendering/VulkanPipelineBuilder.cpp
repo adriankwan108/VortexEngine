@@ -79,28 +79,41 @@ namespace vkclass
         VX_CORE_INFO("PipelineBuilder: Reset");
     }
 
-    void VulkanPipelineBuilder::SetShaders(VkShaderModule vertexShader, VkShaderModule fragmentShader)
+//    void VulkanPipelineBuilder::SetShaders(VkShaderModule vertexShader, VkShaderModule fragmentShader)
+//    {
+//        // it's possible to combine multiple fragment shaders into a single shader module and use different entry points to differentiate between their behaviors.
+//        // Currently, I stick to the standard "main", however.
+//
+//        VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+//        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+//        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+//        vertShaderStageInfo.module = vertexShader;
+//        vertShaderStageInfo.pName = "main";
+//        // pSpecializationInfo allows you to specify values for shader constant
+//        m_shaderStages.push_back(vertShaderStageInfo);
+//
+//        VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+//        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+//        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+//        fragShaderStageInfo.module = fragmentShader;
+//        fragShaderStageInfo.pName = "main";
+//
+//        m_shaderStages.push_back(fragShaderStageInfo);
+//        VX_CORE_INFO("Pipeline Builder: Shaders set.");
+//    }
+
+    void VulkanPipelineBuilder::AddShader(VkShaderModule shaderModule, VkShaderStageFlagBits stageFlagBits)
     {
-        Clear();
-        
-        // it's possible to combine multiple fragment shaders into a single shader module and use different entry points to differentiate between their behaviors. In this case we'll stick to the standard main, however.
-        
-        VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertShaderStageInfo.module = vertexShader;
-        vertShaderStageInfo.pName = "main";
+        // it's possible to combine multiple fragment shaders into a single shader module and use different entry points to differentiate between their behaviors.
+        // Currently, I stick to the standard "main", however.
+
+        VkPipelineShaderStageCreateInfo shaderStageInfo{};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.stage = stageFlagBits;
+        shaderStageInfo.module = shaderModule;
+        shaderStageInfo.pName = "main";
         // pSpecializationInfo allows you to specify values for shader constant
-        m_shaderStages.push_back(vertShaderStageInfo);
-        
-        VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragShaderStageInfo.module = fragmentShader;
-        fragShaderStageInfo.pName = "main";
-        
-        m_shaderStages.push_back(fragShaderStageInfo);
-        VX_CORE_INFO("Pipeline Builder: Shaders set.");
+        m_shaderStages.push_back(shaderStageInfo);
     }
 
     void VulkanPipelineBuilder::SetVertexInput(const VkVertexInputBindingDescription& bindings, const std::vector<VkVertexInputAttributeDescription>& attributes)
