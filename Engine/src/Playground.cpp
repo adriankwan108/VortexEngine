@@ -68,9 +68,10 @@ Playground::Playground()
     m_basicShaderEffect = VX::ShaderEffect::Create(m_basicShaderPass);
     // ShaderEffect->RenderPass[0] = ...;
     m_basicShaderEffect->Build();
-
-    // Material->SetEffect(ShaderEffect);
-    // Material->SetResource("name", *ref); // point the descriptor set to this resource
+    
+    m_basicMaterial->Create();
+    m_basicMaterial->SetShaderEffect(m_basicShaderEffect);
+    // m_material->SetResource("name", *ref); // point the descriptor set to this resource
 
     m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
     // vertex buffer set layout
@@ -120,7 +121,7 @@ void Playground::OnUpdate(VX::Timestep ts)
     VX::RenderCommand::SetClearColor(glm::vec4(0.11f, 0.12f, 0.13f, 1.0f));
     
      //VX::Renderer::Submit(m_basicShader ,m_vertexArray);
-    // renderer::submit(m_basicMaterial, m_vertexArray)
+    VX::Renderer::Submit(m_basicMaterial, m_vertexArray);
     
     VX::Renderer::EndScene();
     // renderer::Flush

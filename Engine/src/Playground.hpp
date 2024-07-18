@@ -18,6 +18,7 @@ private:
     // prepare resources here
     VX::Ref<VX::ShaderPass> m_basicShaderPass;
     VX::Ref<VX::ShaderEffect> m_basicShaderEffect;
+    VX::Ref<VX::Material> m_basicMaterial;
     
     VX::Ref<VX::VertexArray> m_vertexArray;
     VX::Ref<VX::VertexBuffer> m_vertexBuffer;

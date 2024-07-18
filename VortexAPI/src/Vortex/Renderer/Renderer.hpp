@@ -3,7 +3,8 @@
 #include "VortexPCH.hpp"
 #include "RendererAPI.hpp"
 #include "VertexArray.hpp"
-#include "Shader.hpp"
+// #include "Shader.hpp"
+#include "Material.hpp"
 #include "OrthographicCamera.hpp"
 
 #include <glm/glm.hpp>
@@ -22,6 +23,7 @@ namespace VX
         static void BeginScene(std::shared_ptr<OrthographicCamera> camera);
         static void EndScene();
         
+        static void Submit(const Ref<Material>& material, const Ref<VertexArray>& vertexArray);
         // static void Submit(const Ref<Shader>& shader ,const Ref<VertexArray>& vertexArray);
         
         static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }

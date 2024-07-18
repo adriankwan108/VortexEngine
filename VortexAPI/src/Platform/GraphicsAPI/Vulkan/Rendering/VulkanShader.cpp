@@ -389,12 +389,15 @@ namespace vkclass
         m_builder.SetVertexInput(m_VulkanShaderPass->GetVertexInputBinding(), m_VulkanShaderPass->GetVertexInputAttributes());
         m_builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
         //    m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
+        
+        for( auto& shader : m_VulkanShaderPass->GetVulkanShaders())
+        {
+            shader->ClearModule();
+        }
     }
 
     void VulkanShaderEffect::Bind()
     {
         // bind pipeline
-        
-        // descriptor sets binding (pipelinelayout, firstSet, *sets, *descriptor set[current]) -> material's responsibility
     }
 }

@@ -24,6 +24,7 @@
 #include "Vortex/Renderer/RenderCommand.hpp"
 #include "Vortex/Renderer/OrthographicCamera.hpp"
 #include "Vortex/Renderer/Texture.hpp"
+#include "Vortex/Renderer/Material.hpp"
 
 #include "Vortex/Geometry/Geometry.hpp"
 
