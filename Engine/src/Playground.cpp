@@ -69,8 +69,7 @@ Playground::Playground()
     // ShaderEffect->RenderPass[0] = ...;
     m_basicShaderEffect->Build();
     
-    m_basicMaterial->Create();
-    m_basicMaterial->SetShaderEffect(m_basicShaderEffect);
+    m_basicMaterial = VX::Material::Create(m_basicShaderEffect);
     // m_material->SetResource("name", *ref); // point the descriptor set to this resource
 
     m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));

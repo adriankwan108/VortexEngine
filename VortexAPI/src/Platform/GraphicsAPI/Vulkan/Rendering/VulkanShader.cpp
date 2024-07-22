@@ -390,10 +390,10 @@ namespace vkclass
         m_builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
         //    m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
         
-        for( auto& shader : m_VulkanShaderPass->GetVulkanShaders())
-        {
-            shader->ClearModule();
-        }
+//        for( auto& shader : m_VulkanShaderPass->GetVulkanShaders())
+//        {
+//            shader->ClearModule();
+//        }
     }
 
     void VulkanShaderEffect::Bind()

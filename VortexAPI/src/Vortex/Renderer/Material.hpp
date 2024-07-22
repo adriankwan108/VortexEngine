@@ -14,16 +14,10 @@ namespace VX
     class Material
     {
     public:
-        VX::Ref<Material> Create();
+        static VX::Ref<Material> Create(Ref<ShaderEffect> shaderEffect);
         virtual ~Material() = default;
 
         virtual void Bind() = 0;
-
-        void SetShaderEffect(Ref<ShaderEffect> shaderEffect);
-
-    protected:
-        // vector of texture
-        Ref<ShaderEffect> m_shaderEffect;
     };
 
     // TODO: material cache

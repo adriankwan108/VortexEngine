@@ -1,11 +1,11 @@
 #include "Material.hpp"
 
 #include "Renderer.hpp"
-#include "Platform/GraphicsAPI/Vulkan/Rendering/VulkanShader.hpp"
+#include "Platform/GraphicsAPI/Vulkan/Rendering/VulkanMaterial.hpp"
 
 namespace VX
 {
-    Ref<Material> Material::Create()
+    Ref<Material> Material::Create(Ref<ShaderEffect> shaderEffect)
     {
         switch (Renderer::GetAPI())
         {
@@ -14,7 +14,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            return nullptr;
+            return CreateRef<vkclass::VulkanMaterial>(shaderEffect);
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is currently not supported!");
@@ -30,10 +30,5 @@ namespace VX
             break;
         }
         return nullptr;
-    }
-
-    void Material::SetShaderEffect(Ref<ShaderEffect> shaderEffect)
-    {
-        m_shaderEffect = shaderEffect;
     }
 }

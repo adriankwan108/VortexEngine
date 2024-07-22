@@ -2,6 +2,11 @@
 
 namespace vkclass
 {
+    VulkanMaterial::VulkanMaterial(VX::Ref<VX::ShaderEffect> shaderEffect)
+    {
+        m_shaderEffect = std::static_pointer_cast<VulkanShaderEffect>(shaderEffect);
+    }
+
     void VulkanMaterial::Bind()
     {
         // shader effect -> Bind
