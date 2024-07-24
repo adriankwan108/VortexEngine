@@ -4,7 +4,8 @@ namespace vkclass
 {
     VkDevice vkclass::VulkanRenderPass::m_device = VK_NULL_HANDLE;
 
-    VulkanRenderPass::VulkanRenderPass()
+    VulkanRenderPass::VulkanRenderPass(const std::string& name)
+        :m_name(name)
     {
         
     }
@@ -21,31 +22,27 @@ namespace vkclass
         m_device = device;
     }
 
-    void VulkanRenderPass::AddSubpass(vkclass::VulkanSubpass& subpass)
+    void VulkanRenderPass::AddSubpass(vkclass::VulkanSubpass subpass)
     {
         m_subpasses.push_back(subpass.Subpass);
-        for(const auto& attachment: subpass.Attachments)
+        
+        VX_CORE_TRACE("RenderPass: Main attachment count before: {0}", m_attachments.size());
+        if(m_attachments.empty())
         {
-            m_attachments.push_back(attachment.description);
+            m_attachments = subpass.GetAttachments();
+        }else{
+            m_attachments.insert(m_attachments.end(), subpass.GetAttachments().begin(), subpass.GetAttachments().end());
         }
-    }
-
-    void VulkanRenderPass::AddDependency()
-    {
-        // as only one subpass for now
-        VkSubpassDependency dependency{};
-        dependency.srcSubpass = VK_SUBPASS_EXTERNAL; // implicit subpass before or after the render pass depending on whether it is specified in srcSubpass or dstSubpass
-        dependency.dstSubpass = 0; // refers to the first subpass
+        VX_CORE_TRACE("RenderPass: Main attachments count after: {0}", m_attachments.size());
         
-        // wait on operation stages
-        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; // wait for swapchain finish reading image
-        dependency.srcAccessMask = 0;
-        
-        // prevent the transition from happening until it's actually necessary
-        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        
-        m_dependencies.push_back(dependency);
+        VX_CORE_TRACE("RenderPass: Main dependencies count before: {0}", m_dependencies.size());
+        if(m_dependencies.empty())
+        {
+            m_dependencies = subpass.GetDependencies();
+        }else{
+            m_dependencies.insert(m_dependencies.end(), subpass.GetDependencies().begin(), subpass.GetDependencies().end());
+        }
+        VX_CORE_TRACE("RenderPass: Main dependencies count after: {0}", m_dependencies.size());
     }
 
     void VulkanRenderPass::Create()
@@ -64,5 +61,34 @@ namespace vkclass
         createInfo.pDependencies = m_dependencies.data();
         
         VK_CHECK_RESULT(vkCreateRenderPass(m_device, &createInfo, nullptr, &m_renderPass));
+    }
+
+
+    VulkanRenderPassManager::VulkanRenderPassManager()
+    {
+
+    }
+
+    void VulkanRenderPassManager::AddRenderPass(VX::Ref<VulkanRenderPass> renderPass)
+    {
+        // note that this will overwrite the current one
+        m_renderPassMap[renderPass->Name] = renderPass->RenderPass;
+    }
+
+    void VulkanRenderPassManager::Reload()
+    {
+        
+    }
+
+    VkRenderPass VulkanRenderPassManager::GetRenderPass(const std::string & name)
+    {
+        auto it = m_renderPassMap.find(name);
+        if(it != m_renderPassMap.end())
+        {
+            return it->second;
+        }else
+        {
+            return nullptr;
+        }
     }
 }

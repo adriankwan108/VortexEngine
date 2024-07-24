@@ -16,7 +16,7 @@ namespace vkclass
         VX_CORE_INFO("VulkanFrameBuffer: FrameBuffer destroyed.");
     }
 
-    void VulkanFrameBuffer::AddRenderPass(vkclass::VulkanRenderPass* renderPass)
+    void VulkanFrameBuffer::AddRenderPass(VX::Ref<vkclass::VulkanRenderPass> renderPass)
     {
         m_renderPass = renderPass->RenderPass;
     }

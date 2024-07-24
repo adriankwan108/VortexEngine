@@ -10,39 +10,34 @@
 
 namespace vkclass
 {
-    struct SubpassAttachment
+    enum class SubpassType
     {
-        VkAttachmentDescription description; // describe format, data operations before/after rendering
-        VkAttachmentReference reference; // specify usage, attachment to reference by index for ordering
-    };
-
-    // subpass essential variables
-    struct SubpassAttachmentInfo
-    {
-        VkFormat format; // i.e. swapchain format
-        
-        // enable multi-sampling ?
-        VkSampleCountFlagBits imageSampleCount = VK_SAMPLE_COUNT_1_BIT;
+        main
     };
 
     class VulkanSubpass
     {
     public:
-        VulkanSubpass(std::string name);
+        VulkanSubpass(SubpassType subpassType, VkFormat dstFormat);
         ~VulkanSubpass();
         
-        void AddAttachment(SubpassAttachmentInfo info);
-        void Create();
-        
-        const std::string& Name = m_name;
         const VkSubpassDescription& Subpass = m_subpass;
-        const std::vector<SubpassAttachment>& Attachments = m_attachments;
+        //const std::vector<SubpassAttachment>& Attachments = m_attachments;
         
+        std::vector<VkAttachmentDescription> GetAttachments() { return m_attachments; }
+        std::vector<VkSubpassDependency> GetDependencies() { return m_dependencies; }
     private:
-        std::string m_name = "";
         VkSubpassDescription m_subpass{};
         
-        std::vector<SubpassAttachment> m_attachments;
+        // std::vector<SubpassAttachment> m_attachments;
+        std::vector<VkAttachmentDescription> m_attachments;
+        std::vector<VkAttachmentReference> m_references;
+        std::vector<VkSubpassDependency> m_dependencies;
         
+    private:
+        // TODO: make it as generic builder functions
+        VkAttachmentDescription createAttachment(VkFormat format);
+        VkAttachmentReference   createReference();
+        VkSubpassDependency     createDependency();
     };
 }

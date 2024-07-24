@@ -71,10 +71,11 @@ namespace VX
         vkclass::VulkanSyncManager m_SyncManager;
         vkclass::VulkanCommandManager m_CommandManager;
         vkclass::VulkanDescriptorManager m_DescriptorManager;
+        vkclass::VulkanRenderPassManager m_RenderPassManager;
         
         // dynamic life-time, due to recreation by window resize
         VX::Scope<vkclass::VulkanSwapChain> m_SwapChain;
-        vkclass::VulkanRenderPass* m_RenderPass;
+        VX::Ref<vkclass::VulkanRenderPass> m_RenderPass; // TODO: this should be scope actually, and owned by manager
         std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;
         
     private: // var

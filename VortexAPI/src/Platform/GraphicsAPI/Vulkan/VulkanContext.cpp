@@ -9,7 +9,8 @@ namespace VX
         m_Device(&m_Instance, &m_Surface, m_enableValidation),
         m_SyncManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
         m_CommandManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
-        m_DescriptorManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame)
+        m_DescriptorManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
+        m_RenderPassManager()
     {
 
     }
@@ -19,11 +20,6 @@ namespace VX
         for(auto framebuffer: m_FrameBuffers)
         {
             delete framebuffer;
-        }
-        
-        if(m_RenderPass != nullptr)
-        {
-            delete  m_RenderPass;
         }
         
         
@@ -50,7 +46,6 @@ namespace VX
         m_SwapChain = VX::CreateScope<vkclass::VulkanSwapChain>(&m_Surface);
         m_SwapChain->CreateSwapChain(m_isVSync);
         
-        m_RenderPass = new vkclass::VulkanRenderPass();
         createRenderPass();
         
         vkclass::VulkanRendererAPI::SetCommandManager(&m_CommandManager);
@@ -149,17 +144,15 @@ namespace VX
 
     void VulkanContext::createRenderPass()
     {
-        vkclass::VulkanSubpass GeometrySubpass("Geometry");
-        // add attachment to subpass
-        vkclass::SubpassAttachmentInfo subpassInfo;
-        subpassInfo.format = m_SwapChain->SurfaceFormat.format;
-        GeometrySubpass.AddAttachment(subpassInfo);
-        GeometrySubpass.Create();
-
-        // create render pass (from subpass pool), with dependency
+        m_RenderPass = VX::CreateRef<vkclass::VulkanRenderPass>("main");
+        vkclass::VulkanSubpass GeometrySubpass(
+            vkclass::SubpassType::main,
+            m_SwapChain->SurfaceFormat.format
+        );
         m_RenderPass->AddSubpass(GeometrySubpass);
-        m_RenderPass->AddDependency();
         m_RenderPass->Create();
+        
+        m_RenderPassManager.AddRenderPass(m_RenderPass);
     }
 
     void VulkanContext::resizeHelper()
@@ -186,7 +179,7 @@ namespace VX
         
         if(m_RenderPass != nullptr)
         {
-            delete  m_RenderPass;
+            m_RenderPass.reset();
         }
         
         m_SwapChain.reset();
@@ -196,7 +189,6 @@ namespace VX
         m_SwapChain->CreateSwapChain(m_isVSync);
         
         // in theory, when moving a window from standard to HDR monitor, render pass should be recreated
-        m_RenderPass = new vkclass::VulkanRenderPass();
         createRenderPass();
         
         createFrameBuffers();
