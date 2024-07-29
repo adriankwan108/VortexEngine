@@ -42,14 +42,18 @@ namespace vkclass
     {
     public:
         VulkanRenderPassManager();
-        ~VulkanRenderPassManager() = default;
+        ~VulkanRenderPassManager();
         
-        void AddRenderPass(VX::Ref<VulkanRenderPass> renderPass);
-        void Reload();
+        void Init(VkFormat mainFormat);
+        void AddRenderPass(VX::Scope<VulkanRenderPass>& renderPass);
+        
+        // TODO: generic reload; for now, this just destroy and rebuild renderpass & subpass
+        void Reload(const std::string& name, VkFormat format);
+
         VkRenderPass GetRenderPass(const std::string& name);
         
     private:
-        std::map<std::string, VkRenderPass> m_renderPassMap;
-        // createVulkanRenderPass();
+        std::map<std::string, VX::Scope<VulkanRenderPass>> m_renderPassMap;
+        
     };
 }

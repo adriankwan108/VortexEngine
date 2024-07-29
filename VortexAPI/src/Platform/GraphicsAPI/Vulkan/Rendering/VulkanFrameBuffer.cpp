@@ -16,9 +16,14 @@ namespace vkclass
         VX_CORE_INFO("VulkanFrameBuffer: FrameBuffer destroyed.");
     }
 
-    void VulkanFrameBuffer::AddRenderPass(VX::Ref<vkclass::VulkanRenderPass> renderPass)
+    void VulkanFrameBuffer::SetRenderPass(const VkRenderPass& renderPass)
     {
-        m_renderPass = renderPass->RenderPass;
+        if(renderPass ==  VK_NULL_HANDLE)
+        {
+            VX_CORE_ERROR("VulkanFrameBuffer::Set null renderpass.");
+            std::runtime_error("VulkanFrameBuffer::Set null renderpass.");
+        }
+        m_renderPass = renderPass;
     }
 
     void VulkanFrameBuffer::SetUpFrameBuffer(std::vector<VkImageView> imageViews)

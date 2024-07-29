@@ -26,23 +26,21 @@ namespace vkclass
     {
         m_subpasses.push_back(subpass.Subpass);
         
-        VX_CORE_TRACE("RenderPass: Main attachment count before: {0}", m_attachments.size());
         if(m_attachments.empty())
         {
             m_attachments = subpass.GetAttachments();
-        }else{
+        }else
+        {
             m_attachments.insert(m_attachments.end(), subpass.GetAttachments().begin(), subpass.GetAttachments().end());
         }
-        VX_CORE_TRACE("RenderPass: Main attachments count after: {0}", m_attachments.size());
-        
-        VX_CORE_TRACE("RenderPass: Main dependencies count before: {0}", m_dependencies.size());
+
         if(m_dependencies.empty())
         {
             m_dependencies = subpass.GetDependencies();
-        }else{
+        }else
+        {
             m_dependencies.insert(m_dependencies.end(), subpass.GetDependencies().begin(), subpass.GetDependencies().end());
         }
-        VX_CORE_TRACE("RenderPass: Main dependencies count after: {0}", m_dependencies.size());
     }
 
     void VulkanRenderPass::Create()
@@ -52,7 +50,6 @@ namespace vkclass
         // attachments
         createInfo.attachmentCount = static_cast<uint32_t>(m_attachments.size());
         createInfo.pAttachments = m_attachments.data();
-        VX_CORE_INFO("Render Pass: attachment count: {0}", m_attachments.size());
         // subpasses
         createInfo.subpassCount = static_cast<uint32_t>(m_subpasses.size());
         createInfo.pSubpasses = m_subpasses.data();
@@ -61,6 +58,7 @@ namespace vkclass
         createInfo.pDependencies = m_dependencies.data();
         
         VK_CHECK_RESULT(vkCreateRenderPass(m_device, &createInfo, nullptr, &m_renderPass));
+        VX_CORE_INFO("VulkanRenderPass: \"{0}\" created", m_name);
     }
 
 
@@ -69,26 +67,60 @@ namespace vkclass
 
     }
 
-    void VulkanRenderPassManager::AddRenderPass(VX::Ref<VulkanRenderPass> renderPass)
+    VulkanRenderPassManager::~VulkanRenderPassManager()
+    {
+        m_renderPassMap.clear();
+    }
+
+    void VulkanRenderPassManager::Init(VkFormat mainFormat)
+    {
+        // create main render pass
+        auto mainRenderPass = VX::CreateScope<vkclass::VulkanRenderPass>("main");
+        vkclass::VulkanSubpass GeometrySubpass(
+            vkclass::SubpassType::main, mainFormat
+        );
+        mainRenderPass->AddSubpass(GeometrySubpass);
+        mainRenderPass->Create();
+        
+        AddRenderPass(mainRenderPass);
+    }
+
+    void VulkanRenderPassManager::AddRenderPass(VX::Scope<VulkanRenderPass>& renderPass)
     {
         // note that this will overwrite the current one
-        m_renderPassMap[renderPass->Name] = renderPass->RenderPass;
+        m_renderPassMap[renderPass->Name] = std::move(renderPass);
     }
 
-    void VulkanRenderPassManager::Reload()
+    void VulkanRenderPassManager::Reload(const std::string &name, VkFormat format)
     {
-        
+        // delete
+        auto it = m_renderPassMap.find(name);
+        if(it != m_renderPassMap.end())
+        {
+            m_renderPassMap.erase(it);
+            // create main render pass
+            auto mainRenderPass = VX::CreateScope<vkclass::VulkanRenderPass>("main");
+            vkclass::VulkanSubpass GeometrySubpass(
+                vkclass::SubpassType::main, format
+            );
+            mainRenderPass->AddSubpass(GeometrySubpass);
+            mainRenderPass->Create();
+            AddRenderPass(mainRenderPass);
+        }else
+        {
+            VX_CORE_WARN("VulkanRenderPassManager::Reload: name not found.");
+        }
     }
 
-    VkRenderPass VulkanRenderPassManager::GetRenderPass(const std::string & name)
+    VkRenderPass VulkanRenderPassManager::GetRenderPass(const std::string& name)
     {
         auto it = m_renderPassMap.find(name);
         if(it != m_renderPassMap.end())
         {
-            return it->second;
+            return it->second->RenderPass;
         }else
         {
-            return nullptr;
+            return VK_NULL_HANDLE;
         }
     }
 }

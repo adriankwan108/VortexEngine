@@ -20,7 +20,7 @@ namespace vkclass
         explicit VulkanFrameBuffer(vkclass::VulkanDevice* device, uint32_t width, uint32_t height);
         ~VulkanFrameBuffer();
         
-        void AddRenderPass(VX::Ref<vkclass::VulkanRenderPass> renderPass);
+        void SetRenderPass(const VkRenderPass& renderPass);
         void SetUpFrameBuffer(std::vector<VkImageView> imageViews);
         
     public:

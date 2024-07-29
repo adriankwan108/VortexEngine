@@ -31,29 +31,26 @@ namespace VX
 
     void VulkanContext::Init()
     {
-        VX_CORE_INFO("Initiating Vulkan resources...");
-        
-        vkclass::DescriptorManager::Init(&m_DescriptorManager);
-        
+        VX_CORE_INFO("VulkanContext:: Initiating Vulkan resources classes...");
         vkclass::VulkanSwapChain::Init(&m_Device);
         vkclass::VulkanRenderPass::Init(m_Device.LogicalDevice);
-
         vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
         vkclass::VulkanBuffer::Init(&m_Device, &m_CommandManager);
-
         vkclass::VulkanVertexArray::Init(&m_CommandManager);
-        
-        m_SwapChain = VX::CreateScope<vkclass::VulkanSwapChain>(&m_Surface);
-        m_SwapChain->CreateSwapChain(m_isVSync);
-        
-        createRenderPass();
-        
-        vkclass::VulkanRendererAPI::SetCommandManager(&m_CommandManager);
-        
         vkclass::VulkanCamera::Init(&m_Device);
         vkclass::VulkanTexture2D::Init(&m_Device, &m_CommandManager);
         vkclass::VulkanShader::Init(m_Device.LogicalDevice);
         vkclass::VulkanShaderPass::Init(m_Device.LogicalDevice);
+        vkclass::DescriptorManager::Init(&m_DescriptorManager);
+        
+        VX_CORE_INFO("VulkanContext:: Initiating Vulkan resources...");
+        m_SwapChain = VX::CreateScope<vkclass::VulkanSwapChain>(&m_Surface);
+        m_SwapChain->CreateSwapChain(m_isVSync);
+        m_RenderPassManager.Init(m_SwapChain->SurfaceFormat.format);
+        
+        VX_CORE_INFO("VulkanContext:: Initiating RendererAPI...");
+        vkclass::VulkanRendererAPI::SetCommandManager(&m_CommandManager);
+        
         // vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager, m_RenderPass->RenderPass);
         
         createFrameBuffers();
@@ -142,19 +139,6 @@ namespace VX
         }
     }
 
-    void VulkanContext::createRenderPass()
-    {
-        m_RenderPass = VX::CreateRef<vkclass::VulkanRenderPass>("main");
-        vkclass::VulkanSubpass GeometrySubpass(
-            vkclass::SubpassType::main,
-            m_SwapChain->SurfaceFormat.format
-        );
-        m_RenderPass->AddSubpass(GeometrySubpass);
-        m_RenderPass->Create();
-        
-        m_RenderPassManager.AddRenderPass(m_RenderPass);
-    }
-
     void VulkanContext::resizeHelper()
     {
         //VX_CORE_TRACE("Vulkan: Resize helper delivering...");
@@ -177,11 +161,6 @@ namespace VX
             delete framebuffer;
         }
         
-        if(m_RenderPass != nullptr)
-        {
-            m_RenderPass.reset();
-        }
-        
         m_SwapChain.reset();
         
         // recreate all necessary resources
@@ -189,7 +168,7 @@ namespace VX
         m_SwapChain->CreateSwapChain(m_isVSync);
         
         // in theory, when moving a window from standard to HDR monitor, render pass should be recreated
-        createRenderPass();
+        m_RenderPassManager.Reload("main", m_SwapChain->SurfaceFormat.format);
         
         createFrameBuffers();
     }
@@ -204,7 +183,7 @@ namespace VX
         {
             // one swapchain image : one framebuffer currently
             m_FrameBuffers[i] = new vkclass::VulkanFrameBuffer(&m_Device, m_SwapChain->Extent.width, m_SwapChain->Extent.height );
-            m_FrameBuffers[i]->AddRenderPass(m_RenderPass);
+            m_FrameBuffers[i]->SetRenderPass(m_RenderPassManager.GetRenderPass("main"));
             std::vector<VkImageView> imageViews{};
 //            for(const auto& buffer : m_SwapChain->ImageBuffers)
 //            {
