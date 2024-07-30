@@ -12,6 +12,7 @@
 #include "Core/VulkanTools.hpp"
 #include "Core/VulkanCommandManager.hpp"
 #include "Core/VulkanDescriptorManager.hpp"
+#include "VulkanRenderPass.hpp"
 #include "VulkanPipelineBuilder.hpp"
 #include "VulkanShaderLayout.hpp"
 #include "VulkanTexture.hpp"
@@ -194,16 +195,18 @@ namespace vkclass
 
         virtual void Build() override;
         virtual void Bind() override;
+
+        static void Init(VulkanRenderPassManager* renderPassManager);
     public:
-        void SetRenderPass();
         VX::Ref<VulkanShaderPass> GetVulkanShaderPass() { return m_VulkanShaderPass; }
         
     private:
-        VX::Ref<VulkanShaderPass> m_VulkanShaderPass;
+        static VulkanRenderPassManager* s_renderPassManager;
 
+        VX::Ref<VulkanShaderPass> m_VulkanShaderPass;
         // request renderpass
         // request resources
-        // pipeline
+        VkPipeline m_pipeline;
         VulkanPipelineBuilder m_builder;
     };
 }

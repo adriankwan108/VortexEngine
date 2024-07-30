@@ -158,6 +158,11 @@ namespace VX
         }
     };
 
+    enum class RenderPassStage
+    {
+        main
+    };
+
     /*
     * An api-agnostic shader, reading targeted shader path, and reflecting elements (paramaters inside shader) into layout
     * In Vulkan, this also manage shader module
@@ -213,12 +218,13 @@ namespace VX
     public:
         static Ref<ShaderEffect> Create(Ref<ShaderPass> shaderPass);
 
-        void SetRenderPass();
+        void SetRenderPass(RenderPassStage renderPassStage);
         
         virtual void Build() = 0;
         virtual void Bind() = 0;
 
     protected:
         Ref<ShaderPass> m_shaderPass;
+        RenderPassStage m_renderPassStage;
     };
 }

@@ -66,7 +66,7 @@ Playground::Playground()
     m_basicShaderPass->Prepare();
     
     m_basicShaderEffect = VX::ShaderEffect::Create(m_basicShaderPass);
-    // ShaderEffect->RenderPass[0] = ...;
+    m_basicShaderEffect->SetRenderPass(VX::RenderPassStage::main);
     m_basicShaderEffect->Build();
     
     m_basicMaterial = VX::Material::Create(m_basicShaderEffect);

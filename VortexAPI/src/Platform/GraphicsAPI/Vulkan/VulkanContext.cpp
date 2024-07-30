@@ -47,6 +47,7 @@ namespace VX
         m_SwapChain = VX::CreateScope<vkclass::VulkanSwapChain>(&m_Surface);
         m_SwapChain->CreateSwapChain(m_isVSync);
         m_RenderPassManager.Init(m_SwapChain->SurfaceFormat.format);
+        vkclass::VulkanShaderEffect::Init(&m_RenderPassManager);
         
         VX_CORE_INFO("VulkanContext:: Initiating RendererAPI...");
         vkclass::VulkanRendererAPI::SetCommandManager(&m_CommandManager);

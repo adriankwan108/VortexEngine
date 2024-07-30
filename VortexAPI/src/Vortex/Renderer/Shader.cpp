@@ -93,8 +93,8 @@ namespace VX
     }
 
 
-    void ShaderEffect::SetRenderPass()
+    void ShaderEffect::SetRenderPass(RenderPassStage renderPassStage)
     {
-
+        m_renderPassStage = renderPassStage;
     }
 }

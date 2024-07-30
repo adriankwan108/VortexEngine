@@ -374,6 +374,8 @@ namespace vkclass
         s_device = device;
     }
 
+    VulkanRenderPassManager* VulkanShaderEffect::s_renderPassManager = nullptr;
+
     VulkanShaderEffect::VulkanShaderEffect(VX::Ref<VX::ShaderPass> shaderPass)
     {
         m_shaderPass = shaderPass;
@@ -388,16 +390,29 @@ namespace vkclass
         }
         m_builder.SetVertexInput(m_VulkanShaderPass->GetVertexInputBinding(), m_VulkanShaderPass->GetVertexInputAttributes());
         m_builder.SetCullMode(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
-        //    m_pipeline = builder.BuildPipeline(m_pipelineLayout, s_RenderPass);
+
+        switch (m_renderPassStage)
+        {
+        case VX::RenderPassStage::main:
+            m_pipeline = m_builder.BuildPipeline(m_VulkanShaderPass->GetPipelineLayout(), s_renderPassManager->GetRenderPass("main"));
+            break;
+        default:
+            break;
+        }
         
-//        for( auto& shader : m_VulkanShaderPass->GetVulkanShaders())
-//        {
-//            shader->ClearModule();
-//        }
+        // for( auto& shader : m_VulkanShaderPass->GetVulkanShaders())
+        // {
+        //     shader->ClearModule();
+        // }
     }
 
     void VulkanShaderEffect::Bind()
     {
         // bind pipeline
+    }
+
+    void VulkanShaderEffect::Init(VulkanRenderPassManager* renderPassManager)
+    {
+        s_renderPassManager = renderPassManager;
     }
 }
