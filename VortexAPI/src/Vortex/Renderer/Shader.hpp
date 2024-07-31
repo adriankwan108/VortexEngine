@@ -86,7 +86,7 @@ namespace VX
             // vector
             if (type.basetype == spirv_cross::SPIRType::Float)
             {
-                // VX_CORE_TRACE("GetShaderDataType: Float{0}",vecSize);
+                VX_CORE_TRACE("GetShaderDataType: Float{0}",vecSize);
                 switch (vecSize)
                 {
                     case 1: return VX::ShaderDataType::Float;
@@ -97,7 +97,7 @@ namespace VX
                 }
             }else if(type.basetype == spirv_cross::SPIRType::Int)
             {
-                // VX_CORE_TRACE("GetShaderDataType: Int{0}",vecSize);
+                VX_CORE_TRACE("GetShaderDataType: Int{0}",vecSize);
                 switch (vecSize)
                 {
                     case 1: return VX::ShaderDataType::Int;
@@ -120,6 +120,7 @@ namespace VX
         }else if(columnSize == 0)
         {
             // basic type
+            VX_CORE_ASSERT(false, "GetShaderDataType: Not supported yet");
         }
         
         VX_CORE_TRACE("GetShaderDataType: None");
@@ -151,8 +152,10 @@ namespace VX
         ShaderBlock(int location, int set, int binding, const std::vector<ShaderElement>& elements)
             : Location(location), Set(set), Binding(binding), Elements(elements)
         {
+            VX_CORE_TRACE("Block: Set{0}, binding{1}", Set, Binding);
             for (const auto& element : Elements)
             {
+                VX_CORE_TRACE("Element {0}: {1} ", element.Name, element.Size);
                 Stride += element.Size;
             }
         }
@@ -217,6 +220,7 @@ namespace VX
     {
     public:
         static Ref<ShaderEffect> Create(Ref<ShaderPass> shaderPass);
+        virtual ~ShaderEffect() = default;
 
         void SetRenderPass(RenderPassStage renderPassStage);
         

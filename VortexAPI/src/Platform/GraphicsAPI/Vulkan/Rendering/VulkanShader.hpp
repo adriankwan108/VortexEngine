@@ -92,8 +92,12 @@ namespace vkclass
         {
         case VX::ShaderDataType::None:     return VK_FORMAT_UNDEFINED;
         case VX::ShaderDataType::Float:    return VK_FORMAT_R32_SFLOAT;
-        case VX::ShaderDataType::Float2:   return VK_FORMAT_R32G32_SFLOAT;
-        case VX::ShaderDataType::Float3:   return VK_FORMAT_R32G32B32_SFLOAT;
+        case VX::ShaderDataType::Float2:   
+            VX_CORE_TRACE("Format: VK_FORMAT_R32G32_SFLOAT");
+            return VK_FORMAT_R32G32_SFLOAT;
+        case VX::ShaderDataType::Float3:   
+            VX_CORE_TRACE("Format: VK_FORMAT_R32G32B32_SFLOAT");
+            return VK_FORMAT_R32G32B32_SFLOAT;
         case VX::ShaderDataType::Float4:   return VK_FORMAT_R32G32B32A32_SFLOAT;
         case VX::ShaderDataType::Mat3:     return VK_FORMAT_R32G32B32_SFLOAT;
         case VX::ShaderDataType::Mat4:     return VK_FORMAT_R32G32B32A32_SFLOAT;
@@ -122,7 +126,7 @@ namespace vkclass
         static void Init(VkDevice device);
         
         void ClearModule();
-        VkShaderModule GetModule();
+        const VkShaderModule& GetModule();
         
     protected:
         virtual bool read() override;
@@ -166,9 +170,9 @@ namespace vkclass
         virtual void Prepare() override;
     public:
         // Vulkan Specific functions
-        VkVertexInputBindingDescription GetVertexInputBinding() { return m_bindingDescription; }
-        std::vector<VkVertexInputAttributeDescription> GetVertexInputAttributes() { return m_attributeDescriptions; }
-        VkPipelineLayout GetPipelineLayout() { return m_pipelineLayout; }
+        const VkVertexInputBindingDescription& GetVertexInputBinding() { return m_bindingDescription; }
+        const std::vector<VkVertexInputAttributeDescription>& GetVertexInputAttributes() { return m_attributeDescriptions; }
+        const VkPipelineLayout& GetPipelineLayout() { return m_pipelineLayout; }
         std::vector<VX::Ref<VulkanShader>> GetVulkanShaders();
         static void Init(VkDevice device);
         
@@ -177,7 +181,7 @@ namespace vkclass
         std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
         std::vector<DescriptorLayoutHandle> m_descriptorLayoutHandles;
         // std::vector<std::pair<VkPushConstantRange, void*>> m_pushConstants;
-        VkPipelineLayout m_pipelineLayout;
+        VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
         
         static VkDevice s_device;
 
@@ -192,15 +196,17 @@ namespace vkclass
     {
     public:
         VulkanShaderEffect(VX::Ref<VX::ShaderPass> shaderPass);
+        virtual ~VulkanShaderEffect() override;
 
         virtual void Build() override;
         virtual void Bind() override;
 
-        static void Init(VulkanRenderPassManager* renderPassManager);
+        static void Init(VkDevice device, VulkanRenderPassManager* renderPassManager);
     public:
         VX::Ref<VulkanShaderPass> GetVulkanShaderPass() { return m_VulkanShaderPass; }
         
     private:
+        static VkDevice s_device;
         static VulkanRenderPassManager* s_renderPassManager;
 
         VX::Ref<VulkanShaderPass> m_VulkanShaderPass;

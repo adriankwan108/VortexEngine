@@ -6,7 +6,7 @@ namespace vkclass
 
     VulkanPipelineBuilder::VulkanPipelineBuilder()
     {
-        // Clear();
+        Clear();
     }
 
     void VulkanPipelineBuilder::Init(VkDevice device)
@@ -120,6 +120,7 @@ namespace vkclass
     {
         m_vertexInputInfo.vertexBindingDescriptionCount = 1;
         m_vertexInputInfo.pVertexBindingDescriptions = &bindings;
+        VX_CORE_TRACE("VulkanPipelineBuilder::SetVertexInput: attritbute count: {0}", static_cast<uint32_t>(attributes.size()));
         m_vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributes.size());
         m_vertexInputInfo.pVertexAttributeDescriptions = attributes.data();
         

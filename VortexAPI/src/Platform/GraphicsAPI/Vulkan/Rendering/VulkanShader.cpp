@@ -149,6 +149,7 @@ namespace vkclass
         spirv_cross::CompilerGLSL glsl(m_shaderCode);
         spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 
+        VX_CORE_INFO("VulkanShader: Reflecting...");
         for (auto& resource: resources.stage_inputs)
         {
             unsigned location = glsl.get_decoration(resource.id, spv::DecorationLocation);
@@ -230,7 +231,7 @@ namespace vkclass
         VK_CHECK_RESULT(vkCreateShaderModule(s_device, &moduleCI, nullptr, &m_module));
     }
 
-    VkShaderModule VulkanShader::GetModule()
+    const VkShaderModule& VulkanShader::GetModule()
     {
         if(!isModuleLoaded)
         {
@@ -321,6 +322,7 @@ namespace vkclass
 
     void VulkanShaderPass::prepareVertexShader(VX::Ref<VX::Shader> shader)
     {
+        VX_CORE_INFO("ShaderPass: preparing vertex shader...");
         auto& inputLayout = shader->GetShaderLayout("Input");
         for (const auto& block : inputLayout)
         {
@@ -334,6 +336,7 @@ namespace vkclass
             attribute.binding = block.Binding;
             attribute.location = block.Location;
             attribute.offset = m_vertexStride;
+            VX_CORE_TRACE("ShaderPass: binding: {0}, location: {1}, offset: {2}", block.Binding ,block.Location, attribute.offset);
             attribute.format = ShaderDataTypeToVulkanFormat(block.Elements[0].Type);
 
             m_attributeDescriptions.push_back(attribute);
@@ -376,14 +379,22 @@ namespace vkclass
 
     VulkanRenderPassManager* VulkanShaderEffect::s_renderPassManager = nullptr;
 
+    VkDevice vkclass::VulkanShaderEffect::s_device = VK_NULL_HANDLE;
+
     VulkanShaderEffect::VulkanShaderEffect(VX::Ref<VX::ShaderPass> shaderPass)
     {
         m_shaderPass = shaderPass;
         m_VulkanShaderPass = std::static_pointer_cast<VulkanShaderPass>(shaderPass);
     }
 
+    VulkanShaderEffect::~VulkanShaderEffect()
+    {
+        vkDestroyPipeline(s_device, m_pipeline, nullptr);
+    }
+
     void VulkanShaderEffect::Build()
     {
+        m_builder.Clear();
         for( auto& shader : m_VulkanShaderPass->GetVulkanShaders())
         {
             m_builder.AddShader(shader->GetModule(), VulkanShaderStageFlagBits(shader->GetStage()));
@@ -411,8 +422,9 @@ namespace vkclass
         // bind pipeline
     }
 
-    void VulkanShaderEffect::Init(VulkanRenderPassManager* renderPassManager)
+    void VulkanShaderEffect::Init(VkDevice device, VulkanRenderPassManager* renderPassManager)
     {
+        s_device = device;
         s_renderPassManager = renderPassManager;
     }
 }
