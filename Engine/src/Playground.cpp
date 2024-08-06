@@ -6,17 +6,13 @@ Playground::Playground()
     VX_INFO("{0}: Creating...", GetName());
     
     m_camera = VX::OrthographicCamera::Create(-1.6f, 1.6f, -0.9f, 0.9f);
+
     // m_texture = VX::Texture2D::Create();
     // m_texture->LoadFromFile("Resources/VortexAPI/textures/statue-1275469_1280.jpg");
     
     // TODO: Shader to BufferLayout(ShaderLayout) transformer (Reflection)
     // define shader layout
-    /*VX::VertexShaderLayout layout = {
-        {VX::ShaderDataType::Float2, "pos"},
-        {VX::ShaderDataType::Float3, "color"},
-        {VX::ShaderDataType::Float2, "texCoor"}
-    };
-    
+    /*    
     VX::UniformShaderLayout viewProjLayout = {
         {VX::ShaderDataType::Mat4, "view"},
         {VX::ShaderDataType::Mat4, "proj"}
@@ -29,10 +25,10 @@ Playground::Playground()
     // simulate vertices data (counter-clockwise, left-hand)
     std::vector<Geometry::Vertex> vertices =
     {
-        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}, // left bottom
-        {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},  // right bottom
-        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},   // right top
-        {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}   // left top
+        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}, // left  bottom
+        {{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}}, // right bottom
+        {{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}, // right top
+        {{-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}  // left  top
     };
     
     // simulate index data
@@ -59,10 +55,10 @@ Playground::Playground()
     m_vertexArray->SetIndexBuffer(m_indexBuffer);*/
 
     m_basicShaderPass = VX::ShaderPass::Create();
-    auto baseVertShader = VX::Shader::Create("TriangleVert", "Resources/VortexAPI/shaders/vert.spv", VX::ShaderStage::Vertex);
-    auto baseFragShader = VX::Shader::Create("TriangleFrag", "Resources/VortexAPI/shaders/frag.spv", VX::ShaderStage::Fragment);
-    m_basicShaderPass->AddShader(baseVertShader);
-    m_basicShaderPass->AddShader(baseFragShader);
+    m_vertShader = VX::Shader::Create("TriangleVert", "Resources/VortexAPI/shaders/vert.spv", VX::ShaderStage::Vertex);
+    m_fragShader = VX::Shader::Create("TriangleFrag", "Resources/VortexAPI/shaders/frag.spv", VX::ShaderStage::Fragment);
+    m_basicShaderPass->AddShader(m_vertShader);
+    m_basicShaderPass->AddShader(m_fragShader);
     m_basicShaderPass->Prepare();
     
     m_basicShaderEffect = VX::ShaderEffect::Create(m_basicShaderPass);
@@ -74,7 +70,8 @@ Playground::Playground()
 
     m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices), sizeof(Geometry::Vertex));
     m_indexBuffer = VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices));
-    // add draw cmd
+    VX_TRACE("AddDrawCmd: triangleIndices.size:{0}", static_cast<uint32_t>(triangleIndices.size()));
+    m_indexBuffer->AddDrawCmd(static_cast<uint32_t>(triangleIndices.size()));
 
     m_vertexArray->AddVertexBuffer(m_vertexBuffer);
     m_vertexArray->SetIndexBuffer(m_indexBuffer);
@@ -112,6 +109,16 @@ void Playground::OnUpdate(VX::Timestep ts)
     if (VX::Input::IsKeyPressed(VX::Key::D))
     {
         m_cameraPosition.x -= m_CameraMoveSpeed * ts;
+    }
+
+    if (VX::Input::IsKeyPressed(VX::Key::W))
+    {
+        m_cameraPosition.y += m_CameraMoveSpeed * ts;
+    }
+
+    if (VX::Input::IsKeyPressed(VX::Key::S))
+    {
+        m_cameraPosition.y -= m_CameraMoveSpeed * ts;
     }
 
     m_camera->SetPosition(m_cameraPosition);

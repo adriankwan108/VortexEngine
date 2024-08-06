@@ -40,23 +40,14 @@ namespace VX
             uint32_t indexCount;
             uint32_t firstIndex;
             int32_t vertexOffset;
-            
-            int32_t offsetX;
-            int32_t offsetY;
-            uint32_t width;
-            uint32_t height;
         };
         
-        virtual void AddDrawCmd(uint32_t indexCount, uint32_t firstIndex = 0, int32_t vertexOffset = 0,
-                                int32_t offsetX = 0,
-                                int32_t offsetY = 0,
-                                uint32_t width = 0,
-                                uint32_t height = 0);
-        virtual std::vector<DrawCmdInfo> GetDrawInfoList() const { return m_drawInfoList; }
+        virtual void AddDrawCmd(uint32_t indexCount, uint32_t firstIndex = 0, int32_t vertexOffset = 0);
+        virtual std::vector<DrawCmdInfo> GetDrawCmdInfoList() const { return m_drawCmdInfoList; }
         
         static Ref<IndexBuffer> Create(void* data, uint64_t size);
     private:
-        std::vector<DrawCmdInfo> m_drawInfoList;
+        std::vector<DrawCmdInfo> m_drawCmdInfoList;
     };
 
     

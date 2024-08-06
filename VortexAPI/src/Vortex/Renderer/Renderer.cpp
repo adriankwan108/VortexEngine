@@ -53,13 +53,12 @@ namespace VX
 
     void Renderer::Submit(const Ref<Material>& material, const Ref<VertexArray>& vertexArray)
     {
-        /* update per-material / per-object data here */
-//        material->Bind();
-//
-//        if(vertexArray != nullptr)
-//        {
-//            vertexArray->Bind();
-//            RenderCommand::DrawIndexed(vertexArray);
-//        }
+        material->Bind();
+
+        if(vertexArray != nullptr)
+        {
+            vertexArray->Bind();
+            RenderCommand::DrawIndexed(vertexArray);
+        }
     }
 }

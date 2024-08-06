@@ -31,19 +31,14 @@ namespace VX
         return nullptr;
     }
 
-    void IndexBuffer::AddDrawCmd(uint32_t indexCount, uint32_t firstIndex, int32_t vertexOffset, int32_t offsetX, int32_t offsetY, uint32_t width, uint32_t height)
+    void IndexBuffer::AddDrawCmd(uint32_t indexCount, uint32_t firstIndex, int32_t vertexOffset)
     {
-        DrawCmdInfo info;
+        DrawCmdInfo info{};
         info.indexCount = indexCount;
         info.firstIndex = firstIndex;
         info.vertexOffset = vertexOffset;
-        
-        info.offsetX = offsetX;
-        info.offsetY = offsetY;
-        info.width = width;
-        info.height = height;
-        
-        m_drawInfoList.push_back(info);
+
+        m_drawCmdInfoList.push_back(info);
     }
 
     Ref<IndexBuffer> IndexBuffer::Create(void* data, uint64_t size)

@@ -26,7 +26,7 @@ namespace VX
         VX_CORE_INFO("Application: preparing renderer...");
         Renderer::Init();
         
-        VX_CORE_INFO("Application: preparing ui layer...");
+        // VX_CORE_INFO("Application: preparing ui layer...");
         // m_uiLayer = UILayer::Create();
         // PushOverlay(m_uiLayer);
         

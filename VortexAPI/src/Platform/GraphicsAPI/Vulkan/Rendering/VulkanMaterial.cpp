@@ -9,7 +9,7 @@ namespace vkclass
 
     void VulkanMaterial::Bind()
     {
-        // shader effect -> Bind
+        m_shaderEffect->Bind();
         
         // descriptor sets binding (pipelinelayout, firstSet, set count, *descriptor set)
     }

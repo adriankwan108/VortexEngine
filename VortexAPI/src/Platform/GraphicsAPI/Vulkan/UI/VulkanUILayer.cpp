@@ -161,12 +161,12 @@ namespace vkclass
                 {
                     const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[j];
                     
-                    auto x = std::max((int32_t)(pcmd->ClipRect.x), 0);
+                    /*auto x = std::max((int32_t)(pcmd->ClipRect.x), 0);
                     auto y = std::max((int32_t)(pcmd->ClipRect.y), 0);
                     auto width= (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
-                    auto height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y);
+                    auto height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y);*/
                     
-                    m_indexBuffer->AddDrawCmd(pcmd->ElemCount, indexOffset, vertexOffset, x, y, width, height);
+                    m_indexBuffer->AddDrawCmd(pcmd->ElemCount, indexOffset, vertexOffset);
                     indexOffset += pcmd->ElemCount;
                 }
                 vertexOffset += cmd_list->VtxBuffer.Size;

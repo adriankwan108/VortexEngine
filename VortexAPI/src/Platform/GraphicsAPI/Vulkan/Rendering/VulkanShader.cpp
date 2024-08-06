@@ -377,9 +377,9 @@ namespace vkclass
         s_device = device;
     }
 
-    VulkanRenderPassManager* VulkanShaderEffect::s_renderPassManager = nullptr;
-
     VkDevice vkclass::VulkanShaderEffect::s_device = VK_NULL_HANDLE;
+    VulkanRenderPassManager* VulkanShaderEffect::s_renderPassManager = nullptr;
+    VulkanCommandManager* VulkanShaderEffect::s_commandBufferManager = nullptr;
 
     VulkanShaderEffect::VulkanShaderEffect(VX::Ref<VX::ShaderPass> shaderPass)
     {
@@ -419,12 +419,20 @@ namespace vkclass
 
     void VulkanShaderEffect::Bind()
     {
-        // bind pipeline
+        if (m_pipeline == VK_NULL_HANDLE)
+        {
+            VX_CORE_WARN("VulkanShaderEffect:: Binding null pipeline");
+        }
+        else
+        {
+            s_commandBufferManager->BindPipeline(m_pipeline);
+        }
     }
 
-    void VulkanShaderEffect::Init(VkDevice device, VulkanRenderPassManager* renderPassManager)
+    void VulkanShaderEffect::Init(VkDevice device, VulkanRenderPassManager* renderPassManager, VulkanCommandManager* commandBufferManager)
     {
         s_device = device;
         s_renderPassManager = renderPassManager;
+        s_commandBufferManager = commandBufferManager;
     }
 }

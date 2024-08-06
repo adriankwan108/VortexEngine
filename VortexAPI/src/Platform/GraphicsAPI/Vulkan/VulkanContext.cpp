@@ -47,15 +47,12 @@ namespace VX
         m_SwapChain = VX::CreateScope<vkclass::VulkanSwapChain>(&m_Surface);
         m_SwapChain->CreateSwapChain(m_isVSync);
         m_RenderPassManager.Init(m_SwapChain->SurfaceFormat.format);
-        vkclass::VulkanShaderEffect::Init(m_Device.LogicalDevice, &m_RenderPassManager);
+        vkclass::VulkanShaderEffect::Init(m_Device.LogicalDevice, &m_RenderPassManager, &m_CommandManager);
         
         VX_CORE_INFO("VulkanContext:: Initiating RendererAPI...");
         vkclass::VulkanRendererAPI::SetCommandManager(&m_CommandManager);
         
-        // vkclass::VulkanShader::Init(m_Device.LogicalDevice, &m_CommandManager, m_RenderPass->RenderPass);
-        
         createFrameBuffers();
-        
     }
 
     void VulkanContext::DisplayStart()
@@ -151,7 +148,6 @@ namespace VX
             return;
         }
 
-        /* recreate swap chain */
 
         // prevent touching resources that are still in used
         vkDeviceWaitIdle(m_Device.LogicalDevice);
@@ -162,9 +158,8 @@ namespace VX
             delete framebuffer;
         }
         
+        /* recreate swap chain */
         m_SwapChain.reset();
-        
-        // recreate all necessary resources
         m_SwapChain = VX::CreateScope<vkclass::VulkanSwapChain>(&m_Surface);
         m_SwapChain->CreateSwapChain(m_isVSync);
         

@@ -16,6 +16,8 @@ public:
     
 private:
     // prepare resources here
+    VX::Ref<VX::Shader> m_vertShader;
+    VX::Ref<VX::Shader> m_fragShader;
     VX::Ref<VX::ShaderPass> m_basicShaderPass;
     VX::Ref<VX::ShaderEffect> m_basicShaderEffect;
     VX::Ref<VX::Material> m_basicMaterial;

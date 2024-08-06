@@ -151,13 +151,11 @@ namespace vkclass
     void VulkanCommandManager::BindVertexBuffer(std::vector<VkBuffer> vertexBuffers, std::vector<VkDeviceSize> offsets)
     {
         vkCmdBindVertexBuffers(m_mainCommandBuffers[m_currentFrame], 0, 1, vertexBuffers.data(), offsets.data());
-        // VX_CORE_TRACE("CmdManager: Bind vertex buffer.");
     }
 
     void VulkanCommandManager::BindIndexBuffer(VkBuffer indexBuffer, VkDeviceSize offset)
     {
         vkCmdBindIndexBuffer(m_mainCommandBuffers[m_currentFrame], indexBuffer, offset, VK_INDEX_TYPE_UINT16);
-        // VX_CORE_TRACE("CmdManager: Bind index buffer.");
     }
 
     void VulkanCommandManager::BindDescriptor(VkPipelineLayout pipelineLayout, uint32_t setIndex, const VkDescriptorSet* descriptorSetPtr)
@@ -174,9 +172,7 @@ namespace vkclass
 
     void VulkanCommandManager::DrawIndexed(uint32_t indexCount, uint32_t firstIndex, int32_t vertexOffset)
     {
-//        vkCmdDraw(m_commandBuffers[m_currentFrame], 1, 1, 0, 0);
         vkCmdDrawIndexed(m_mainCommandBuffers[m_currentFrame], indexCount, 1, firstIndex, vertexOffset, 0);
-        // VX_CORE_TRACE("CmdManager: draw indexed.");
     }
 
     void VulkanCommandManager::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)

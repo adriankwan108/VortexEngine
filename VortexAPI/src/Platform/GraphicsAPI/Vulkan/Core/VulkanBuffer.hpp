@@ -86,7 +86,7 @@ namespace vkclass
         virtual void Bind() const override;
         virtual void Unbind() const override;
         
-        VkBuffer GetBuffer() const { return m_vertexBuffer.Buffer; }
+        const VkBuffer& GetBuffer() const { return m_vertexBuffer.Buffer; }
         
     private:
         VulkanBuffer m_vertexBuffer; // optimized, device local final vertex buffer
@@ -104,7 +104,7 @@ namespace vkclass
         virtual void SetData(void* data, uint64_t size) override;
         
     public:
-        VkBuffer GetBuffer() const { return m_indexBuffer.Buffer ;}
+        const VkBuffer& GetBuffer() const { return m_indexBuffer.Buffer ;}
 
     private:
         VulkanBuffer m_indexBuffer; // optimized, device local final index buffer

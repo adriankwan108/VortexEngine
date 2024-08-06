@@ -16,7 +16,7 @@ namespace vkclass
 
     void VulkanVertexArray::Bind() const
     {
-        // OpenGL: Binding VAO, each vbo bind in their related buffer
+        // OpenGL: Binding VAO, each vbo would be bound in their related buffer
         // Vulkan: No VAO, but bind all vbos here
 
         s_commandBufferManager->BindVertexBuffer(m_vkVertexBuffers, m_vkOffsets);

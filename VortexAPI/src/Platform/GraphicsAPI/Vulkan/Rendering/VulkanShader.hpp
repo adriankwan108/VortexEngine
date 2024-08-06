@@ -201,13 +201,14 @@ namespace vkclass
         virtual void Build() override;
         virtual void Bind() override;
 
-        static void Init(VkDevice device, VulkanRenderPassManager* renderPassManager);
+        static void Init(VkDevice device, VulkanRenderPassManager* renderPassManager, VulkanCommandManager* commandBufferManager);
     public:
         VX::Ref<VulkanShaderPass> GetVulkanShaderPass() { return m_VulkanShaderPass; }
         
     private:
         static VkDevice s_device;
         static VulkanRenderPassManager* s_renderPassManager;
+        static VulkanCommandManager* s_commandBufferManager;
 
         VX::Ref<VulkanShaderPass> m_VulkanShaderPass;
         // request renderpass
