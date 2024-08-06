@@ -72,9 +72,9 @@ Playground::Playground()
     m_basicMaterial = VX::Material::Create(m_basicShaderEffect);
     // m_material->SetResource("name", *ref); // point the descriptor set to this resource
 
-    m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices));
-    // vertex buffer set layout
+    m_vertexBuffer = VX::VertexBuffer::Create(vertices.data(), MEM_SIZE(vertices), sizeof(Geometry::Vertex));
     m_indexBuffer = VX::IndexBuffer::Create(triangleIndices.data(), MEM_SIZE(triangleIndices));
+    // add draw cmd
 
     m_vertexArray->AddVertexBuffer(m_vertexBuffer);
     m_vertexArray->SetIndexBuffer(m_indexBuffer);

@@ -30,4 +30,16 @@ namespace VX
         }
         return nullptr;
     }
+
+    void VertexArray::AddVertexBuffer(Ref<VertexBuffer>& vertexBuffer)
+    {
+        m_vertexBuffers.push_back(vertexBuffer);
+        AddApiVertexBuffer(vertexBuffer);
+    }
+
+    void VertexArray::SetIndexBuffer(Ref<IndexBuffer>& indexBuffer)
+    {
+        m_indexBuffer = indexBuffer;
+        SetApiIndexBuffer(indexBuffer);
+    }
 }

@@ -21,28 +21,22 @@ namespace vkclass
         
         virtual void Bind() const override;
         virtual void Unbind() const override;
-        
-        virtual void AddVertexBuffer(VX::Ref<VX::VertexBuffer>& vertexBuffer) override;
-        virtual void SetIndexBuffer (VX::Ref<VX::IndexBuffer>& indexBuffer) override;
-        
-        // TODO: revise this as this is not in used ?
-        virtual const std::vector<VX::Ref<VX::VertexBuffer>>& GetVertexBuffer() const override { return m_VertexBuffers; }
-        virtual const VX::Ref<VX::IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
-        
+
+    protected:
+        virtual void AddApiVertexBuffer(VX::Ref<VX::VertexBuffer>& vertexBuffer) override;
+        virtual void SetApiIndexBuffer(VX::Ref<VX::IndexBuffer>& indexBuffer) override;
+
+    // vulkan specific
     public:
         static void Init(vkclass::VulkanCommandManager* commandBufferManager);
-        
-    private:
-        std::vector<VX::Ref<VX::VertexBuffer>> m_VertexBuffers;
-        VX::Ref<VX::IndexBuffer> m_IndexBuffer;
 
+    private:
         static vkclass::VulkanCommandManager* s_commandBufferManager;
         
-    private:
-        std::vector<VkBuffer> m_VkVertexBuffers;
-        std::vector<VkDeviceSize> m_VkVBsOffsets;
-        uint32_t m_LastStride = 0;
+        std::vector<VkBuffer> m_vkVertexBuffers;
+        std::vector<VkDeviceSize> m_vkOffsets;
+        uint32_t m_lastStride = 0;
         
-        VkBuffer m_VkIndexBuffer;
+        VkBuffer m_vkIndexBuffer = VK_NULL_HANDLE;
     };
 }

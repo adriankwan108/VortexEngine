@@ -121,7 +121,7 @@ namespace vkclass
                 memcpy(vtxDst + vtxOffset, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
                 vtxOffset += cmd_list->VtxBuffer.Size;
             }
-            m_vertexBuffer = VX::VertexBuffer::Create(vtxDst, vtxOffset * sizeof(ImDrawVert));
+            m_vertexBuffer = VX::VertexBuffer::Create(vtxDst, vtxOffset * sizeof(ImDrawVert), sizeof(ImDrawVert));
             //m_vertexBuffer->SetLayout(ImguiLayout);
             if(vtxDst != nullptr)
             {

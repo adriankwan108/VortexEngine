@@ -16,14 +16,13 @@ namespace VX
         // the binding serves for different concept for different API, but this will be called when added to vertex array
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
-        
-        virtual void SetData(void* data, uint64_t size) = 0;
-        
-        /*virtual void SetLayout(const VertexShaderLayout& layout) = 0;
-        virtual const VertexShaderLayout& GetLayout() const = 0;*/
-        
-        static Ref<VertexBuffer> Create();
-        static Ref<VertexBuffer> Create(void* data, uint64_t size);
+
+        const uint64_t& GetStride() const { return m_stride; }
+
+        static Ref<VertexBuffer> Create(void* data, uint64_t totalSize, uint64_t stride);
+
+    protected:
+        uint64_t m_stride;
     };
 
     class IndexBuffer
@@ -55,7 +54,6 @@ namespace VX
                                 uint32_t height = 0);
         virtual std::vector<DrawCmdInfo> GetDrawInfoList() const { return m_drawInfoList; }
         
-        static Ref<IndexBuffer> Create();
         static Ref<IndexBuffer> Create(void* data, uint64_t size);
     private:
         std::vector<DrawCmdInfo> m_drawInfoList;

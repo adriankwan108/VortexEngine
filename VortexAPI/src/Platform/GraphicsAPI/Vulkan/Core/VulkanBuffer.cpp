@@ -125,7 +125,7 @@ namespace vkclass
     }
 
 
-    VulkanVertexBuffer::VulkanVertexBuffer(void* data, VkDeviceSize size)
+    VulkanVertexBuffer::VulkanVertexBuffer(void* data, VkDeviceSize size, uint64_t stride)
     {
         // staging in CPU accesible memory
         VulkanBuffer stagingBuffer = VulkanBuffer(data, size, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -134,6 +134,8 @@ namespace vkclass
 
         // copy data from staging buffer to device local final vertex buffer
         VulkanBuffer::CopyTo(&stagingBuffer, &m_vertexBuffer, size);
+
+        m_stride = stride;
     }
 
     void VulkanVertexBuffer::Bind() const
@@ -147,28 +149,6 @@ namespace vkclass
     {
         // no op in vulkan,
     }
-
-    void VulkanVertexBuffer::SetData(void* data, uint64_t size)
-    {
-//        m_vertexBuffer.Flush();
-//        m_vertexBuffer.Unmap();
-//        m_vertexBuffer.Map();
-//        m_vertexBuffer.SetData(&data, size);
-//        m_vertexBuffer.Unmap();
-        
-        // staging in CPU accesible memory
-        VulkanBuffer stagingBuffer = VulkanBuffer(data, static_cast<VkDeviceSize>(size), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-
-        m_vertexBuffer.Setup(size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-
-        // copy data from staging buffer to device local final vertex buffer
-        VulkanBuffer::CopyTo(&stagingBuffer, &m_vertexBuffer, size);
-    }
-
-    /*void VulkanVertexBuffer::SetLayout(const VX::VertexShaderLayout& layout)
-    {
-        m_Layout = layout;
-    }*/
 
 
     VulkanIndexBuffer::VulkanIndexBuffer(void* data, VkDeviceSize size)

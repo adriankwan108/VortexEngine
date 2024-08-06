@@ -15,9 +15,9 @@
 namespace vkclass
 {
     /*
-     *  Noted that we're not supposed to actually call vkAllocateMemory for every individual buffer.
+     *  Noted that it is not supposed to call vkAllocateMemory for every individual buffer.
      *  The maximum number of simulaneous memory allocations is limited by maxMemoryAllocationCount,
-     *  low as 4096 even on highend hardware.
+     *  which it is 4096 even on highend hardware, pretty low.
      *
      *  TODO: allocate memory for a large number of objects at the same time, to create a custom allocator that splits up a single allocation among many different objects by using the offset
      */
@@ -79,31 +79,23 @@ namespace vkclass
     class VulkanVertexBuffer : public VX::VertexBuffer
     {
     public:
-        VulkanVertexBuffer() = default;
-        VulkanVertexBuffer(void* data, VkDeviceSize size);
+        //VulkanVertexBuffer() = default;
+        explicit VulkanVertexBuffer(void* data, VkDeviceSize totalSize, uint64_t stride);
         virtual ~VulkanVertexBuffer() = default;
         
         virtual void Bind() const override;
         virtual void Unbind() const override;
         
-        virtual void SetData(void* data, uint64_t size) override;
-
-        /*virtual void SetLayout(const VX::VertexShaderLayout& layout) override;
-        virtual const VX::VertexShaderLayout& GetLayout() const override { return m_Layout; }*/
-        
         VkBuffer GetBuffer() const { return m_vertexBuffer.Buffer; }
         
     private:
         VulkanBuffer m_vertexBuffer; // optimized, device local final vertex buffer
-        //VX::VertexShaderLayout m_Layout;
     };
 
     class VulkanIndexBuffer : public VX::IndexBuffer
     {
     public:
-        VulkanIndexBuffer() = default;
-        // optimized, device local final vertex buffer
-        VulkanIndexBuffer(void* data, VkDeviceSize size);
+        explicit VulkanIndexBuffer(void* data, VkDeviceSize size);
         virtual ~VulkanIndexBuffer() = default;
 
         virtual void Bind() const override;
@@ -115,7 +107,7 @@ namespace vkclass
         VkBuffer GetBuffer() const { return m_indexBuffer.Buffer ;}
 
     private:
-        VulkanBuffer m_indexBuffer;
+        VulkanBuffer m_indexBuffer; // optimized, device local final index buffer
     };
 
     /*

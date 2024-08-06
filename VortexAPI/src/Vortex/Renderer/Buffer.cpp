@@ -5,7 +5,7 @@
 
 namespace VX
 {
-    Ref<VertexBuffer> VertexBuffer::Create()
+    Ref<VertexBuffer> VertexBuffer::Create(void* data, uint64_t totalSize, uint64_t stride)
     {
         switch (Renderer::GetAPI()) {
             case RendererAPI::API::None:
@@ -13,33 +13,7 @@ namespace VX
                 return nullptr;
                 break;
             case RendererAPI::API::Vulkan:
-                return CreateRef<vkclass::VulkanVertexBuffer>();
-                break;
-            case RendererAPI::API::DX12:
-                VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::DX12 is currently not supported!");
-                return nullptr;
-                break;
-            case RendererAPI::API::OpenGL:
-                VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::OpenGL is currently not supported!");
-                return nullptr;
-                break;
-            default:
-                VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::<API> is not identified!");
-                return nullptr;
-                break;
-        }
-        return nullptr;
-    }
-
-    Ref<VertexBuffer> VertexBuffer::Create(void* data, uint64_t size)
-    {
-        switch (Renderer::GetAPI()) {
-            case RendererAPI::API::None:
-                VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::None is currently not supported!");
-                return nullptr;
-                break;
-            case RendererAPI::API::Vulkan:
-                return CreateRef<vkclass::VulkanVertexBuffer>(data, size);
+                return CreateRef<vkclass::VulkanVertexBuffer>(data, totalSize, stride);
                 break;
             case RendererAPI::API::DX12:
                 VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::DX12 is currently not supported!");
@@ -70,32 +44,6 @@ namespace VX
         info.height = height;
         
         m_drawInfoList.push_back(info);
-    }
-
-    Ref<IndexBuffer> IndexBuffer::Create()
-    {
-        switch (Renderer::GetAPI()) {
-            case RendererAPI::API::None:
-                VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::None is currently not supported!");
-                return nullptr;
-                break;
-            case RendererAPI::API::Vulkan:
-                return CreateRef<vkclass::VulkanIndexBuffer>();
-                break;
-            case RendererAPI::API::DX12:
-                VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::DX12 is currently not supported!");
-                return nullptr;
-                break;
-            case RendererAPI::API::OpenGL:
-                VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::OpenGL is currently not supported!");
-                return nullptr;
-                break;
-            default:
-                VX_CORE_ASSERT(false, "Vertex Buffer: RendererAPI::<API> is not identified!");
-                return nullptr;
-                break;
-        }
-        return nullptr;
     }
 
     Ref<IndexBuffer> IndexBuffer::Create(void* data, uint64_t size)

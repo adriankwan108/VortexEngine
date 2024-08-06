@@ -19,8 +19,8 @@ namespace vkclass
         // OpenGL: Binding VAO, each vbo bind in their related buffer
         // Vulkan: No VAO, but bind all vbos here
 
-        s_commandBufferManager->BindVertexBuffer(m_VkVertexBuffers, m_VkVBsOffsets);
-        s_commandBufferManager->BindIndexBuffer(m_VkIndexBuffer);
+        s_commandBufferManager->BindVertexBuffer(m_vkVertexBuffers, m_vkOffsets);
+        s_commandBufferManager->BindIndexBuffer(m_vkIndexBuffer);
     }
 
     void VulkanVertexArray::Unbind() const
@@ -33,21 +33,17 @@ namespace vkclass
         s_commandBufferManager = commandBufferManager;
     }
 
-    void VulkanVertexArray::AddVertexBuffer(VX::Ref<VX::VertexBuffer>& vertexBuffer)
+    void VulkanVertexArray::AddApiVertexBuffer(VX::Ref<VX::VertexBuffer>& vertexBuffer)
     {
-        // vertexBuffer->Bind(); // used by opengl
-        m_VertexBuffers.push_back(vertexBuffer);
-        
-        /*auto vkVB = std::static_pointer_cast<VulkanVertexBuffer>(vertexBuffer);
-        m_VkVertexBuffers.push_back(vkVB->GetBuffer());
-        
-        m_VkVBsOffsets.push_back(static_cast<VkDeviceSize>(m_LastStride));
-        m_LastStride += vkVB->GetLayout().GetStride();*/
+        auto vkVB = std::static_pointer_cast<VulkanVertexBuffer>(vertexBuffer);
+        m_vkVertexBuffers.push_back(vkVB->GetBuffer());
+        m_vkOffsets.push_back(m_lastStride);
+        m_lastStride += vkVB->GetStride();
     }
 
-    void VulkanVertexArray::SetIndexBuffer(VX::Ref<VX::IndexBuffer>& indexBuffer)
+    void VulkanVertexArray::SetApiIndexBuffer(VX::Ref<VX::IndexBuffer>& indexBuffer)
     {
-        m_IndexBuffer = indexBuffer;
-        m_VkIndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(m_IndexBuffer)->GetBuffer();
+        auto vkIB = std::static_pointer_cast<VulkanIndexBuffer>(m_indexBuffer);
+        m_vkIndexBuffer = vkIB->GetBuffer();
     }
 }
