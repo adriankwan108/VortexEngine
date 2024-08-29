@@ -8,7 +8,7 @@ class VortexEngine : public VX::Application
 public:
     VortexEngine()
     {
-         PushLayer(new Playground());
+         // PushLayer(new Playground());
     }
     
     ~VortexEngine()

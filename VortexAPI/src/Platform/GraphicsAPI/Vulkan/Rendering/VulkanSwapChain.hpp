@@ -7,6 +7,10 @@
 #include "Core/VulkanDevice.hpp"
 #include "Core/VulkanSurface.hpp"
 
+#ifdef __APPLE__
+#include <sys/utsname.h>
+#endif
+
 namespace vkclass
 {
     typedef struct _SwapChainBuffers {
@@ -17,17 +21,15 @@ namespace vkclass
     class VulkanSwapChain
     {
     public:
-        VulkanSwapChain(vkclass::VulkanSurface* surface);
+        VulkanSwapChain(vkclass::VulkanDevice* device, vkclass::VulkanSurface* surface);
         ~VulkanSwapChain();
-        
-        static void Init(vkclass::VulkanDevice* device);
         
         VkResult AcquireNextImage(VkSemaphore semaphore);
         VkResult PresentImage(std::vector<VkSemaphore> signalSemaphores);
-        void CreateSwapChain(bool isVSync = false);
+        void CreateSwapChain(bool isVSync, bool isFullScreen);
         
     public:
-        static vkclass::VulkanDevice* m_device;
+        vkclass::VulkanDevice* m_device;
         
         const uint32_t& ImageCount = m_imageCount;
         const uint32_t& AvailableImageIndex = m_availableImageIndex;
@@ -43,12 +45,12 @@ namespace vkclass
         VkPresentModeKHR m_presentMode{};
         VkExtent2D m_extent{};
         
-        uint32_t m_imageCount; // equal to SwapChainBuffers size
+        uint32_t m_imageCount; 
         uint32_t m_availableImageIndex; // index of the swap chain image that has become available.
         
-        VkSwapchainKHR m_swapChain;
+        VkSwapchainKHR m_swapChain = VK_NULL_HANDLE;
         std::vector<VkImage> m_swapChainImages; // TODO: this should be cleaned up
-        std::vector<SwapChainBuffer> m_swapChainBuffers;
+        std::vector<SwapChainBuffer> m_swapChainBuffers; // size = m_imageCount (to be determined by platform)
         
     private:
         // @brief choose color space

@@ -52,9 +52,10 @@ namespace VX
 
         const int MAX_FRAMES_IN_FLIGHT = 2;
 
-    private: // engine configs
+    private: // TODO: engine configs
         bool m_enableValidation = true;
         bool m_isVSync = true;
+        bool m_isFullScreen = false;
 
     private:
         // extensions required by os
@@ -68,6 +69,7 @@ namespace VX
         vkclass::VulkanInstance m_Instance;
         vkclass::VulkanSurface m_Surface;
         vkclass::VulkanDevice m_Device;
+        vkclass::VulkanSwapChain m_SwapChain;
         vkclass::VulkanSyncManager m_SyncManager;
         
         // dynamic resources manager
@@ -75,10 +77,8 @@ namespace VX
         vkclass::VulkanDescriptorManager m_DescriptorManager;
         vkclass::VulkanRenderPassManager m_RenderPassManager;
         
-        // dynamic life-time resources, due to recreation by window resize
-        VX::Scope<vkclass::VulkanSwapChain> m_SwapChain;
 
-        std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;
+        // std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;
         
     private: // var
         uint32_t m_currentRenderingFrame = 0;
@@ -93,6 +93,6 @@ namespace VX
     private:
         void resizeHelper();
         
-        void createFrameBuffers();
+        // void createFrameBuffers();
     };
 }
