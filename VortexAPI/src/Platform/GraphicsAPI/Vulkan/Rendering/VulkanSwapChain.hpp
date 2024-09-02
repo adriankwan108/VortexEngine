@@ -38,6 +38,8 @@ namespace vkclass
         const VkExtent2D& Extent = m_extent;
         const std::vector<SwapChainBuffer>& ImageBuffers = m_swapChainBuffers;
         
+        VkImage GetCurrentImage() { return m_swapChainImages[m_availableImageIndex]; }
+        
     private:
         vkclass::VulkanSurface* m_surface;
         
@@ -49,7 +51,7 @@ namespace vkclass
         uint32_t m_availableImageIndex; // index of the swap chain image that has become available.
         
         VkSwapchainKHR m_swapChain = VK_NULL_HANDLE;
-        std::vector<VkImage> m_swapChainImages; // TODO: this should be cleaned up
+        std::vector<VkImage> m_swapChainImages;
         std::vector<SwapChainBuffer> m_swapChainBuffers; // size = m_imageCount (to be determined by platform)
         
     private:

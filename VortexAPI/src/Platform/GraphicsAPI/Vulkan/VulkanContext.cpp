@@ -55,13 +55,14 @@ namespace VX
 
     void VulkanContext::DisplayStart()
     {
-        // all operations in display are asynchronous, inflight frames enabled
-        // sync manager operates objects with current rendering frame (i.e. fence, semaphores)
-        // cmd manager operates objects with current rendering frame (e.g. current rendering cmd buffer)
+        // all operations in display are asynchronous, inflight frames enabled, managers work with current rendering frame
         
-        // m_SyncManager.WaitForFences();
-
-        // m_acquireNextImageResult = m_SwapChain->AcquireNextImage(m_SyncManager.GetImageAvailableSemaphore());
+        // wait for prev frame to finish
+        m_SyncManager.WaitForFences();
+        m_SyncManager.ResetFences();
+        
+        // acquire an image from swap chain
+         m_acquireNextImageResult = m_SwapChain.AcquireNextImage(m_SyncManager.GetImageAvailableSemaphore());
         //if( m_acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR) // btw the return state is not guranteed by drivers / platforms
         //{
         //    VX_CORE_INFO("Vulkan Context: Display() acquire image out of date, resizing...");
@@ -72,14 +73,16 @@ namespace VX
         //    VX_CORE_ERROR("Vulkan Context: Failed to acquire swap chain.");
         //    throw std::runtime_error("Vulkan Context: Failed to acquire swap chain.");
         //}
-        // m_SyncManager.ResetFences();
-        // m_CommandManager.Reset();
         
         // m_DescriptorManager.Reset();
         // VX_CORE_INFO("Current frame: {0}", m_currentRenderingFrame);
         // VX_CORE_INFO("FrameBuffer Index: {0}", m_SwapChain->AvailableImageIndex);
+         
+        // record command buffer
+        m_CommandManager.Reset();
+        m_CommandManager.BeginRecordCommands();
         
-        // m_CommandManager.BeginRecordCommands();
+         
         //m_CommandManager.SetExtent(m_FrameBuffers[m_SwapChain->AvailableImageIndex]->Extent);
         // m_CommandManager.SetExtent(m_Surface.GetExtent());
         /*m_CommandManager.BeginRenderPass(
@@ -94,13 +97,20 @@ namespace VX
     void VulkanContext::DisplayEnd()
     {
         // m_CommandManager.EndRenderPass();
-        // m_CommandManager.EndCommandBuffer();
-        /*m_CommandManager.Submit(
+        
+        // submit recorded command buffer
+        m_CommandManager.EndCommandBuffer();
+        m_CommandManager.Submit(
             {m_SyncManager.GetImageAvailableSemaphore()},
             {m_SyncManager.GetRenderFinishedSemaphore()},
             m_SyncManager.GetInFlightFence()
-        );*/
-        //m_presentResult = m_SwapChain->PresentImage({m_SyncManager.GetRenderFinishedSemaphore()});
+        );
+        
+        // verify framebuffer image format
+        m_CommandManager.TransitImageLayout(m_SwapChain.GetCurrentImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+        
+        // present the swap chain image
+         m_presentResult = m_SwapChain.PresentImage({m_SyncManager.GetRenderFinishedSemaphore()});
         //if(m_presentResult == VK_ERROR_OUT_OF_DATE_KHR || m_presentResult == VK_SUBOPTIMAL_KHR || m_framebufferResized)
         //{
         //    //VX_CORE_TRACE("Vulkan Context: Display() present image out of date, resizing...");

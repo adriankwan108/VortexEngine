@@ -153,9 +153,9 @@ namespace vkclass
         
         vkBindImageMemory(s_device->LogicalDevice, m_image, m_imageMemory, 0);
 
-        s_cmdManager->TransitImageLayout(m_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        s_cmdManager->TransitImageLayout(m_image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
         s_cmdManager->CopyBufferToImage(stagingBuffer->Buffer, m_image, m_Width, m_Height);
-        s_cmdManager->TransitImageLayout(m_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        s_cmdManager->TransitImageLayout(m_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     
         VX_CORE_TRACE("VulkanTexture: Create Image");
     }
