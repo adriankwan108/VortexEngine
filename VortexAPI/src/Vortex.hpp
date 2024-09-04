@@ -18,6 +18,7 @@
 #include "Vortex/Core/Input.hpp"
 #include "Vortex/Core/InputCode.hpp"
 
+#include "Vortex/Renderer/FrameBuffer.hpp"
 #include "Vortex/Renderer/Shader.hpp"
 #include "Vortex/Renderer/Buffer.hpp"
 #include "Vortex/Renderer/VertexArray.hpp"

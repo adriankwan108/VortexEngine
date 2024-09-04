@@ -10,41 +10,41 @@ namespace vkclass
 
     void VulkanUILayer::OnAttach()
     {
-        VX_CORE_INFO("VulkanUILayer: OnAttach");
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO();
-        
-        // configuration flags
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-        
-        // setup style
-        ImGui::StyleColorsDark();
-        
-        // load fonts
-        // io.FontGlobalScale
-        
-        // dimensions
-        auto width = static_cast<float>(VX::Application::Get().GetWindow().GetWidth());
-        auto height = static_cast<float>(VX::Application::Get().GetWindow().GetHeight());
-        io.DisplaySize = ImVec2(width, height);
-        io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+        VX_CORE_INFO("VulkanUILayer: OnAttached.");
+//        ImGui::CreateContext();
+//        ImGuiIO& io = ImGui::GetIO();
+//
+//        // configuration flags
+//        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+//
+//        // setup style
+//        ImGui::StyleColorsDark();
+//
+//        // load fonts
+//        // io.FontGlobalScale
+//
+//        // dimensions
+//        auto width = static_cast<float>(VX::Application::Get().GetWindow().GetWidth());
+//        auto height = static_cast<float>(VX::Application::Get().GetWindow().GetHeight());
+//        io.DisplaySize = ImVec2(width, height);
+//        io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
         
         // key mapping
         
         // link to our vulkan renderer
         
         // init resources
-        unsigned char* fontData;
-        int texWidth, texHeight;
-        io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
-        
-        m_fontTexture = VX::CreateRef<VulkanTexture2D>();
-        m_fontTexture->LoadFromData(fontData, texWidth, texHeight);
-        
-        VX_CORE_INFO("DisplaySize: {0}, {1}", io.DisplaySize.x, io.DisplaySize.y);
-//        FontPushConstant.scale = {2.0f /io.DisplaySize.x, 2.0f /io.DisplaySize.y};
-        FontPushConstant.scale = {2.0f / 1920, 2.0f /1080};
-        FontPushConstant.translate = {-1.0f, -1.0f};
+//        unsigned char* fontData;
+//        int texWidth, texHeight;
+//        io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
+//
+//        m_fontTexture = VX::CreateRef<VulkanTexture2D>();
+//        m_fontTexture->LoadFromData(fontData, texWidth, texHeight);
+//
+//        VX_CORE_INFO("DisplaySize: {0}, {1}", io.DisplaySize.x, io.DisplaySize.y);
+////        FontPushConstant.scale = {2.0f /io.DisplaySize.x, 2.0f /io.DisplaySize.y};
+//        FontPushConstant.scale = {2.0f / 1920, 2.0f /1080};
+//        FontPushConstant.translate = {-1.0f, -1.0f};
      
         /*m_fontShader = VX::CreateRef<VulkanShader>("ImGuiFont", "Resources/VortexAPI/shaders/ui.vert.spv", "Resources/VortexAPI/shaders/ui.frag.spv");
         m_fontShader->SetVertexLayout(ImguiLayout);
@@ -55,8 +55,8 @@ namespace vkclass
 
     void VulkanUILayer::OnDetach()
     {
-        VX_CORE_INFO("VulkanUILayer: OnDetach");
-        ImGui::DestroyContext();
+        VX_CORE_INFO("VulkanUILayer: OnDetached.");
+//        ImGui::DestroyContext();
     }
 
     void VulkanUILayer::OnEvent(VX::Event& event)
@@ -69,7 +69,7 @@ namespace vkclass
 
     void VulkanUILayer::OnUpdateStart()
     {
-        ImGui::NewFrame();
+//        ImGui::NewFrame();
 //
 //        {
 //            ImGui::Begin("Testing");
@@ -77,16 +77,16 @@ namespace vkclass
 //            ImGui::End();
 //        }
 
-        {
-            ImGui::ShowDemoWindow();
-        }
+//        {
+//            ImGui::ShowDemoWindow();
+//        }
     }
 
     void VulkanUILayer::OnUpdateEnd()
     {
-        ImGui::Render();
-        
-        updateBuffers();
+//        ImGui::Render();
+//
+//        updateBuffers();
        
         // VX::Renderer::Submit(m_fontShader ,m_vertexArray);
     }
