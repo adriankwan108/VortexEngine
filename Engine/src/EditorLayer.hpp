@@ -14,5 +14,5 @@ public:
     virtual void OnEvent(VX::Event& event) override;
     
 private:
-
+    VX::Ref<VX::RenderTarget> m_EditorFrame;
 };

@@ -15,7 +15,6 @@ namespace VX
             break;
         case RendererAPI::API::Vulkan:
              return CreateRef<vkclass::VulkanShader>(name, filePath, stage);
-            return nullptr;
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is currently not supported!");

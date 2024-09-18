@@ -8,6 +8,9 @@ EditorLayer::EditorLayer()
 void EditorLayer::OnAttach()
 {
     VX_INFO("Editor::OnAttached.");
+    VX::RenderTargetSpecification spec;
+    spec.IsSwapChainTarget = true;
+    m_EditorFrame = VX::RenderTarget::Create(spec);
 }
 
 void EditorLayer::OnDetach()
