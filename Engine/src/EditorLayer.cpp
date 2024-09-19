@@ -10,7 +10,7 @@ void EditorLayer::OnAttach()
     VX_INFO("Editor::OnAttached.");
     VX::RenderTargetSpecification spec;
     spec.IsSwapChainTarget = true;
-    m_EditorFrame = VX::RenderTarget::Create(spec);
+    m_EditorFrame = VX::RenderTarget::Create("editor", spec);
 }
 
 void EditorLayer::OnDetach()
@@ -20,7 +20,7 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(VX::Timestep ts)
 {
-    
+    m_EditorFrame->Bind();
 }
 
 void EditorLayer::OnEvent(VX::Event &event)

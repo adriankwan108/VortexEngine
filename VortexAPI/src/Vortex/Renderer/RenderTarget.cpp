@@ -5,7 +5,7 @@
 
 namespace VX
 {
-    Ref<RenderTarget> RenderTarget::Create(const RenderTargetSpecification& spec)
+    Ref<RenderTarget> RenderTarget::Create(const std::string& name, const RenderTargetSpecification& spec)
     {
         switch (Renderer::GetAPI())
         {
@@ -14,7 +14,7 @@ namespace VX
             return nullptr;
             break;
         case RendererAPI::API::Vulkan:
-            return CreateRef<vkclass::VulkanRenderTarget>(spec);
+            return CreateRef<vkclass::VulkanRenderTarget>(name, spec);
             break;
         case RendererAPI::API::DX12:
             VX_CORE_ASSERT(false, "RendererAPI::DX12 is currently not supported!");

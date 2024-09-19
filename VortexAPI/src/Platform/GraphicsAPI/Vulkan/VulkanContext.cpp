@@ -32,7 +32,12 @@ namespace VX
 
     void VulkanContext::Init()
     {
+        VX_CORE_INFO("VulkanContext:: Initiating RendererAPI...");
+        vkclass::VulkanRendererAPI::SetCommandManager(&m_CommandManager);
+        
         VX_CORE_INFO("VulkanContext:: Initiating Vulkan resources classes...");
+        vkclass::VulkanRenderTarget::Init(&m_RenderTargetManager);
+        
         vkclass::VulkanRenderPass::Init(m_Device.LogicalDevice);
         vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
         vkclass::VulkanBuffer::Init(&m_Device, &m_CommandManager);
@@ -47,8 +52,6 @@ namespace VX
         // m_RenderPassManager.Init(m_SwapChain->SurfaceFormat.format);
         // vkclass::VulkanShaderEffect::Init(m_Device.LogicalDevice, &m_RenderPassManager, &m_CommandManager);
         
-        VX_CORE_INFO("VulkanContext:: Initiating RendererAPI...");
-        vkclass::VulkanRendererAPI::SetCommandManager(&m_CommandManager);
         
         // createFrameBuffers();
     }

@@ -22,6 +22,8 @@
 
 #include "Core/VulkanBuffer.hpp"
 
+#include "Rendering/VulkanRenderTarget.hpp"
+
 #include "Rendering/VulkanFrameBuffer.hpp"
 #include "Rendering/VulkanSwapChain.hpp"
 #include "Rendering/VulkanSubpass.hpp"
@@ -74,6 +76,8 @@ namespace VX
         
         // dynamic resources manager
         vkclass::VulkanCommandManager m_CommandManager;
+        vkclass::VulkanRenderTargetManager m_RenderTargetManager;
+        
         vkclass::VulkanDescriptorManager m_DescriptorManager;
         vkclass::VulkanRenderPassManager m_RenderPassManager;
         

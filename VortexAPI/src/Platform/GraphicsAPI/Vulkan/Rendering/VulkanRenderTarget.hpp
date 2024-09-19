@@ -6,31 +6,43 @@ namespace vkclass
 {
     class VulkanRenderTarget;
 
+    /*
+     This manages all abstrated framebuffer objects (frames in flight) and render passes
+     */
     class VulkanRenderTargetManager
     {
     public:
-        // GetOrCreateRenderPass();
-        // GetOrCreateFramebuffer();
+        VulkanRenderTargetManager();
+        ~VulkanRenderTargetManager();
+        
+        void PrepareTarget(VulkanRenderTarget* target);
 
     private:
-        std::unordered_map<std::string, VulkanRenderTarget> m_map; // TODO: examine if hash map is better
+        // map of <name, renderpasses>
+        // map of <name, framebuffers>
+        
+        // get or create renderpass
+        // get or create framebuffer
     };
+
 
     class VulkanRenderTarget : public VX::RenderTarget
     {
     public:
-        VulkanRenderTarget(const VX::RenderTargetSpecification& spec);
+        VulkanRenderTarget(const std::string& name, const VX::RenderTargetSpecification& spec);
         ~VulkanRenderTarget();
 
         virtual void Bind()     override;
         virtual void Unbind()   override;
 
     public:
-        static void Init(VulkanRenderTargetManager* managerr);
+        static void Init(VulkanRenderTargetManager* manager);
     
     private:
+        friend class VulkanRenderTargetManager;
         static inline VulkanRenderTargetManager* s_manager = nullptr;
-        // VkRenderPass* m_renderPass;
-        // VkFramebuffer* m_framebuffer;
+        
+        std::string m_name;
+        VX::RenderTargetSpecification m_spec;
     };
 }

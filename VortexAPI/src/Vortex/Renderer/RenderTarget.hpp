@@ -24,6 +24,6 @@ namespace VX
         virtual void Bind() = 0;
         virtual void Unbind() = 0;
 
-        static Ref<RenderTarget> Create(const RenderTargetSpecification& spec);
+        static Ref<RenderTarget> Create(const std::string& name, const RenderTargetSpecification& spec);
     };
 }
