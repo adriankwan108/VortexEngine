@@ -3,14 +3,25 @@
 
 namespace vkclass
 {
-    VulkanRenderTargetManager::VulkanRenderTargetManager()
+    VulkanRenderTargetManager::VulkanRenderTargetManager(VkDevice device, VulkanSwapChain* swapchain)
+        :m_device(device), m_swapchain(swapchain)
     {
         
     }
 
     VulkanRenderTargetManager::~VulkanRenderTargetManager()
     {
+        VX_CORE_TRACE("VulkanRenderTargetManager destroyed.");
+        m_RenderPasses.clear();
+    }
+
+    void VulkanRenderTargetManager::CreateSwapChainTarget()
+    {
+        // get spec from swapchain
         
+        // create render pass for swapchain
+        VulkanRenderPassBuilder builder(m_device);
+        m_RenderPasses.insert(std::make_pair("swapchain", builder.Create()));
     }
 
     void VulkanRenderTargetManager::PrepareTarget(VulkanRenderTarget* target)
@@ -18,8 +29,10 @@ namespace vkclass
         VX_CORE_TRACE("VulkanRenderTargetManager::Preparing for {0}", target->m_name);
         if(target->m_spec.IsSwapChainTarget)
         {
-            VX_CORE_TRACE("VulkanRenderTargetManager:: this is swap chain target");
-
+            // get the reference of swapchain's renderpass and framebuffer
+        }else
+        {
+            // get or create renderpass and framebuffer
         }
     }
 

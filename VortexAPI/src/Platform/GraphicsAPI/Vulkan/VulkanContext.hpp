@@ -78,8 +78,8 @@ namespace VX
         vkclass::VulkanCommandManager m_CommandManager;
         vkclass::VulkanRenderTargetManager m_RenderTargetManager;
         
-        vkclass::VulkanDescriptorManager m_DescriptorManager;
-        vkclass::VulkanRenderPassManager m_RenderPassManager;
+        // vkclass::VulkanDescriptorManager m_DescriptorManager;
+        // vkclass::VulkanRenderPassManager m_RenderPassManager;
         
 
         // std::vector<vkclass::VulkanFrameBuffer*> m_FrameBuffers;

@@ -10,10 +10,12 @@ namespace VX
         m_SwapChain(&m_Device, &m_Surface),
         m_SyncManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
         m_CommandManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
-        m_DescriptorManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
-        m_RenderPassManager()
+        m_RenderTargetManager(m_Device.LogicalDevice, &m_SwapChain)
+        // m_DescriptorManager(&m_Device, MAX_FRAMES_IN_FLIGHT, m_currentRenderingFrame),
+        // m_RenderPassManager()
     {
         m_SwapChain.CreateSwapChain(m_isVSync, m_isFullScreen);
+        m_RenderTargetManager.CreateSwapChainTarget();
     }
 
     VulkanContext::~VulkanContext()
@@ -38,15 +40,15 @@ namespace VX
         VX_CORE_INFO("VulkanContext:: Initiating Vulkan resources classes...");
         vkclass::VulkanRenderTarget::Init(&m_RenderTargetManager);
         
-        vkclass::VulkanRenderPass::Init(m_Device.LogicalDevice);
-        vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
-        vkclass::VulkanBuffer::Init(&m_Device, &m_CommandManager);
-        vkclass::VulkanVertexArray::Init(&m_CommandManager);
-        vkclass::VulkanCamera::Init(&m_Device);
-        vkclass::VulkanTexture2D::Init(&m_Device, &m_CommandManager);
-        vkclass::VulkanShader::Init(m_Device.LogicalDevice);
-        vkclass::VulkanShaderPass::Init(m_Device.LogicalDevice);
-        vkclass::DescriptorManager::Init(&m_DescriptorManager);
+//        vkclass::VulkanRenderPass::Init(m_Device.LogicalDevice);
+//        vkclass::VulkanPipelineBuilder::Init(m_Device.LogicalDevice);
+//        vkclass::VulkanBuffer::Init(&m_Device, &m_CommandManager);
+//        vkclass::VulkanVertexArray::Init(&m_CommandManager);
+//        vkclass::VulkanCamera::Init(&m_Device);
+//        vkclass::VulkanTexture2D::Init(&m_Device, &m_CommandManager);
+//        vkclass::VulkanShader::Init(m_Device.LogicalDevice);
+//        vkclass::VulkanShaderPass::Init(m_Device.LogicalDevice);
+//        vkclass::DescriptorManager::Init(&m_DescriptorManager);
         
 
         // m_RenderPassManager.Init(m_SwapChain->SurfaceFormat.format);

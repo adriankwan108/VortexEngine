@@ -1,6 +1,8 @@
 #pragma once
 #include "vulkan/vulkan.h"
 #include "Renderer/RenderTarget.hpp"
+#include "VulkanSwapChain.hpp"
+#include "VulkanRenderPass.hpp"
 
 namespace vkclass
 {
@@ -12,13 +14,16 @@ namespace vkclass
     class VulkanRenderTargetManager
     {
     public:
-        VulkanRenderTargetManager();
+        VulkanRenderTargetManager(VkDevice device, VulkanSwapChain* swapchain);
         ~VulkanRenderTargetManager();
         
         void PrepareTarget(VulkanRenderTarget* target);
+        void CreateSwapChainTarget();
 
     private:
-        // map of <name, renderpasses>
+        VkDevice m_device;
+        VulkanSwapChain* m_swapchain;
+        std::unordered_map<std::string, VX::Scope<VulkanRenderPass>> m_RenderPasses;
         // map of <name, framebuffers>
         
         // get or create renderpass
