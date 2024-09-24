@@ -16,9 +16,46 @@ namespace vkclass
     VX::Scope<VulkanRenderPass> VulkanRenderPassBuilder::Create()
     {
         VX_CORE_TRACE("RenderPassBuilder:: Creating...");
-        // create subpass
+        uint32_t currSubpassIndex     = 0;
+        
+        // configs:
+        // isDeferredShading
+        // isDepthReadSubpass
+        // hasDepthAttachmentRef
+        
+        // grab attachment references from spec
+        
+        /* create subpass */
+        // main subpass
+        {
+            VkSubpassDescription& subpassDesc = m_SubpassDescriptions[currSubpassIndex++];
+            subpassDesc.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+            subpassDesc.colorAttachmentCount = static_cast<uint32_t>(m_colorAttachmentReferences.size());
+            subpassDesc.pColorAttachments = m_colorAttachmentReferences.data();
+            
+            // depth
+            // shading rate
+        }
+        
+        // color write, depth read subpass
+        {
+            
+        }
+        
+        // two subpasses for deferred shading
+        {
+            // 1.
+            // 2.
+        }
+        
+        // custom resolve subpass
+        {
+            
+        }
         
         // create render pass
+        m_renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        
         
         return VX::CreateScope<VulkanRenderPass>(m_device);
     }

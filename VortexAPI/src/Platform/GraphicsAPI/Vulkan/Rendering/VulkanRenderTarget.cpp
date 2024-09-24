@@ -19,6 +19,8 @@ namespace vkclass
     {
         // get spec from swapchain
         
+        // transform to render pass spec requirement
+        
         // create render pass for swapchain
         VulkanRenderPassBuilder builder(m_device);
         m_RenderPasses.insert(std::make_pair("swapchain", builder.Create()));

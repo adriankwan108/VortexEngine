@@ -24,9 +24,12 @@ namespace vkclass
     private:
         VkDevice m_device;
         
-        // subpass descriptions
+        VkSubpassDescription m_SubpassDescriptions[8];
         // subpass dependencies
-        // attachments
+        
+        std::vector<VkAttachmentReference> m_colorAttachmentReferences;
+        
+        VkRenderPassCreateInfo m_renderPassCreateInfo;
     };
 
     // wrapper of VkRenderPass with RAII
