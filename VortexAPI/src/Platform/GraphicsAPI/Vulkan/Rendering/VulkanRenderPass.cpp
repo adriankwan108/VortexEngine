@@ -13,18 +13,28 @@ namespace vkclass
     {
     }
 
-    VX::Scope<VulkanRenderPass> VulkanRenderPassBuilder::Create()
+    void VulkanRenderPassBuilder::Create(const VulkanRenderPassSpecification& spec, VkRenderPass* renderPass)
     {
+        if(renderPass != nullptr && *renderPass != VK_NULL_HANDLE)
+        {
+            VX_CORE_TRACE("RenderPassBuilder:: Destroy input renderpass...");
+        }
+        
         VX_CORE_TRACE("RenderPassBuilder:: Creating...");
         uint32_t currSubpassIndex     = 0;
-        
+        uint32_t currDependencyIndex  = 0;
+
         // configs:
-        // isDeferredShading
+        // isDeferredShading = info.GetSubpassHint() == Deferred
         // isDepthReadSubpass
         // hasDepthAttachmentRef
-        
-        // grab attachment references from spec
-        
+
+        // grab all attachment descriptions from info
+
+        // grab color attachment references from info
+
+        // grab depth stencil attachment references from info
+
         /* create subpass */
         // main subpass
         {
@@ -32,38 +42,47 @@ namespace vkclass
             subpassDesc.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
             subpassDesc.colorAttachmentCount = static_cast<uint32_t>(m_colorAttachmentReferences.size());
             subpassDesc.pColorAttachments = m_colorAttachmentReferences.data();
-            
+
             // depth
             // shading rate
         }
-        
+
         // color write, depth read subpass
         {
-            
+            // subpass dependency
         }
-        
+
         // two subpasses for deferred shading
         {
-            // 1.
-            // 2.
+            // 1. Write: scene, gbuffer ; Input: depth
+            // 2. Write: scene          ; Input: gbuffer, depth
         }
-        
+
         // custom resolve subpass
         {
-            
+
         }
-        
+
         // create render pass
         m_renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        // total attachment
+//        m_renderPassCreateInfo.attachmentCount = static_cast<uint32_t>(m_attachmentDescriptions.size());
+//        m_renderPassCreateInfo.pAttachments = m_attachmentDescriptions.data();
+//
+//        m_renderPassCreateInfo.subpassCount = currSubpassIndex;
+//        m_renderPassCreateInfo.pSubpasses = m_SubpassDescriptions;
+//        m_renderPassCreateInfo.dependencyCount = currDependencyIndex;
+//        m_renderPassCreateInfo.pDependencies = m_SubpassDependencies;
         
-        
-        return VX::CreateScope<VulkanRenderPass>(m_device);
+//        VK_CHECK_RESULT(vkCreateRenderPass(m_device, &m_renderPassCreateInfo, nullptr, renderPass));
     }
 
 
-    VulkanRenderPass::VulkanRenderPass(VkDevice device)
-        :m_device(device)
+    VulkanRenderPass::VulkanRenderPass(VkDevice device, const VulkanRenderPassSpecification& spec)
+        :m_device(device), m_spec(spec)
     {
+        VulkanRenderPassBuilder builder(m_device);
+        builder.Create(spec, &m_RenderPass);
         VX_CORE_TRACE("RenderPass created.");
     }
 
@@ -73,7 +92,7 @@ namespace vkclass
         {
             vkDestroyRenderPass(m_device, m_RenderPass, nullptr);
         }
-        VX_CORE_TRACE("RenderPass deleted.");
+        VX_CORE_TRACE("RenderPass destroyed.");
     }
 
 //    VkDevice vkclass::VulkanRenderPass::m_device = VK_NULL_HANDLE;

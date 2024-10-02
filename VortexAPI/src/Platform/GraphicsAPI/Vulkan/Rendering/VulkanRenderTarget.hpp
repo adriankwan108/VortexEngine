@@ -49,5 +49,8 @@ namespace vkclass
         
         std::string m_name;
         VX::RenderTargetSpecification m_spec;
+        
+        // reference of render pass
+        // reference of framebuffer
     };
 }

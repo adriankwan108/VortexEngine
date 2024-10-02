@@ -31,24 +31,53 @@ namespace VX
 //        };
 //    }
 
-    struct RTAttachmentSpecification
-    {
-        // texture* (format, samples...)
-        // load, store operations
-    };
-
-    enum class SubpassHint
+    enum class RTAttachmentTextureFormat
     {
         None = 0
     };
 
+    struct RTAttachmentTextureSpecification
+    {
+        // format
+        // sampling
+    };
+
+    enum class RTAttachmentOperations
+    {
+        DontCare = 0
+    };
+    
+
+    /*
+     Specify one buffer (inside not in flight framebuffer)'s format and what to do with the data inside this buffer
+     */
+    struct RTAttachmentSpecification
+    {
+        // texture spec
+        // operations
+    };
+
+    /*
+     Specify how buffers cooperated and be handled throughout rendering operations
+     */
+    enum class SubpassHint
+    {
+        None = 0
+        // Deferred
+    };
+
+    /*
+     Specify how many buffers are used, and how their contents should be handled throughout rendering operationzs
+     */
     struct RenderTargetSpecification
     {
         uint32_t Width = 0, Height = 0;
         bool IsSwapChainTarget = false;
+        
         SubpassHint Hint = SubpassHint::None;
         
         // color    attachment
+        // std::vector<RTAttachmentSpecification> colorSpecifications;
         
         // optional:
         // input    attachment

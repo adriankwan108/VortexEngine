@@ -8,11 +8,14 @@
 #include "Core/VulkanTools.hpp"
 #include "Core/VulkanInitializer.hpp"
 #include "VulkanSwapChain.hpp"
-#include "VulkanSubpass.hpp"
 
 namespace vkclass
 {
-    class VulkanRenderPass;
+    struct VulkanRenderPassSpecification
+    {
+        // attachments
+        // subpass hint
+    };
 
     class VulkanRenderPassBuilder
     {
@@ -20,13 +23,14 @@ namespace vkclass
         explicit VulkanRenderPassBuilder(VkDevice device);
         ~VulkanRenderPassBuilder();
         
-        VX::Scope<VulkanRenderPass> Create();
+         void Create(const VulkanRenderPassSpecification& spec, VkRenderPass* renderPass);
     private:
         VkDevice m_device;
         
         VkSubpassDescription m_SubpassDescriptions[8];
-        // subpass dependencies
+        VkSubpassDependency m_SubpassDependencies[8];
         
+        std::vector<VkAttachmentDescription> m_attachmentDescriptions;
         std::vector<VkAttachmentReference> m_colorAttachmentReferences;
         
         VkRenderPassCreateInfo m_renderPassCreateInfo;
@@ -36,11 +40,12 @@ namespace vkclass
     class VulkanRenderPass
     {
     public:
-        VulkanRenderPass(VkDevice device);
+        VulkanRenderPass(VkDevice device, const VulkanRenderPassSpecification& spec);
         ~VulkanRenderPass();
         
     private:
         VkDevice m_device;
+        VulkanRenderPassSpecification m_spec;
         VkRenderPass m_RenderPass = VK_NULL_HANDLE;
     };
 

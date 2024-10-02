@@ -18,12 +18,18 @@ namespace vkclass
     void VulkanRenderTargetManager::CreateSwapChainTarget()
     {
         // get spec from swapchain
+        // swapchain format
         
-        // transform to render pass spec requirement
+        // transform to renderpass spec
+        VulkanRenderPassSpecification renderPassSpec;
+        
+        // get spec hash
+        // m_RenderPasses.insert(std::make_pair(hash, renderpass));
+        m_RenderPasses.insert(std::make_pair("swapchain", VX::CreateScope<VulkanRenderPass>(m_device, renderPassSpec)));
         
         // create render pass for swapchain
-        VulkanRenderPassBuilder builder(m_device);
-        m_RenderPasses.insert(std::make_pair("swapchain", builder.Create()));
+        // VulkanRenderPassBuilder builder(m_device);
+        // m_RenderPasses.insert(std::make_pair("swapchain", builder.Create(renderPassSpec)));
     }
 
     void VulkanRenderTargetManager::PrepareTarget(VulkanRenderTarget* target)
@@ -34,7 +40,8 @@ namespace vkclass
             // get the reference of swapchain's renderpass and framebuffer
         }else
         {
-            // get or create renderpass and framebuffer
+            // get or create renderpass and framebuffer by spec
+            // renderpass spec
         }
     }
 
