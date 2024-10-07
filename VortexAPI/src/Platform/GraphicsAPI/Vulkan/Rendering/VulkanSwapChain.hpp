@@ -34,7 +34,7 @@ namespace vkclass
         const uint32_t& ImageCount = m_imageCount;
         const uint32_t& AvailableImageIndex = m_availableImageIndex;
         
-        const VkSurfaceFormatKHR& SurfaceFormat = m_surfaceFormat;
+        inline VkSurfaceFormatKHR GetSurfaceFormat() const { return m_surfaceFormat; }
         const VkExtent2D& Extent = m_extent;
         const std::vector<SwapChainBuffer>& ImageBuffers = m_swapChainBuffers;
         

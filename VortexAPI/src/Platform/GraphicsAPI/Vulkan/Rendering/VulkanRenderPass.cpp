@@ -3,6 +3,30 @@
 namespace vkclass
 {
 
+    VulkanRenderPassSpecification::VulkanRenderPassSpecification(const VX::RenderTargetSpecification& rtSpec)
+    {
+        m_TotalAttachmentNum = 0;
+        m_colorAttachmentNum = 0;
+        
+//        for(int i = 0; i < m_colorAttachmentNum; i++)
+//        {
+//            VkAttachmentDescription& CurrDesc = m_desc[i];
+//        }
+    }
+
+    VulkanRenderPassSpecification::VulkanRenderPassSpecification(VX::SubpassHint hint, std::initializer_list<VkAttachmentDescription> colorAttachmentDesciptions)
+    {
+        m_TotalAttachmentNum = 0;
+        m_colorAttachmentNum = colorAttachmentDesciptions.size();
+        
+        for(int i = 0; i < m_colorAttachmentNum; i++)
+        {
+            m_colorReferences[i].attachment = m_TotalAttachmentNum;
+            m_colorReferences[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            m_TotalAttachmentNum++;
+        }
+    }
+
     VulkanRenderPassBuilder::VulkanRenderPassBuilder(VkDevice device)
         :m_device(device)
     {
@@ -30,8 +54,17 @@ namespace vkclass
         // hasDepthAttachmentRef
 
         // grab all attachment descriptions from info
-
+        for(int i = 0; i < spec.GetTotalAttachmentNum(); i++)
+        {
+            m_attachmentDescriptions.emplace_back(spec.GetAttachmentDescription()[i]);
+        }
+        
         // grab color attachment references from info
+        uint32_t colorAttachmentsNum = spec.GetColorAttachmentsNum();
+        for(int i = 0; i < colorAttachmentsNum; i++)
+        {
+            m_colorAttachmentReferences.emplace_back(spec.GetColorAttachmentReferences()[i]);
+        }
 
         // grab depth stencil attachment references from info
 
@@ -66,15 +99,15 @@ namespace vkclass
         // create render pass
         m_renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         // total attachment
-//        m_renderPassCreateInfo.attachmentCount = static_cast<uint32_t>(m_attachmentDescriptions.size());
-//        m_renderPassCreateInfo.pAttachments = m_attachmentDescriptions.data();
-//
-//        m_renderPassCreateInfo.subpassCount = currSubpassIndex;
-//        m_renderPassCreateInfo.pSubpasses = m_SubpassDescriptions;
+        m_renderPassCreateInfo.attachmentCount = static_cast<uint32_t>(m_attachmentDescriptions.size());
+        m_renderPassCreateInfo.pAttachments = m_attachmentDescriptions.data();
+
+        m_renderPassCreateInfo.subpassCount = currSubpassIndex;
+        m_renderPassCreateInfo.pSubpasses = m_SubpassDescriptions;
 //        m_renderPassCreateInfo.dependencyCount = currDependencyIndex;
 //        m_renderPassCreateInfo.pDependencies = m_SubpassDependencies;
         
-//        VK_CHECK_RESULT(vkCreateRenderPass(m_device, &m_renderPassCreateInfo, nullptr, renderPass));
+        VK_CHECK_RESULT(vkCreateRenderPass(m_device, &m_renderPassCreateInfo, nullptr, renderPass));
     }
 
 
@@ -90,9 +123,10 @@ namespace vkclass
     {
         if(m_device != VK_NULL_HANDLE)
         {
+            VX_CORE_TRACE("VkRenderPass destroyed.");
             vkDestroyRenderPass(m_device, m_RenderPass, nullptr);
         }
-        VX_CORE_TRACE("RenderPass destroyed.");
+        VX_CORE_TRACE("VulkanRenderPass destroyed.");
     }
 
 //    VkDevice vkclass::VulkanRenderPass::m_device = VK_NULL_HANDLE;

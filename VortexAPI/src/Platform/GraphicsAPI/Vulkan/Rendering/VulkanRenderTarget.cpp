@@ -19,17 +19,27 @@ namespace vkclass
     {
         // get spec from swapchain
         // swapchain format
+        // swapchain store op
+        // swapchain load op
+        
+        // attachment spec
         
         // transform to renderpass spec
-        VulkanRenderPassSpecification renderPassSpec;
+        VkAttachmentDescription colorAttachment{};
+        colorAttachment.format = m_swapchain->GetSurfaceFormat().format;
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
         
+        VulkanRenderPassSpecification renderPassSpec(VX::SubpassHint::None, {colorAttachment});
         // get spec hash
         // m_RenderPasses.insert(std::make_pair(hash, renderpass));
-        m_RenderPasses.insert(std::make_pair("swapchain", VX::CreateScope<VulkanRenderPass>(m_device, renderPassSpec)));
         
-        // create render pass for swapchain
-        // VulkanRenderPassBuilder builder(m_device);
-        // m_RenderPasses.insert(std::make_pair("swapchain", builder.Create(renderPassSpec)));
+        m_RenderPasses.insert(std::make_pair("swapchain", VX::CreateScope<VulkanRenderPass>(m_device, renderPassSpec)));
     }
 
     void VulkanRenderTargetManager::PrepareTarget(VulkanRenderTarget* target)
@@ -40,8 +50,9 @@ namespace vkclass
             // get the reference of swapchain's renderpass and framebuffer
         }else
         {
-            // get or create renderpass and framebuffer by spec
-            // renderpass spec
+            VulkanRenderPassSpecification spec(target->m_spec);
+            
+            // get or create framebuffer
         }
     }
 

@@ -50,7 +50,7 @@ namespace vkclass
         std::string m_name;
         VX::RenderTargetSpecification m_spec;
         
-        // reference of render pass
+        // VX::Scope<VulkanRenderPass> m_RenderPass;
         // reference of framebuffer
     };
 }

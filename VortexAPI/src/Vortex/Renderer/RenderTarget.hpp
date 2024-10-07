@@ -33,12 +33,16 @@ namespace VX
 
     enum class RTAttachmentTextureFormat
     {
-        None = 0
+        None = 0,
+        RGBA8_UINT
     };
 
     struct RTAttachmentTextureSpecification
     {
-        // format
+        RTAttachmentTextureSpecification() = default;
+        RTAttachmentTextureSpecification(RTAttachmentTextureFormat format)
+            :Format(format){}
+        RTAttachmentTextureFormat Format = RTAttachmentTextureFormat::None;
         // sampling
     };
 
@@ -53,8 +57,12 @@ namespace VX
      */
     struct RTAttachmentSpecification
     {
-        // texture spec
-        // operations
+        RTAttachmentSpecification(RTAttachmentTextureSpecification spec)
+            :TextureSpecification(spec){}
+  
+        RTAttachmentTextureSpecification TextureSpecification;
+        // load operation
+        // store operation
     };
 
     /*
@@ -76,8 +84,7 @@ namespace VX
         
         SubpassHint Hint = SubpassHint::None;
         
-        // color    attachment
-        // std::vector<RTAttachmentSpecification> colorSpecifications;
+        std::vector<RTAttachmentSpecification> colorAttachmentSpec;
         
         // optional:
         // input    attachment

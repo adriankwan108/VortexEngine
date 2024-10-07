@@ -4,6 +4,7 @@
 #include "vulkan/vulkan.h"
 #include <map>
 
+#include "Renderer/RenderTarget.hpp"
 #include "Core/VulkanDevice.hpp"
 #include "Core/VulkanTools.hpp"
 #include "Core/VulkanInitializer.hpp"
@@ -11,12 +12,42 @@
 
 namespace vkclass
 {
-    struct VulkanRenderPassSpecification
+    /*
+     This contains all Vulkan attachments' descriptions and creates references,
+     which descriptions are gathered from render target specification, or by raw
+     */
+    class VulkanRenderPassSpecification
     {
-        // attachments
-        // subpass hint
+    public:
+        VulkanRenderPassSpecification(const VX::RenderTargetSpecification& rtSpec);
+        VulkanRenderPassSpecification(VX::SubpassHint hint, std::initializer_list<VkAttachmentDescription> colorAttachmentDesciptions);
+        // get hash
+        
+        inline const VX::SubpassHint& GetSubpassHint() { return m_subpassHint; }
+        
+        inline uint32_t GetColorAttachmentsNum() const { return m_colorAttachmentNum; }
+        inline const VkAttachmentReference* GetColorAttachmentReferences() const { return m_colorAttachmentNum > 0 ? m_colorReferences : nullptr; }
+        
+        inline uint32_t GetTotalAttachmentNum() const { return m_TotalAttachmentNum; }
+        inline const VkAttachmentDescription* GetAttachmentDescription() const { return m_desc; }
+        
+    private:
+        static const int MaxSimultaneousRenderTargets = 1024; // TODO: should be defined somewhere else
+        
+        VX::SubpassHint m_subpassHint = VX::SubpassHint::None;
+        
+        uint32_t m_TotalAttachmentNum;
+        uint8_t m_colorAttachmentNum;
+        VkAttachmentReference m_colorReferences[MaxSimultaneousRenderTargets];
+        
+        // Depth in "+1", Shading Rate texture in "+2"
+        // VkAttachmentDescription Desc[MaxSimultaneousRenderTargets * 2 + 2];
+        VkAttachmentDescription m_desc[MaxSimultaneousRenderTargets * 2];
     };
 
+    /*
+     This builds the subpasses details from subpass hint and render pass specification
+     */
     class VulkanRenderPassBuilder
     {
     public:
