@@ -42,17 +42,16 @@ namespace vkclass
         m_RenderPasses.insert(std::make_pair("swapchain", VX::CreateScope<VulkanRenderPass>(m_device, renderPassSpec)));
     }
 
-    void VulkanRenderTargetManager::PrepareTarget(VulkanRenderTarget* target)
+    VulkanRenderPass* VulkanRenderTargetManager::GetRenderPass(const std::string& name)
     {
-        VX_CORE_TRACE("VulkanRenderTargetManager::Preparing for {0}", target->m_name);
-        if(target->m_spec.IsSwapChainTarget)
+        auto it = m_RenderPasses.find(name);
+        if (it != m_RenderPasses.end())
         {
-            // get the reference of swapchain's renderpass and framebuffer
-        }else
+            return it->second.get();
+        }
+        else
         {
-            VulkanRenderPassSpecification spec(target->m_spec);
-            
-            // get or create framebuffer
+            return nullptr;
         }
     }
 
@@ -60,7 +59,14 @@ namespace vkclass
     VulkanRenderTarget::VulkanRenderTarget(const std::string& name, const VX::RenderTargetSpecification& spec)
         :m_name(name), m_spec(spec)
     {
-        s_manager->PrepareTarget(this);
+        if (m_spec.IsSwapChainTarget)
+        {
+            m_RenderPass = s_manager->GetRenderPass("swapchain");
+        }
+        else
+        {
+            VX_CORE_INFO("VulkanRenderTarget:: Non swapchain target is not supported yet.");
+        }
     }
 
     VulkanRenderTarget::~VulkanRenderTarget()

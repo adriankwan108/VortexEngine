@@ -20,7 +20,7 @@ namespace vkclass
     {
     public:
         VulkanRenderPassSpecification(const VX::RenderTargetSpecification& rtSpec);
-        VulkanRenderPassSpecification(VX::SubpassHint hint, std::initializer_list<VkAttachmentDescription> colorAttachmentDesciptions);
+        VulkanRenderPassSpecification(VX::SubpassHint hint, std::vector<VkAttachmentDescription> colorAttachmentDesciptions);
         // get hash
         
         inline const VX::SubpassHint& GetSubpassHint() { return m_subpassHint; }
@@ -54,7 +54,7 @@ namespace vkclass
         explicit VulkanRenderPassBuilder(VkDevice device);
         ~VulkanRenderPassBuilder();
         
-         void Create(const VulkanRenderPassSpecification& spec, VkRenderPass* renderPass);
+        void Create(const VulkanRenderPassSpecification& spec, VkRenderPass* renderPass);
     private:
         VkDevice m_device;
         
@@ -64,7 +64,7 @@ namespace vkclass
         std::vector<VkAttachmentDescription> m_attachmentDescriptions;
         std::vector<VkAttachmentReference> m_colorAttachmentReferences;
         
-        VkRenderPassCreateInfo m_renderPassCreateInfo;
+        VkRenderPassCreateInfo m_renderPassCreateInfo{};
     };
 
     // wrapper of VkRenderPass with RAII

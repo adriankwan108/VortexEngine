@@ -17,8 +17,8 @@ namespace vkclass
         VulkanRenderTargetManager(VkDevice device, VulkanSwapChain* swapchain);
         ~VulkanRenderTargetManager();
         
-        void PrepareTarget(VulkanRenderTarget* target);
         void CreateSwapChainTarget();
+        VulkanRenderPass* GetRenderPass(const std::string& name);
 
     private:
         VkDevice m_device;
@@ -50,7 +50,7 @@ namespace vkclass
         std::string m_name;
         VX::RenderTargetSpecification m_spec;
         
-        // VX::Scope<VulkanRenderPass> m_RenderPass;
+        VulkanRenderPass* m_RenderPass = nullptr;
         // reference of framebuffer
     };
 }

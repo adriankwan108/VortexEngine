@@ -14,7 +14,7 @@ namespace vkclass
 //        }
     }
 
-    VulkanRenderPassSpecification::VulkanRenderPassSpecification(VX::SubpassHint hint, std::initializer_list<VkAttachmentDescription> colorAttachmentDesciptions)
+    VulkanRenderPassSpecification::VulkanRenderPassSpecification(VX::SubpassHint hint, std::vector<VkAttachmentDescription> colorAttachmentDesciptions)
     {
         m_TotalAttachmentNum = 0;
         m_colorAttachmentNum = colorAttachmentDesciptions.size();
@@ -23,7 +23,11 @@ namespace vkclass
         {
             m_colorReferences[i].attachment = m_TotalAttachmentNum;
             m_colorReferences[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-            m_TotalAttachmentNum++;
+
+            VkAttachmentDescription& currDesc = m_desc[m_TotalAttachmentNum];
+            currDesc = colorAttachmentDesciptions[i];
+
+            ++m_TotalAttachmentNum;
         }
     }
 
@@ -39,9 +43,10 @@ namespace vkclass
 
     void VulkanRenderPassBuilder::Create(const VulkanRenderPassSpecification& spec, VkRenderPass* renderPass)
     {
-        if(renderPass != nullptr && *renderPass != VK_NULL_HANDLE)
+        if(renderPass == nullptr || *renderPass != VK_NULL_HANDLE)
         {
-            VX_CORE_TRACE("RenderPassBuilder:: Destroy input renderpass...");
+            VX_CORE_ERROR("RenderPassBuilder:: Create failed: invalid input...");
+            return;
         }
         
         VX_CORE_TRACE("RenderPassBuilder:: Creating...");
@@ -54,6 +59,7 @@ namespace vkclass
         // hasDepthAttachmentRef
 
         // grab all attachment descriptions from info
+        VX_CORE_TRACE("RenderPass: total attachment num: {0}", spec.GetTotalAttachmentNum());
         for(int i = 0; i < spec.GetTotalAttachmentNum(); i++)
         {
             m_attachmentDescriptions.emplace_back(spec.GetAttachmentDescription()[i]);
@@ -61,6 +67,7 @@ namespace vkclass
         
         // grab color attachment references from info
         uint32_t colorAttachmentsNum = spec.GetColorAttachmentsNum();
+        VX_CORE_TRACE("RenderPass: color attachment num: {0}", colorAttachmentsNum);
         for(int i = 0; i < colorAttachmentsNum; i++)
         {
             m_colorAttachmentReferences.emplace_back(spec.GetColorAttachmentReferences()[i]);
@@ -71,10 +78,12 @@ namespace vkclass
         /* create subpass */
         // main subpass
         {
-            VkSubpassDescription& subpassDesc = m_SubpassDescriptions[currSubpassIndex++];
+            VkSubpassDescription subpassDesc{};
             subpassDesc.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
             subpassDesc.colorAttachmentCount = static_cast<uint32_t>(m_colorAttachmentReferences.size());
             subpassDesc.pColorAttachments = m_colorAttachmentReferences.data();
+
+            m_SubpassDescriptions[currSubpassIndex++] = subpassDesc;
 
             // depth
             // shading rate
@@ -104,6 +113,7 @@ namespace vkclass
 
         m_renderPassCreateInfo.subpassCount = currSubpassIndex;
         m_renderPassCreateInfo.pSubpasses = m_SubpassDescriptions;
+
 //        m_renderPassCreateInfo.dependencyCount = currDependencyIndex;
 //        m_renderPassCreateInfo.pDependencies = m_SubpassDependencies;
         
