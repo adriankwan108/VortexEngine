@@ -18,6 +18,8 @@ namespace vkclass
         VkImageView view;
     } SwapChainBuffer;
 
+    class VulkanRenderTargetManager;
+
     class VulkanSwapChain
     {
     public:
@@ -28,33 +30,30 @@ namespace vkclass
         VkResult PresentImage(std::vector<VkSemaphore> signalSemaphores);
         void CreateSwapChain(bool isVSync, bool isFullScreen);
         
-    public:
-        vkclass::VulkanDevice* m_device;
-        
-        const uint32_t& ImageCount = m_imageCount;
-        const uint32_t& AvailableImageIndex = m_availableImageIndex;
-        
-        inline VkSurfaceFormatKHR GetSurfaceFormat() const { return m_surfaceFormat; }
-        const VkExtent2D& Extent = m_extent;
-        const std::vector<SwapChainBuffer>& ImageBuffers = m_swapChainBuffers;
-        
-        VkImage GetCurrentImage() { return m_swapChainImages[m_availableImageIndex]; }
+        inline uint32_t                     GetImageCount()     const { return m_imageCount; }
+        inline VkSurfaceFormatKHR           GetSurfaceFormat()  const { return m_surfaceFormat; }
+        inline VkImage                      GetCurrentImage()   const { return m_swapChainImages[m_availableImageIndex]; }
+        inline VkExtent2D                   GetExtent()         const { return m_extent; }
+        inline std::vector<SwapChainBuffer> GetImageBuffers()   const { return m_swapChainBuffers; }
         
     private:
+        friend class VulkanRenderTargetManager;
+
+        vkclass::VulkanDevice* m_device;
         vkclass::VulkanSurface* m_surface;
         
         VkSurfaceFormatKHR m_surfaceFormat{};
         VkPresentModeKHR m_presentMode{};
         VkExtent2D m_extent{};
         
-        uint32_t m_imageCount; 
-        uint32_t m_availableImageIndex; // index of the swap chain image that has become available.
+        uint32_t m_imageCount = 0; 
+        uint32_t m_availableImageIndex = 0; // index of the swap chain image that has become available.
         
         VkSwapchainKHR m_swapChain = VK_NULL_HANDLE;
         std::vector<VkImage> m_swapChainImages;
         std::vector<SwapChainBuffer> m_swapChainBuffers; // size = m_imageCount (to be determined by platform)
         
-    private:
+ 
         // @brief choose color space
         VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
         

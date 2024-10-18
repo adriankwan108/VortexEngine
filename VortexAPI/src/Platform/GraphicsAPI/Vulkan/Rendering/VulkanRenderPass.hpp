@@ -13,14 +13,14 @@
 namespace vkclass
 {
     /*
-     This contains all Vulkan attachments' descriptions and creates references,
-     which descriptions are gathered from render target specification, or by raw
+     Contains all Vulkan attachments' descriptions and references
      */
     class VulkanRenderPassSpecification
     {
     public:
         VulkanRenderPassSpecification(const VX::RenderTargetSpecification& rtSpec);
-        VulkanRenderPassSpecification(VX::SubpassHint hint, std::vector<VkAttachmentDescription> colorAttachmentDesciptions);
+        // VulkanRenderPassSpecification(const VX::SubpassHint& hint, const std::vector<VkAttachmentDescription>& colorAttachmentDesciptions);
+        VulkanRenderPassSpecification(const VX::SubpassHint& hint, std::initializer_list<VkAttachmentDescription> colorAttachmentDesciptions);
         // get hash
         
         inline const VX::SubpassHint& GetSubpassHint() { return m_subpassHint; }
@@ -38,11 +38,11 @@ namespace vkclass
         
         uint32_t m_TotalAttachmentNum;
         uint8_t m_colorAttachmentNum;
-        VkAttachmentReference m_colorReferences[MaxSimultaneousRenderTargets];
+        VkAttachmentReference m_colorReferences[MaxSimultaneousRenderTargets] = {};
         
         // Depth in "+1", Shading Rate texture in "+2"
         // VkAttachmentDescription Desc[MaxSimultaneousRenderTargets * 2 + 2];
-        VkAttachmentDescription m_desc[MaxSimultaneousRenderTargets * 2];
+        VkAttachmentDescription m_desc[MaxSimultaneousRenderTargets] = {};
     };
 
     /*
@@ -56,10 +56,10 @@ namespace vkclass
         
         void Create(const VulkanRenderPassSpecification& spec, VkRenderPass* renderPass);
     private:
-        VkDevice m_device;
+        VkDevice m_device = VK_NULL_HANDLE;
         
-        VkSubpassDescription m_SubpassDescriptions[8];
-        VkSubpassDependency m_SubpassDependencies[8];
+        VkSubpassDescription m_SubpassDescriptions[8] = {};
+        VkSubpassDependency m_SubpassDependencies[8] = {};
         
         std::vector<VkAttachmentDescription> m_attachmentDescriptions;
         std::vector<VkAttachmentReference> m_colorAttachmentReferences;
@@ -73,6 +73,8 @@ namespace vkclass
     public:
         VulkanRenderPass(VkDevice device, const VulkanRenderPassSpecification& spec);
         ~VulkanRenderPass();
+
+        inline VkRenderPass GetHandle() const { return m_RenderPass; }
         
     private:
         VkDevice m_device;

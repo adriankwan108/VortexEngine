@@ -24,7 +24,6 @@
 
 #include "Rendering/VulkanRenderTarget.hpp"
 
-#include "Rendering/VulkanFrameBuffer.hpp"
 #include "Rendering/VulkanSwapChain.hpp"
 #include "Rendering/VulkanSubpass.hpp"
 #include "Rendering/VulkanRenderPass.hpp"

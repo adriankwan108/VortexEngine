@@ -3,6 +3,7 @@
 #include "Renderer/RenderTarget.hpp"
 #include "VulkanSwapChain.hpp"
 #include "VulkanRenderPass.hpp"
+#include "VulkanFramebuffer.hpp"
 
 namespace vkclass
 {
@@ -18,16 +19,15 @@ namespace vkclass
         ~VulkanRenderTargetManager();
         
         void CreateSwapChainTarget();
-        VulkanRenderPass* GetRenderPass(const std::string& name);
+        VulkanRenderPass* GetOrCreateRenderPass(const std::string& hash, const VX::RenderTargetSpecification& spec) const;
+        std::vector<VulkanFramebuffer*> GetOrCreateFramebuffer(const std::string& hash) const;
+        void SetFramebufferIndex(uint32_t* framebufferIndex);
 
     private:
         VkDevice m_device;
         VulkanSwapChain* m_swapchain;
         std::unordered_map<std::string, VX::Scope<VulkanRenderPass>> m_RenderPasses;
-        // map of <name, framebuffers>
-        
-        // get or create renderpass
-        // get or create framebuffer
+        std::unordered_map<std::string, std::vector<VX::Scope<VulkanFramebuffer>>> m_FrameBuffersMap;
     };
 
 
@@ -51,6 +51,8 @@ namespace vkclass
         VX::RenderTargetSpecification m_spec;
         
         VulkanRenderPass* m_RenderPass = nullptr;
-        // reference of framebuffer
+
+        std::vector<VulkanFramebuffer*> m_framebuffers;
+        uint32_t* m_framebufferIndex = nullptr;
     };
 }
